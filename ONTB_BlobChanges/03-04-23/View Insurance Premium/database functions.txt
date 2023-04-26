@@ -1,0 +1,63 @@
+public byte[] DownloadInsurancePremiumReceipt(string premium_uid, out string file_name)
+        {
+
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+
+                SqlDataReader sdr = null;
+
+                byte[] file_in_bytes = null;
+
+                using (SqlCommand cmd = new SqlCommand("DownloadInsurancePremiumReceiptBlob"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Id", premium_uid);
+                    cmd.Connection = con;
+                    con.Open();
+                    sdr = cmd.ExecuteReader();
+                    sdr.Read();
+                    file_in_bytes = (byte[])sdr["BlobData"];
+                    file_name = sdr["DocPath"].ToString();
+
+                    con.Close();
+                }
+
+                return file_in_bytes;
+            }
+            catch (Exception ex)
+            {
+                file_name = "";
+                return null;
+            }
+        }
+
+-------------------------------------------------
+ public int InsurancePremium_Delete(Guid PremiumUID, Guid UserUID)
+        {
+            int sresult = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("usp_InsurancePremium_Delete"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        cmd.Parameters.AddWithValue("@PremiumUID", PremiumUID);
+                        cmd.Parameters.AddWithValue("@UserUID", UserUID);
+                        con.Open();
+                        sresult = (int)cmd.ExecuteNonQuery();
+                        con.Close();
+
+                    }
+                }
+                return sresult;
+            }
+            catch (Exception ex)
+            {
+                return sresult = 0;
+            }
+        }
+

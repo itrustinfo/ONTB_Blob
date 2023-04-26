@@ -863,10 +863,12 @@ namespace ProjectManagementTool._content_pages.document_drilldown
                 string filename = string.Empty;
                 DataSet ds1 = null;
                 DataSet ds = getdt.getLatest_DocumentVerisonSelect(new Guid(UID));
+                string docversion = string.Empty;
                 if (ds.Tables[0].Rows.Count > 0)
                 {
                     path = Server.MapPath(ds.Tables[0].Rows[0]["Doc_FileName"].ToString());
                     //File.Decrypt(path);
+                    docversion = ds.Tables[0].Rows[0]["Doc_Version"].ToString();
                 }
                 else
                 {
@@ -890,9 +892,48 @@ namespace ProjectManagementTool._content_pages.document_drilldown
                     }
                 }
                 //
-                string getExtension = System.IO.Path.GetExtension(path);
+                byte[] bytes;
+
+                string filepath = Server.MapPath("~/_PreviewLoad/" + Path.GetFileName(path));
+                //
+                //for blob
+                string Connectionstring = getdt.getProjectConnectionString(new Guid(ds.Tables[0].Rows[0]["ProjectUID"].ToString()));
+                //
+                if (docversion == "1")
+                {
+                    DataSet docBlob = getdt.GetActualDocumentBlob_by_ActualDocumentUID(new Guid(UID), Connectionstring);
+                    if (docBlob.Tables[0].Rows.Count > 0)
+                    {
+                        bytes = (byte[])docBlob.Tables[0].Rows[0]["Blob_Data"];
+
+                        BinaryWriter Writer = null;
+                        Writer = new BinaryWriter(File.OpenWrite(filepath));
+
+                        // Writer raw data                
+                        Writer.Write(bytes);
+                        Writer.Flush();
+                        Writer.Close();
+                    }
+                }
+                else
+                {
+                    DataSet docBlob = getdt.GetDocumentVersionBlob_by_DocVersion_UID(new Guid(ds.Tables[0].Rows[0]["DocVersion_UID"].ToString()), Connectionstring);
+                    if (docBlob.Tables[0].Rows.Count > 0)
+                    {
+                        bytes = (byte[])docBlob.Tables[0].Rows[0]["ResubmitFile_Blob"];
+
+                        BinaryWriter Writer = null;
+                        Writer = new BinaryWriter(File.OpenWrite(filepath));
+
+                        // Writer raw data                
+                        Writer.Write(bytes);
+                        Writer.Flush();
+                        Writer.Close();
+                    }
+                }
+                string getExtension = System.IO.Path.GetExtension(filepath);
                 string outPath = path.Replace(getExtension, "") + "_download" + getExtension;
-                getdt.DecryptFile(path, outPath);
+                getdt.DecryptFile(filepath, outPath);
                 System.IO.FileInfo file = new System.IO.FileInfo(outPath);
 
                 if (file.Exists)

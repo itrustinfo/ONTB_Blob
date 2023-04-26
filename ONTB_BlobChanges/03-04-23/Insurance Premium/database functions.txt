@@ -1,0 +1,36 @@
+ public Boolean InsertorUpdateInsurancePremium(Guid PremiumUID, Guid InsuranceUID, float Premium_Paid, float Interest, float Penalty,DateTime Premium_PaidDate,DateTime Premium_DueDate,DateTime Next_PremiumDate,string Premium_Receipt,string Remarks,byte[] receipt_blob)
+        {
+            Boolean sresult = false;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("usp_InsertorUpdateInsurancePremium"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@PremiumUID", PremiumUID);
+                        cmd.Parameters.AddWithValue("@InsuranceUID", InsuranceUID);
+                        cmd.Parameters.AddWithValue("@Premium_Paid", Premium_Paid);
+                        cmd.Parameters.AddWithValue("@Interest", Interest);
+                        cmd.Parameters.AddWithValue("@Penalty", Penalty);
+                        cmd.Parameters.AddWithValue("@Premium_PaidDate", Premium_PaidDate);
+                        cmd.Parameters.AddWithValue("@Premium_DueDate", Premium_DueDate);
+                        cmd.Parameters.AddWithValue("@Next_PremiumDate", Next_PremiumDate);
+                        cmd.Parameters.AddWithValue("@Premium_Receipt", Premium_Receipt);
+                        cmd.Parameters.AddWithValue("@Remarks", Remarks);
+                        cmd.Parameters.AddWithValue("@BlobData", receipt_blob);
+                        cmd.ExecuteNonQuery();
+                        con.Close();
+                        sresult = true;
+                    }
+                }
+                return sresult;
+            }
+            catch (Exception ex)
+            {
+                return sresult = false;
+            }
+        }

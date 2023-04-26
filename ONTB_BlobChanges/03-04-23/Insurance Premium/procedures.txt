@@ -1,0 +1,47 @@
+/****** Object:  StoredProcedure [dbo].[usp_InsertorUpdateInsurancePremium]    Script Date: 3/28/2023 4:29:30 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[usp_InsertorUpdateInsurancePremium]
+@PremiumUID uniqueidentifier,
+@InsuranceUID uniqueidentifier,
+@Premium_Paid decimal(18,3),
+@Interest decimal(18,3),
+@Penalty decimal(18,3),
+@Premium_PaidDate datetime,
+@Premium_DueDate datetime,
+@Next_PremiumDate datetime,
+@Premium_Receipt varchar(300),
+@Remarks varchar(100),
+@BlobData varbinary(max)
+as
+begin
+if not exists(select PremiumUID from Insurance_Premiums where PremiumUID=@PremiumUID)
+begin
+	if @Premium_Receipt !=''
+	begin
+		insert into Insurance_Premiums(PremiumUID,InsuranceUID,Premium_Paid,Interest,Penalty,Premium_PaidDate,Premium_DueDate,Next_PremiumDate,Premium_Receipt,Remarks,BlobData)
+		values(@PremiumUID,@InsuranceUID,@Premium_Paid,@Interest,@Penalty,@Premium_PaidDate,@Premium_DueDate,@Next_PremiumDate,@Premium_Receipt,@Remarks,@BlobData)
+	end
+	else
+	begin
+				insert into Insurance_Premiums(PremiumUID,InsuranceUID,Premium_Paid,Interest,Penalty,Premium_PaidDate,Premium_DueDate,Next_PremiumDate,Remarks)
+		values(@PremiumUID,@InsuranceUID,@Premium_Paid,@Interest,@Penalty,@Premium_PaidDate,@Premium_DueDate,@Next_PremiumDate,@Remarks)
+	end
+end
+else
+begin
+	if @Premium_Receipt !=''
+	begin
+		update Insurance_Premiums set Premium_Paid=@Premium_Paid,Interest=@Interest,Penalty=@Penalty,Premium_PaidDate=@Premium_PaidDate,Premium_DueDate=@Premium_DueDate,
+		Next_PremiumDate=@Next_PremiumDate,Premium_Receipt=@Premium_Receipt,Remarks=@Remarks,BlobData = @BlobData where PremiumUID=@PremiumUID;
+	end
+	else
+	begin
+				update Insurance_Premiums set Premium_Paid=@Premium_Paid,Interest=@Interest,Penalty=@Penalty,Premium_PaidDate=@Premium_PaidDate,Premium_DueDate=@Premium_DueDate,
+		Next_PremiumDate=@Next_PremiumDate,Remarks=@Remarks where PremiumUID=@PremiumUID;
+	end
+	
+end
+end

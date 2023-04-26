@@ -1,0 +1,106 @@
+/****** Object:  Table [dbo].[IssuesBlob]    Script Date: 3/31/2023 10:10:00 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[IssuesBlob](
+	[IssueBlobUID] [uniqueidentifier] NOT NULL,
+	[Issue_Uid] [uniqueidentifier] NULL,
+	[Blob_Data] [varbinary](max) NULL,
+	[Delete_Flag] [varchar](1) NULL,
+	[DocName] [nvarchar](max) NULL,
+	[DocPath] [nvarchar](max) NULL,
+ CONSTRAINT [PK_IssuesBlob] PRIMARY KEY CLUSTERED 
+(
+	[IssueBlobUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[IssuesBlob] ADD  CONSTRAINT [DF_IssuesBlob_Delete_Flag]  DEFAULT ('N') FOR [Delete_Flag]
+GO
+
+------------------------------------------------------
+
+/****** Object:  Table [dbo].[IssueRemarksBlob]    Script Date: 3/31/2023 10:11:20 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[IssueRemarksBlob](
+	[IssueRemarksBlobUID] [uniqueidentifier] NOT NULL,
+	[IssueRemarksUID] [uniqueidentifier] NULL,
+	[Blob_Data] [varbinary](max) NULL,
+	[Delete_Flag] [varchar](1) NULL,
+	[DocName] [nvarchar](100) NULL,
+	[DocPath] [nvarchar](max) NULL,
+ CONSTRAINT [PK_IssueRemarksBlob] PRIMARY KEY CLUSTERED 
+(
+	[IssueRemarksBlobUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[IssueRemarksBlob] ADD  CONSTRAINT [DF_IssueRemarksBlob_Delete_Flag]  DEFAULT ('N') FOR [Delete_Flag]
+GO
+--------------------------------------------------
+/****** Object:  Table [dbo].[InsuranceDocBlobs]    Script Date: 3/31/2023 10:22:38 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[InsuranceDocBlobs](
+	[InsuranceDocBlobUID] [uniqueidentifier] NOT NULL,
+	[InsuranceDoc_UID] [uniqueidentifier] NULL,
+	[BlobData] [varbinary](max) NULL,
+	[DeleteFlag] [nvarchar](1) NULL,
+	[DocName] [nvarchar](max) NULL,
+	[DocPath] [nvarchar](max) NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+-------------------------------------
+
+/****** Object:  Table [dbo].[BankDocBlobs]    Script Date: 3/31/2023 10:26:29 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[BankDocBlobs](
+	[BankDocBlobUID] [uniqueidentifier] NOT NULL,
+	[BankDoc_UID] [uniqueidentifier] NULL,
+	[BlobData] [varbinary](max) NULL,
+	[DeleteFlag] [nvarchar](1) NULL,
+	[DocName] [nvarchar](max) NULL,
+	[DocPath] [nvarchar](max) NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+-------------------------------------------------------
+
+/****** Object:  Table [dbo].[PhotographBlobs]    Script Date: 3/31/2023 10:30:49 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[PhotographBlobs](
+	[PhotographBlobUID] [uniqueidentifier] NOT NULL,
+	[SitePhotograph_UID] [uniqueidentifier] NULL,
+	[BlobData] [varbinary](max) NULL,
+	[DeleteFlag] [nvarchar](1) NULL,
+	[PhotoName] [nvarchar](max) NULL,
+	[PhotoPath] [nvarchar](max) NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+-------------------------------------------
+

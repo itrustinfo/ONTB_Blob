@@ -1,0 +1,83 @@
+  public DataSet GetIssueRemarksBlobs(string issue_remarks_uid)
+        {
+            DataSet ds = new DataSet();
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+                SqlDataAdapter cmd = new SqlDataAdapter("GetIssueRemarksBlobs", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.Parameters.AddWithValue("@issue_remarks_uid", issue_remarks_uid);
+                cmd.Fill(ds);
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+            }
+            return ds;
+        }
+
+//--------------------------------
+
+ public byte[] DownloadDocument(string issue_remarks_doc_uid, out string file_name)
+        {
+
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+
+                SqlDataReader sdr = null;
+
+                byte[] file_in_bytes = null;
+
+                using (SqlCommand cmd = new SqlCommand("DownloadIssueRemarksDoc"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Id", issue_remarks_doc_uid);
+                    cmd.Connection = con;
+                    con.Open();
+                    sdr = cmd.ExecuteReader();
+                    sdr.Read();
+                    file_in_bytes = (byte[])sdr["Blob_Data"];
+                    file_name = sdr["DocPath"].ToString();
+
+                    con.Close();
+                }
+
+                return file_in_bytes;
+            }
+            catch (Exception ex)
+            {
+                file_name = "";
+                return null;
+            }
+        }
+//---------------------------------------------------
+
+ public int DeleteIssueStatusBlob(string issue_status_blob_uid)
+        {
+            int sresult = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("deleteIssueStatusBlob"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        cmd.Parameters.AddWithValue("@issue_remarks_blob_uid", issue_status_blob_uid);
+                        con.Open();
+                        sresult = (int)cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+
+                return sresult;
+            }
+            catch (Exception ex)
+            {
+                return sresult = 0;
+            }
+        }
+//----------------------------------------
+

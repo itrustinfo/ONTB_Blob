@@ -1,0 +1,59 @@
+/****** Object:  StoredProcedure [dbo].[GetIssueRemarksBlobs]    Script Date: 3/28/2023 4:54:45 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[GetIssueRemarksBlobs] 
+@issue_remarks_uid nvarchar(max)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SELECT * from IssueRemarksBlob where IssueRemarksUID = @issue_remarks_uid and Delete_Flag = 'N';
+END
+
+----------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[DownloadIssueRemarksDoc]    Script Date: 3/28/2023 4:55:43 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[DownloadIssueRemarksDoc] 
+@id nvarchar(max)
+AS
+BEGIN
+SET NOCOUNT ON;
+SELECT Blob_Data, DocPath from IssueRemarksBlob B where IssueRemarksBlobUID = @id;
+END
+
+-------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[deleteIssueStatusBlob]    Script Date: 3/28/2023 4:56:29 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[deleteIssueStatusBlob] 
+@issue_remarks_blob_uid nvarchar(max) 	
+AS
+BEGIN
+	SET NOCOUNT ON;
+    update IssueRemarksBlob set Delete_Flag='Y' where IssueRemarksBlobUID = @issue_remarks_blob_uid;
+END
+
+-------------------------------------

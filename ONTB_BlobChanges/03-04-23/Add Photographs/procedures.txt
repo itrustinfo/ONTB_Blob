@@ -1,0 +1,31 @@
+/****** Object:  StoredProcedure [dbo].[usp_GetSitePhotograph_by_WorkpackageUID]    Script Date: 3/28/2023 4:03:45 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[usp_GetSitePhotograph_by_WorkpackageUID]
+@WorkpackageUID uniqueidentifier
+as
+begin
+set nocount on;
+select A.*,B.PhotographBlobUID from SitePhotographs A, PhotographBlobs B where A.SitePhotoGraph_UID = B.SitePhotograph_UID and A.WorkpackageUID=@WorkpackageUID and A.Delete_Flag='N';
+end
+--------------------------------------------------------
+/****** Object:  StoredProcedure [dbo].[InsertUploadedPhotographBlob]    Script Date: 3/28/2023 4:06:32 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[InsertUploadedPhotographBlob] 
+@PhotographBlobUID uniqueidentifier,
+@site_photograph_uid nvarchar(max),
+@photoBytes varbinary(max),
+@photoName nvarchar(max),
+@photoPath nvarchar(max)
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+	insert into PhotographBlobs(PhotographBlobUID,SitePhotograph_UID,BlobData,DeleteFlag,PhotoName,PhotoPath)
+	values(@PhotographBlobUID,@site_photograph_uid,@photoBytes,'N',@photoName,@photoPath);
+END

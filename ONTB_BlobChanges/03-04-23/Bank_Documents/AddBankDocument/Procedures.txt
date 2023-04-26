@@ -1,0 +1,19 @@
+/****** Object:  StoredProcedure [dbo].[InsertUploadedBankDocumentBlob]    Script Date: 3/27/2023 3:41:52 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[InsertUploadedBankDocumentBlob] 
+@BankBlobUID uniqueidentifier,
+@bank_doc_uid nvarchar(max),
+@docBytes varbinary(max),
+@docName nvarchar(max),
+@docPath nvarchar(max)
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+	insert into BankDocBlobs(BankDocBlobUID,BankDoc_UID,BlobData,DeleteFlag,DocName,DocPath)
+	values(@BankBlobUID,@bank_doc_uid,@docBytes,'N',@docName,@docPath);
+END
+

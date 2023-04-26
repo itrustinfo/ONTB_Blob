@@ -1,0 +1,69 @@
+ public int InsertUploadedBankDocumentBlob(Guid BankDocBlobUID, string bank_doc_uid, byte[] docBytes, string flName, string flPath)
+        {
+            int sresult = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("InsertUploadedBankDocumentBlob"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@docName", flName);
+                        cmd.Parameters.AddWithValue("@docPath", flPath);
+                        cmd.Parameters.AddWithValue("@BankBlobUID", BankDocBlobUID);
+                        cmd.Parameters.AddWithValue("@bank_doc_uid", bank_doc_uid);
+                        cmd.Parameters.AddWithValue("@docBytes", docBytes);
+                        sresult = (int)cmd.ExecuteNonQuery();
+                        con.Close();
+
+                    }
+                }
+                return sresult;
+            }
+            catch (Exception ex)
+            {
+                return sresult;
+            }
+        }
+
+//--------------------------------------------------
+
+public byte[] DownloadBankDocument(string bank_doc_blob_uid, out string file_name)
+        {
+
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+
+                SqlDataReader sdr = null;
+
+                byte[] file_in_bytes = null;
+
+                using (SqlCommand cmd = new SqlCommand("DownloadBankDocBlob"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Id", bank_doc_blob_uid);
+                    cmd.Connection = con;
+                    con.Open();
+                    sdr = cmd.ExecuteReader();
+                    sdr.Read();
+                    file_in_bytes = (byte[])sdr["BlobData"];
+                    file_name = sdr["DocPath"].ToString();
+
+                    con.Close();
+                }
+
+                return file_in_bytes;
+            }
+            catch (Exception ex)
+            {
+                file_name = "";
+                return null;
+            }
+        }
+
+//-------------------------------------------
+

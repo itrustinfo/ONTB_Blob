@@ -1,0 +1,37 @@
+/****** Object:  StoredProcedure [dbo].[DownloadInsurancePremiumReceiptBlob]    Script Date: 3/28/2023 4:48:30 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[DownloadInsurancePremiumReceiptBlob] 
+@id nvarchar(max)
+AS
+BEGIN
+SET NOCOUNT ON;
+SELECT BlobData, Premium_Receipt as DocPath from Insurance_Premiums where PremiumUID = @id;
+END
+
+--------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[usp_InsurancePremium_Delete]    Script Date: 3/28/2023 4:49:59 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER proc [dbo].[usp_InsurancePremium_Delete]
+@PremiumUID uniqueidentifier,
+@UserUID uniqueidentifier
+as
+begin
+
+update Insurance_Premiums set Delete_Flag='Y' where PremiumUID=@PremiumUID;
+
+insert into ActivityDeleteLogs(DeleteLog_UID,Activity_UID,Activity_UserUID,Activity_For)
+	values(NEWID(),@PremiumUID,@UserUID,'Insurance Premium');
+end

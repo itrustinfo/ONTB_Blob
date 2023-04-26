@@ -1,0 +1,75 @@
+/****** Object:  Table [dbo].[Insurance_Premiums]    Script Date: 3/31/2023 10:28:57 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Insurance_Premiums](
+	[PremiumUID] [uniqueidentifier] NOT NULL,
+	[InsuranceUID] [uniqueidentifier] NULL,
+	[Premium_Paid] [decimal](18, 3) NULL,
+	[Interest] [decimal](18, 3) NULL,
+	[Penalty] [decimal](18, 3) NULL,
+	[Premium_PaidDate] [datetime] NULL,
+	[Premium_DueDate] [datetime] NULL,
+	[Next_PremiumDate] [datetime] NULL,
+	[Premium_Receipt] [varchar](300) NULL,
+	[Remarks] [varchar](1000) NULL,
+	[Delete_Flag] [varchar](1) NULL,
+	[ServerCopiedAdd] [varchar](1) NULL,
+	[CopiedAddDate] [datetime] NULL,
+	[ServerCopiedUpdate] [varchar](1) NULL,
+	[CopiedUpdateDate] [datetime] NULL,
+	[BlobData] [varbinary](max) NULL,
+ CONSTRAINT [PK_Insurance_Premiums] PRIMARY KEY CLUSTERED 
+(
+	[PremiumUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Insurance_Premiums] ADD  CONSTRAINT [DF_Insurance_Premiums_Delete_Flag]  DEFAULT ('N') FOR [Delete_Flag]
+GO
+
+ALTER TABLE [dbo].[Insurance_Premiums] ADD  DEFAULT ('N') FOR [ServerCopiedAdd]
+GO
+
+----------------------------------------------
+
+/****** Object:  Table [dbo].[RABills_Documents]    Script Date: 3/31/2023 10:47:27 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[RABills_Documents](
+	[DocumentUID] [uniqueidentifier] NOT NULL,
+	[created_date] [datetime] NULL,
+	[RABillUid] [uniqueidentifier] NULL,
+	[WorkpackageUID] [uniqueidentifier] NULL,
+	[UserID] [uniqueidentifier] NOT NULL,
+	[FilePath] [varchar](250) NULL,
+	[Description] [varchar](500) NULL,
+	[ServerCopiedAdd] [varchar](1) NULL,
+	[CopiedAddDate] [datetime] NULL,
+	[ServerCopiedUpdate] [varchar](1) NULL,
+	[CopiedUpdateDate] [datetime] NULL,
+	[DeleteFlag] [varchar](1) NULL,
+	[DocBlob] [varbinary](max) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[DocumentUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[RABills_Documents] ADD  DEFAULT ('N') FOR [ServerCopiedAdd]
+GO
+
+ALTER TABLE [dbo].[RABills_Documents] ADD  DEFAULT ('N') FOR [DeleteFlag]
+GO
+
+-----------------------------------------------
+

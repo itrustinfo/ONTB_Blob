@@ -1,0 +1,27 @@
+ public int InsertIssueRemarksBlob(string doc_name, string doc_path, byte[] blob_data, string issue_remarks_uid)
+        {
+            int sresult = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("InsertIssueRemarksBlob"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@DocName", doc_name);
+                        cmd.Parameters.AddWithValue("@DocPath", doc_path);
+                        cmd.Parameters.AddWithValue("@BlobData", blob_data);
+                        cmd.Parameters.AddWithValue("@IssueRemarksUID", issue_remarks_uid);
+                        sresult = (int)cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+                return sresult;
+            }
+            catch (Exception ex)
+            {
+                return sresult;
+            }
+        }

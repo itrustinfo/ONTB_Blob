@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -246,11 +247,29 @@ namespace ProjectManagementTool._content_pages.communication_tracking
                 {
                     string path = Server.MapPath(ds.Tables[0].Rows[0]["CoverLetterFile"].ToString());
 
-                    string getExtension = System.IO.Path.GetExtension(path);
-                    string outPath = path.Replace(getExtension, "") + "_download" + getExtension;
-                    getdt.DecryptFile(path, outPath);
-                    System.IO.FileInfo file = new System.IO.FileInfo(outPath);
+                    byte[] bytes;
+                    string filepath = Server.MapPath("~/_PreviewLoad/" + Path.GetFileName(path));
+                    //for blob
+                    string Connectionstring = getdt.getProjectConnectionString(new Guid(DDlProject.SelectedValue));
 
+                    DataSet docBlob = getdt.GetDocumentStatusBlob_by_StatusUID(new Guid(StatusUID),Connectionstring);
+                    if (docBlob.Tables[0].Rows.Count > 0)
+                    {
+                        bytes = (byte[])docBlob.Tables[0].Rows[0]["CoverFileBlob_Data"];
+
+                        BinaryWriter Writer = null;
+                        Writer = new BinaryWriter(File.OpenWrite(filepath));
+
+                        // Writer raw data                
+                        Writer.Write(bytes);
+                        Writer.Flush();
+                        Writer.Close();
+                    }
+
+                    string getExtension = System.IO.Path.GetExtension(filepath);
+                    string outPath = filepath.Replace(getExtension, "") + "_download" + getExtension;
+                    getdt.DecryptFile(filepath, outPath);
+                    System.IO.FileInfo file = new System.IO.FileInfo(outPath);
                     if (file.Exists)
                     {
 

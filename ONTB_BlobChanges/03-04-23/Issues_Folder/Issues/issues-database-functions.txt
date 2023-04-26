@@ -1,0 +1,85 @@
+ public DataSet GetUploadedIssueDocBlobs(string issue_uid)
+        {
+            DataSet ds = new DataSet();
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+                SqlDataAdapter cmd = new SqlDataAdapter("GetUploadedIssueDocBlobs", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.Parameters.AddWithValue("@issue_uid", issue_uid);
+                cmd.Fill(ds);
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+            }
+            return ds;
+        }
+
+//----------------------------------------------
+
+ public byte[] DownloadIssueDocument(string issue_doc_uid, out string file_name)
+        {
+
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+
+                SqlDataReader sdr = null;
+
+                byte[] file_in_bytes = null;
+
+                using (SqlCommand cmd = new SqlCommand("DownloadIssueDoc"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Id", issue_doc_uid);
+                    cmd.Connection = con;
+                    con.Open();
+                    sdr = cmd.ExecuteReader();
+                    sdr.Read();
+                    file_in_bytes = (byte[])sdr["Blob_Data"];
+                    file_name = sdr["DocPath"].ToString();
+
+                    con.Close();
+                }
+
+                return file_in_bytes;
+            }
+            catch (Exception ex)
+            {
+                file_name = "";
+                return null;
+            }
+        }
+
+//-----------------------------------------------------
+
+ public int DeleteIssueBlob(string issue_blob_uid)
+        {
+            int sresult = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("DeleteIssueBlob"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        cmd.Parameters.AddWithValue("@issue_blob_uid", issue_blob_uid);
+                        con.Open();
+                        sresult = (int)cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+
+                return sresult;
+            }
+            catch (Exception ex)
+            {
+                return sresult = 0;
+            }
+        }
+
+//-------------------------------------------------------
+

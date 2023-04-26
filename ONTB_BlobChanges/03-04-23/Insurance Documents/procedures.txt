@@ -1,0 +1,60 @@
+/****** Object:  StoredProcedure [dbo].[InsertUploadedInsuranceDocumentBlob]    Script Date: 3/28/2023 4:18:28 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[InsertUploadedInsuranceDocumentBlob] 
+@InsuranceBlobUID uniqueidentifier,
+@insurance_doc_uid nvarchar(max),
+@docBytes varbinary(max),
+@docName nvarchar(max),
+@docPath nvarchar(max)
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+	insert into InsuranceDocBlobs(InsuranceDocBlobUID,InsuranceDoc_UID,BlobData,DeleteFlag,DocName,DocPath)
+	values(@InsuranceBlobUID,@insurance_doc_uid,@docBytes,'N',@docName,@docPath);
+END
+
+---------------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[DownloadInsuranceDocBlob]    Script Date: 3/28/2023 4:19:19 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[DownloadInsuranceDocBlob] 
+@id nvarchar(max)
+AS
+BEGIN
+SET NOCOUNT ON;
+SELECT BlobData, DocPath from InsuranceDocBlobs where InsuranceDocBlobUID = @id;
+END
+
+-------------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[usp_InsuranceDocuments_Delete]    Script Date: 3/28/2023 4:20:18 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER proc [dbo].[usp_InsuranceDocuments_Delete]
+@InsuranceDoc_UID uniqueidentifier,
+@UserUID uniqueidentifier
+as
+begin
+
+update InsuranceDocuments set Delete_Flag='Y' where InsuranceDoc_UID=@InsuranceDoc_UID;
+update InsuranceDocBlobs set DeleteFlag = 'Y' where InsuranceDoc_UID=@InsuranceDoc_UID;
+
+insert into ActivityDeleteLogs(DeleteLog_UID,Activity_UID,Activity_UserUID,Activity_For)
+	values(NEWID(),@InsuranceDoc_UID,@UserUID,'Insurance Documents');
+end
+-------------------------------------------

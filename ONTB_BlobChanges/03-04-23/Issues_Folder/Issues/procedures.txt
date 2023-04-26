@@ -1,0 +1,60 @@
+/****** Object:  StoredProcedure [dbo].[GetUploadedIssueDocBlobs]    Script Date: 3/27/2023 11:34:07 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[GetUploadedIssueDocBlobs] 
+@issue_uid nvarchar(max)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SELECT IssueBlobUID,DocName,DocPath from IssuesBlob where issue_uid = @issue_uid;
+END
+
+------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[DownloadIssueDoc]    Script Date: 3/27/2023 11:35:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[DownloadIssueDoc] 
+@id nvarchar(max)
+AS
+BEGIN
+SET NOCOUNT ON;
+SELECT Blob_Data, DocPath from IssuesBlob where IssueBlobUID = @id;
+END
+
+---------------------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[DeleteIssueBlob]    Script Date: 3/27/2023 11:36:00 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[DeleteIssueBlob] 
+@issue_blob_uid nvarchar(max) 	
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+    delete from IssuesBlob where IssueBlobUID = @issue_blob_uid;
+	
+END
+

@@ -1,0 +1,1727 @@
+	vaibhav.parulekar@njsei.com
+//
+CREATE TABLE [dbo].[ActualDocumentBlob](
+	[Blob_UID] [uniqueidentifier] NOT NULL,
+	[ActualDocumentUID] [uniqueidentifier] NULL,
+	[Blob_Data] [varbinary](max) NULL,
+	[Delete_Flag] [varchar](1) NULL,
+ CONSTRAINT [PK_ActualDocumentBlob] PRIMARY KEY CLUSTERED 
+(
+	[Blob_UID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[ActualDocumentBlob] ADD  CONSTRAINT [DF_ActualDocumentBlob_Delete_Flag]  DEFAULT ('N') FOR [Delete_Flag]
+GO
+
+//
+CREATE TABLE [dbo].[DocumentStatus_Blob](
+	[StatusBlob_UID] [uniqueidentifier] NOT NULL,
+	[StatusUID] [uniqueidentifier] NULL,
+	[DocumentUID] [uniqueidentifier] NULL,
+	[CoverFileBlob_Data] [varbinary](max) NULL,
+	[ReviewFileBlob_Data] [varbinary](max) NULL,
+	[Delete_Flag] [varchar](1) NULL,
+ CONSTRAINT [PK_DocumentStatus_Blob] PRIMARY KEY CLUSTERED 
+(
+	[StatusBlob_UID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[DocumentStatus_Blob] ADD  CONSTRAINT [DF_DocumentStatus_Blob_Delete_Flag]  DEFAULT ('N') FOR [Delete_Flag]
+GO
+
+
+//
+CREATE TABLE [dbo].[DocumentVersionBlob](
+	[DocumentVersionBlob] [uniqueidentifier] NOT NULL,
+	[DocVersion_UID] [uniqueidentifier] NULL,
+	[DocumentUID] [uniqueidentifier] NULL,
+	[CoverLetter_Blob] [varbinary](max) NULL,
+	[ResubmitFile_Blob] [varbinary](max) NULL,
+	[Delete_Flag] [varchar](1) NULL,
+ CONSTRAINT [PK_DocumentVersionBlob] PRIMARY KEY CLUSTERED 
+(
+	[DocumentVersionBlob] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[DocumentVersionBlob] ADD  CONSTRAINT [DF_DocumentVersionBlob_Delete_Flag]  DEFAULT ('N') FOR [Delete_Flag]
+GO
+
+
+//
+/****** Object:  Table [dbo].[MasterDbforBlob]    Script Date: 4/5/2023 10:31:44 AM ******/
+/****** Object:  Table [dbo].[MasterDbforBlob]    Script Date: 4/5/2023 10:38:04 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[MasterDbforBlob](
+	[MasterdbUID] [uniqueidentifier] NOT NULL,
+	[ProjectUID] [uniqueidentifier] NULL,
+	[ProjectName] [varchar](50) NULL,
+	[DbConnectionString] [varchar](500) NULL,
+	[DbName] [varchar](100) NULL,
+ CONSTRAINT [PK_MasterDbforBlob] PRIMARY KEY CLUSTERED 
+(
+	[MasterdbUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+//
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [usp_GetProjectdb] 
+	-- Add the parameters for the stored procedure here
+@ProjectUID as uniqueidentifier
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	select * From MasterDbforBlob where ProjectUID=@ProjectUID
+END
+GO
+
+
+//
+-- ================================================
+-- Template generated from Template Explorer using:
+-- Create Procedure (New Menu).SQL
+--
+-- Use the Specify Values for Template Parameters 
+-- command (Ctrl-Shift-M) to fill in the parameter 
+-- values below.
+--
+-- This block of comments will not be included in
+-- the definition of the procedure.
+-- ================================================
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [usp_InsertActualDocumentsBlob] 
+	-- Add the parameters for the stored procedure here
+@ActualDocumentUID as uniqueidentifier,
+@Blob_Data varbinary(max)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	-- Insert into ActualDocumentBlob Table
+	insert into ActualDocumentBlob(Blob_UID,ActualDocumentUID,Blob_Data)
+	values(NEWID(),@ActualDocumentUID,@Blob_Data)
+
+END
+GO
+
+//added on 10/04/2023
+-- ================================================
+-- Template generated from Template Explorer using:
+-- Create Procedure (New Menu).SQL
+--
+-- Use the Specify Values for Template Parameters 
+-- command (Ctrl-Shift-M) to fill in the parameter 
+-- values below.
+--
+-- This block of comments will not be included in
+-- the definition of the procedure.
+-- ================================================
+SET ANSI_NULLS ON
+GO
+USE [CP02_Blob]
+GO
+/****** Object:  StoredProcedure [dbo].[usp_InsertDocumentStatusBlob]    Script Date: 4/11/2023 2:43:20 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+create PROCEDURE [dbo].[usp_InsertDocumentStatusBlob] 
+	-- Add the parameters for the stored procedure here
+@StatusUID as uniqueidentifier,
+@ActualDocumentUID as uniqueidentifier,
+@CoverLetterBlob as varbinary(max),
+@ReviewFileBlob_Data varbinary(max)=null
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	
+			insert into DocumentStatus_Blob(StatusBlob_UID,StatusUID,DocumentUID,CoverFileBlob_Data,ReviewFileBlob_Data)
+			values(NEWID(),@StatusUID,@ActualDocumentUID,@CoverLetterBlob,@ReviewFileBlob_Data);
+		
+		
+
+	  
+END
+
+
+
+//added on 10/04/2023
+-- ================================================
+-- Template generated from Template Explorer using:
+-- Create Procedure (New Menu).SQL
+--
+-- Use the Specify Values for Template Parameters 
+-- command (Ctrl-Shift-M) to fill in the parameter 
+-- values below.
+--
+-- This block of comments will not be included in
+-- the definition of the procedure.
+-- ================================================
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [usp_InsertDocumentVersionBlob]
+	-- Add the parameters for the stored procedure here
+@DocVersionUID as uniqueidentifier,
+@DocumentUID as uniqueidentifier,
+@Blob_Data as varbinary(max)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	 insert into DocumentVersionBlob(DocumentVersionBlob,DocVersion_UID,DocumentUID,ResubmitFile_Blob)
+		  values(NEWID(),@DocVersionUID,@DocumentUID,@Blob_Data);
+END
+GO
+
+
+//
+USE [ONTB_Server_Blob]
+GO
+/****** Object:  StoredProcedure [dbo].[Document_Insert_or_Update]    Script Date: 4/10/2023 2:45:32 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER proc [dbo].[Document_Insert_or_Update]
+@ActualDocumentUID uniqueidentifier,
+@ProjectUID uniqueidentifier,
+@WorkPackageUID uniqueidentifier,
+@DocumentUID uniqueidentifier,
+@ProjectRef_Number varchar(50),
+@Ref_Number varchar(75),
+@Doc_Type varchar(50),
+@IncomingRec_Date datetime,
+@FlowUID uniqueidentifier,
+@ActualDocument_Name varchar(250),
+@Description varchar(max),
+@ActualDocument_Version float,
+@ActualDocument_Type varchar(50),
+@Media_HC varchar(50),
+@Media_SC varchar(50),
+@Media_SCEF varchar(50),
+@Media_HCR varchar(50),
+@Media_SCR varchar(50),
+@Media_NA varchar(50),
+@ActualDocument_Path varchar(500),
+@Remarks varchar(max),
+@FileRef_Number varchar(100),
+@ActualDocument_CurrentStatus varchar(100),
+@FlowStep1_DisplayName varchar(50),
+@FlowStep2_DisplayName varchar(50),
+@FlowStep3_DisplayName varchar(50),
+@Step1UserUID uniqueidentifier,
+@Step1User_TargetDate datetime,
+@Step2UserUID uniqueidentifier,
+@Step2User_TargetDate datetime,
+@Step3UserUID uniqueidentifier,
+@Step3User_TargetDate datetime,
+@ActualDocument_Originator varchar(50),
+@Document_Date datetime,
+@UploadFilePhysicalpath varchar(1000),
+@CoverLetterUID uniqueidentifier,
+@SubmissionType varchar(50),
+@StatusUID as uniqueidentifier,
+@DocVersionUID as uniqueidentifier
+as
+begin
+if not exists (select ActualDocument_Name from ActualDocuments where ActualDocumentUID=@ActualDocumentUID)
+begin
+	insert into ActualDocuments(ActualDocumentUID,ProjectUID,WorkPackageUID,DocumentUID,ProjectRef_Number,Ref_Number,
+	Doc_Type,IncomingRec_Date,FlowUID,ActualDocument_Name,Description,ActualDocument_Version,ActualDocument_Type,
+	Media_HC,Media_SC,Media_SCEF,Media_HCR,Media_SCR,Media_NA,ActualDocument_Path,Remarks,FileRef_Number,
+	ActualDocument_CreatedDate,ActualDocument_CurrentStatus,Delete_Flag,ActualDocument_Originator,Document_Date,FlowStep1_TargetDate,FlowStep2_TargetDate,FlowStep3_TargetDate,CoverLetterUID,SubmissionType)
+	values(@ActualDocumentUID,@ProjectUID,@WorkPackageUID,@DocumentUID,@ProjectRef_Number,@Ref_Number,
+	@Doc_Type,@IncomingRec_Date,@FlowUID,@ActualDocument_Name,@Description,@ActualDocument_Version,@ActualDocument_Type,
+	@Media_HC,@Media_SC,@Media_SCEF,@Media_HCR,@Media_SCR,@Media_NA,@ActualDocument_Path,@Remarks,@FileRef_Number,
+	GETDATE(),@ActualDocument_CurrentStatus,'N',@ActualDocument_Originator,@Document_Date,@Step1User_TargetDate,@Step2User_TargetDate,@Step3User_TargetDate,@CoverLetterUID,@SubmissionType)
+
+
+	 -- Insert to WordDocRead table
+		  declare @strPath varchar(500)=@ActualDocument_Path;
+		  set @strPath = (select reverse(left(reverse(@strPath),CHARINDEX('.',reverse(@strPath))-1)))
+
+		  if(@strPath = 'doc' or @strPath = 'docx')
+		  begin
+			  insert into WordDocRead(UID,Doc_path,Status,CreatedDate,DocumemtUID,Encrypted)
+			  values(NEWID(),@UploadFilePhysicalpath,'Pending',GETDATE(),@ActualDocumentUID,'Y')
+		  end
+
+	declare @SubmitTargetDate datetime;
+	set @SubmitTargetDate=(select FlowStep1_TargetDate from Documents where DocumentUID=@DocumentUID);
+	if(GETDATE() > @SubmitTargetDate)
+		  begin
+			declare @Step1Days int;
+			declare @Step2Days int;
+			declare @Step3Days int;
+
+			set @Step1Days=(select FlowStep1_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			set @Step2Days=(select FlowStep2_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			set @Step3Days=(select FlowStep3_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+
+			--update Documents set FlowStep1_TargetDate=GETDATE(),FlowStep2_TargetDate=DATEADD(DAY, @Step2Days, GETDATE()),
+			--FlowStep3_TargetDate=DATEADD(DAY, @Step3Days, GETDATE()) where DocumentUID=@DocumentUID;
+			update ActualDocuments set FlowStep1_TargetDate=GETDATE(),FlowStep2_TargetDate=DATEADD(DAY, @Step2Days, GETDATE()),FlowStep3_TargetDate=DATEADD(DAY, @Step3Days, GETDATE())
+			where ActualDocumentUID=@ActualDocumentUID;
+		  end
+
+	if @Doc_Type ='Document'
+	begin
+		  
+
+		  declare @CoverLetterPath varchar(max);
+		  if @ActualDocument_CurrentStatus='Submitted'
+		  begin
+			set @CoverLetterPath=(select top 1 ActualDocument_Path from ActualDocuments where DocumentUID=@DocumentUID and ActualDocument_CurrentStatus='Submitted' and Doc_Type='Cover Letter')
+		  end
+		 -- declare @StatusUID uniqueidentifier;
+		  --set @StatusUID=NEWID();
+
+		  insert into DocumentStatus(StatusUID,DocumentUID,AcivityUserUID,Version,ActivityType,ActivityDate,Current_Status,CoverLetterFile,Origin,Status_Comments,Ref_Number) 
+		  values(@StatusUID,@ActualDocumentUID,@Step1UserUID,1.0,@ActualDocument_CurrentStatus,@IncomingRec_Date,@ActualDocument_CurrentStatus,@CoverLetterPath,@ActualDocument_Originator,@Remarks,@Ref_Number)
+
+		  -- Insert to Document Version table
+		  insert into DocumentVesrion(DocVersion_UID,DocStatus_UID,DocumentUID,Doc_Version,Doc_Type,Doc_FileName,Doc_Status,Doc_StatusDate)
+		  values(@DocVersionUID,@StatusUID,@ActualDocumentUID,1.0,@ActualDocument_Type,@ActualDocument_Path,'Checked In',@Document_Date)
+
+
+		  -- Insert into DocumentFlowData
+		  declare @FlowStep1_UserRole uniqueidentifier;
+		  declare @FlowStep2_UserRole uniqueidentifier;
+		  declare @FlowStep3_UserRole uniqueidentifier;
+		  --declare @FlowStep4_UserRole uniqueidentifier;
+		  --declare @FlowStep5_UserRole uniqueidentifier;
+		  set @FlowStep1_UserRole=(select UserRole from UserProjects where UserUID=@Step1UserUID and ProjectUID=@ProjectUID)
+		  set @FlowStep2_UserRole=(select UserRole from UserProjects where UserUID=@Step2UserUID and ProjectUID=@ProjectUID)
+		  set @FlowStep3_UserRole=(select UserRole from UserProjects where UserUID=@Step3UserUID and ProjectUID=@ProjectUID)
+
+		  if(GETDATE() > @SubmitTargetDate)
+		  begin
+			 insert into DocumentFlowData(DocumentFlow_UID,FlowMasterUID,DocumentUID,FlowStep1_UserID,FlowStep1_UserRole,FlowStep1_TargetDate,FlowStep1_DisplayName,
+				FlowStep2_UserID,FlowStep2_UserRole,FlowStep2_TargetDate,FlowStep2_DisplayName,
+				FlowStep3_UserID,FlowStep3_UserRole,FlowStep3_TargetDate,FlowStep3_DisplayName,Delete_Flag)
+			  values(NEWID(),@FlowUID,@ActualDocumentUID,@Step1UserUID,@FlowStep1_UserRole,GETDATE(),@FlowStep1_DisplayName,
+				@Step2UserUID,@FlowStep2_UserRole,DATEADD(DAY, @Step2Days, GETDATE()),@FlowStep2_DisplayName,
+				@Step3UserUID,@FlowStep3_UserRole,DATEADD(DAY, @Step3Days, GETDATE()),@FlowStep3_DisplayName,'N')
+		  end
+		  else
+		  begin
+			  insert into DocumentFlowData(DocumentFlow_UID,FlowMasterUID,DocumentUID,FlowStep1_UserID,FlowStep1_UserRole,FlowStep1_TargetDate,FlowStep1_DisplayName,
+				FlowStep2_UserID,FlowStep2_UserRole,FlowStep2_TargetDate,FlowStep2_DisplayName,
+				FlowStep3_UserID,FlowStep3_UserRole,FlowStep3_TargetDate,FlowStep3_DisplayName,Delete_Flag)
+			  values(NEWID(),@FlowUID,@ActualDocumentUID,@Step1UserUID,@FlowStep1_UserRole,@Step1User_TargetDate,@FlowStep1_DisplayName,
+				@Step2UserUID,@FlowStep2_UserRole,@Step2User_TargetDate,@FlowStep2_DisplayName,
+				@Step3UserUID,@FlowStep3_UserRole,@Step3User_TargetDate,@FlowStep3_DisplayName,'N')
+			end
+	end
+end
+else
+begin
+	update ActualDocuments set ProjectRef_Number=@ProjectRef_Number,Ref_Number=@Ref_Number,Doc_Type=@Doc_Type,
+	IncomingRec_Date=@IncomingRec_Date,FlowUID=@FlowUID,ActualDocument_Name=@ActualDocument_Name,Description=@Description,
+	ActualDocument_Type=@ActualDocument_Type,Media_HC=@Media_HC,Media_SC=@Media_SC,Media_SCEF=@Media_SCEF,
+	Media_HCR=@Media_HCR,Media_SCR=@Media_SCR,Media_NA=@Media_NA,Remarks=@Remarks,FileRef_Number=@FileRef_Number,
+	ActualDocument_Originator=@ActualDocument_Originator,Document_Date=@Document_Date where ActualDocumentUID=@ActualDocumentUID
+	if not exists (select StatusUID from DocumentStatus where DocumentUID=@ActualDocumentUID and ActivityType='Submitted')
+	begin
+		insert into DocumentStatus(StatusUID,DocumentUID,AcivityUserUID,Version,ActivityType,ActivityDate,Current_Status,CoverLetterFile,Origin,Status_Comments,Ref_Number) 
+		values(@StatusUID,@ActualDocumentUID,@Step1UserUID,1.0,@ActualDocument_CurrentStatus,@IncomingRec_Date,@ActualDocument_CurrentStatus,@CoverLetterPath,@ActualDocument_Originator,@Remarks,@Ref_Number)
+	End
+end
+end
+
+
+
+//
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+create PROCEDURE [dbo].[usp_InsertDocumentStatusBlob_FirstTime] 
+	-- Add the parameters for the stored procedure here
+@StatusUID as uniqueidentifier,
+@ActualDocumentUID as uniqueidentifier,
+@CoverLetterUID as uniqueidentifier
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	declare @CoverLetterBlob varbinary(MAX);
+	set @CoverLetterBlob=(select Blob_Data from ActualDocumentBlob where ActualDocumentUID=@CoverLetterUID and Delete_Flag='N');
+	  --Insert into Document Status Blob table
+		  insert into DocumentStatus_Blob(StatusBlob_UID,StatusUID,DocumentUID,CoverFileBlob_Data)
+		  values(NEWID(),@StatusUID,@ActualDocumentUID,@CoverLetterBlob);
+END
+
+
+//
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create proc [dbo].[usp_GetActualDocumentBlob_by_ActualDocumentUID]
+@ActualDocumentUID uniqueidentifier
+as
+begin
+set nocount on;
+select Blob_UID,ActualDocumentUID,Blob_Data from ActualDocumentBlob where 
+ActualDocumentUID=@ActualDocumentUID and Delete_Flag='N'
+end
+
+//
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create proc [dbo].[usp_GetDocumentVersionBlob_by_DocVersion_UID]
+@DocVersion_UID uniqueidentifier
+as
+begin
+set nocount on;
+select DocumentVersionBlob,DocVersion_UID,CoverLetter_Blob,ResubmitFile_Blob
+from DocumentVersionBlob where DocVersion_UID=@DocVersion_UID and Delete_Flag='N';
+end
+
+
+//added on 11/04/2023
+USE [ONTB_Server_Blob]
+GO
+/****** Object:  StoredProcedure [dbo].[usp_GetLatestDocumentVersion_DocumentUID]    Script Date: 4/11/2023 10:21:20 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[usp_GetLatestDocumentVersion_DocumentUID]
+@DocumentUID uniqueidentifier
+
+as
+begin
+declare @FlowUID uniqueidentifier;
+declare @ProjectUID uniqueidentifier;
+set @FlowUID =(select FlowUID from ActualDocuments where ActualDocumentUID=@DocumentUID);
+set @ProjectUID =(select ProjectUID from ActualDocuments where ActualDocumentUID=@DocumentUID);
+
+declare @StepCount int;
+set @StepCount=(select Steps_Count from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+
+if @StepCount=1
+begin
+	select ActualDocument_Path as Doc_FileName,ActualDocumentUID as DocumentUID,1 as Doc_Version,ActualDocument_Type as Doc_Type,@ProjectUID as ProjectUID from ActualDocuments where ActualDocumentUID=@DocumentUID;
+end
+else
+begin
+	select TOP 1 *,@ProjectUID as ProjectUID from DocumentVesrion where DocumentUID=@DocumentUID and Doc_Version=(select max(Doc_Version) from DocumentVesrion where DocumentUID=@DocumentUID) order by Doc_StatusDate desc
+end
+end
+
+//added on 12/04/2023
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[usp_InsertDocumentVersionBlob]
+	-- Add the parameters for the stored procedure here
+@DocVersionUID as uniqueidentifier,
+@DocumentUID as uniqueidentifier,
+@Blob_Data as varbinary(max),
+@CoverLetter_Blob varbinary(max)=null
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	 insert into DocumentVersionBlob(DocumentVersionBlob,DocVersion_UID,DocumentUID,ResubmitFile_Blob,CoverLetter_Blob)
+		  values(NEWID(),@DocVersionUID,@DocumentUID,@Blob_Data,@CoverLetter_Blob);
+END
+
+
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create proc [dbo].[usp_GetDocumentStatusBlob_by_StatusUID]
+@StatusUID uniqueidentifier
+as
+begin
+set nocount on;
+select StatusBlob_UID,StatusUID,CoverFileBlob_Data,ReviewFileBlob_Data
+from DocumentStatus_Blob where StatusUID=@StatusUID and Delete_Flag='N'
+end
+
+//added on 13/04/2023
+USE [ONTB_Server_Blob]
+GO
+/****** Object:  StoredProcedure [dbo].[Document_Insert_or_Update_with_RelativePath_Flow2]    Script Date: 4/13/2023 1:03:27 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER proc [dbo].[Document_Insert_or_Update_with_RelativePath_Flow2]
+@ActualDocumentUID uniqueidentifier,
+@ProjectUID uniqueidentifier,
+@WorkPackageUID uniqueidentifier,
+@DocumentUID uniqueidentifier,
+@ProjectRef_Number varchar(50),
+@Ref_Number varchar(75),
+@Doc_Type varchar(50),
+@IncomingRec_Date datetime,
+@FlowUID uniqueidentifier,
+@ActualDocument_Name varchar(250),
+@Description varchar(max),
+@ActualDocument_Version float,
+@ActualDocument_Type varchar(50),
+@Media_HC varchar(50),
+@Media_SC varchar(50),
+@Media_SCEF varchar(50),
+@Media_HCR varchar(50),
+@Media_SCR varchar(50),
+@Media_NA varchar(50),
+@ActualDocument_Path varchar(500),
+@Remarks varchar(max),
+@FileRef_Number varchar(100),
+@ActualDocument_CurrentStatus varchar(100),
+@FlowStep1_DisplayName varchar(50),
+@FlowStep2_DisplayName varchar(50),
+@Step1UserUID uniqueidentifier,
+@Step1User_TargetDate datetime,
+@Step2UserUID uniqueidentifier,
+@Step2User_TargetDate datetime,
+@ActualDocument_Originator varchar(50),
+@Document_Date datetime,
+@ActualDocument_RelativePath varchar(500),
+@ActualDocument_DirectoryName varchar(100),
+@UploadFilePhysicalpath varchar(1000),
+@CoverLetterUID uniqueidentifier,
+@SubmissionType varchar(50),
+@StatusUID as uniqueidentifier,
+@DocVersionUID as uniqueidentifier
+as
+begin
+if not exists (select ActualDocument_Name from ActualDocuments where ActualDocumentUID=@ActualDocumentUID)
+begin
+	insert into ActualDocuments(ActualDocumentUID,ProjectUID,WorkPackageUID,DocumentUID,ProjectRef_Number,Ref_Number,
+	Doc_Type,IncomingRec_Date,FlowUID,ActualDocument_Name,Description,ActualDocument_Version,ActualDocument_Type,
+	Media_HC,Media_SC,Media_SCEF,Media_HCR,Media_SCR,Media_NA,ActualDocument_Path,Remarks,FileRef_Number,
+	ActualDocument_CreatedDate,ActualDocument_CurrentStatus,Delete_Flag,ActualDocument_Originator,Document_Date,ActualDocument_RelativePath,ActualDocument_DirectoryName,FlowStep1_TargetDate,FlowStep2_TargetDate,CoverLetterUID,SubmissionType)
+	values(@ActualDocumentUID,@ProjectUID,@WorkPackageUID,@DocumentUID,@ProjectRef_Number,@Ref_Number,
+	@Doc_Type,@IncomingRec_Date,@FlowUID,@ActualDocument_Name,@Description,@ActualDocument_Version,@ActualDocument_Type,
+	@Media_HC,@Media_SC,@Media_SCEF,@Media_HCR,@Media_SCR,@Media_NA,@ActualDocument_Path,@Remarks,@FileRef_Number,
+	GETDATE(),@ActualDocument_CurrentStatus,'N',@ActualDocument_Originator,@Document_Date,@ActualDocument_RelativePath,@ActualDocument_DirectoryName,@Step1User_TargetDate,@Step2User_TargetDate,@CoverLetterUID,@SubmissionType)
+
+
+	-- Insert to WordDocRead table
+	declare @strPath varchar(500)=@ActualDocument_Path;
+	set @strPath = (select reverse(left(reverse(@strPath),CHARINDEX('.',reverse(@strPath))-1)))
+
+	if(@strPath = 'doc' or @strPath = 'docx')
+	begin
+		insert into WordDocRead(UID,Doc_path,Status,CreatedDate,DocumemtUID,Encrypted)
+		values(NEWID(),@UploadFilePhysicalpath,'Pending',GETDATE(),@ActualDocumentUID,'Y')
+	end
+	declare @SubmitTargetDate datetime;
+	set @SubmitTargetDate=(select FlowStep1_TargetDate from Documents where DocumentUID=@DocumentUID);
+
+	if(GETDATE() > @SubmitTargetDate)
+	begin
+		declare @Step1Days int;
+		declare @Step2Days int;
+
+		set @Step1Days=(select FlowStep1_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+		set @Step2Days=(select FlowStep2_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+
+		--update Documents set FlowStep1_TargetDate=GETDATE(),FlowStep2_TargetDate=DATEADD(DAY, @Step2Days, GETDATE()) where DocumentUID=@DocumentUID;
+		update ActualDocuments set FlowStep1_TargetDate=GETDATE(),FlowStep2_TargetDate=DATEADD(DAY, @Step2Days, GETDATE()) where ActualDocumentUID=@ActualDocumentUID;
+	end
+	if @Doc_Type ='Document'
+	begin
+		declare @CoverLetterPath varchar(max);
+		  if @ActualDocument_CurrentStatus='Submitted'
+		  begin
+			set @CoverLetterPath=(select top 1 ActualDocument_Path from ActualDocuments where DocumentUID=@DocumentUID and ActualDocument_CurrentStatus='Submitted' and Doc_Type='Cover Letter')
+		  end
+
+			
+		  
+
+		insert into DocumentStatus(StatusUID,DocumentUID,AcivityUserUID,Version,ActivityType,ActivityDate,Current_Status,Origin,Status_Comments,CoverLetterFile,Ref_Number) 
+		  values(@StatusUID,@ActualDocumentUID,@Step1UserUID,1.0,@ActualDocument_CurrentStatus,@IncomingRec_Date,@ActualDocument_CurrentStatus,@ActualDocument_Originator,@Remarks,@CoverLetterPath,@Ref_Number)
+
+		   -- Insert to Document Version table
+		  insert into DocumentVesrion(DocVersion_UID,DocStatus_UID,DocumentUID,Doc_Version,Doc_Type,Doc_FileName,Doc_Status,Doc_StatusDate)
+		  values(@DocVersionUID,@StatusUID,@ActualDocumentUID,1.0,@ActualDocument_Type,@ActualDocument_Path,'Checked In',GETDATE())
+		  
+		  -- Insert into DocumentFlowData
+		  declare @FlowStep1_UserRole uniqueidentifier;
+		  declare @FlowStep2_UserRole uniqueidentifier;
+		  --declare @FlowStep4_UserRole uniqueidentifier;
+		  --declare @FlowStep5_UserRole uniqueidentifier;
+		  set @FlowStep1_UserRole=(select UserRole from UserProjects where UserUID=@Step1UserUID and ProjectUID=@ProjectUID)
+		  set @FlowStep2_UserRole=(select UserRole from UserProjects where UserUID=@Step2UserUID and ProjectUID=@ProjectUID)		  
+
+		  if(GETDATE() > @SubmitTargetDate)
+		  begin
+			insert into DocumentFlowData(DocumentFlow_UID,FlowMasterUID,DocumentUID,FlowStep1_UserID,FlowStep1_UserRole,FlowStep1_TargetDate,FlowStep1_DisplayName,
+				FlowStep2_UserID,FlowStep2_UserRole,FlowStep2_TargetDate,FlowStep2_DisplayName,Delete_Flag)
+			  values(NEWID(),@FlowUID,@ActualDocumentUID,@Step1UserUID,@FlowStep1_UserRole,GETDATE(),@FlowStep1_DisplayName,
+				@Step2UserUID,@FlowStep2_UserRole,DATEADD(DAY, @Step2Days, GETDATE()),@FlowStep2_DisplayName,'N')
+		  end
+		  else
+		  begin
+			  insert into DocumentFlowData(DocumentFlow_UID,FlowMasterUID,DocumentUID,FlowStep1_UserID,FlowStep1_UserRole,FlowStep1_TargetDate,FlowStep1_DisplayName,
+				FlowStep2_UserID,FlowStep2_UserRole,FlowStep2_TargetDate,FlowStep2_DisplayName,Delete_Flag)
+			  values(NEWID(),@FlowUID,@ActualDocumentUID,@Step1UserUID,@FlowStep1_UserRole,@Step1User_TargetDate,@FlowStep1_DisplayName,
+				@Step2UserUID,@FlowStep2_UserRole,@Step2User_TargetDate,@FlowStep2_DisplayName,'N')
+			end
+	end
+end
+else
+begin
+	update ActualDocuments set ProjectRef_Number=@ProjectRef_Number,Ref_Number=@Ref_Number,Doc_Type=@Doc_Type,
+	IncomingRec_Date=@IncomingRec_Date,FlowUID=@FlowUID,ActualDocument_Name=@ActualDocument_Name,Description=@Description,
+	ActualDocument_Type=@ActualDocument_Type,Media_HC=@Media_HC,Media_SC=@Media_SC,Media_SCEF=@Media_SCEF,
+	Media_HCR=@Media_HCR,Media_SCR=@Media_SCR,Media_NA=@Media_NA,Remarks=@Remarks,FileRef_Number=@FileRef_Number,
+	ActualDocument_Originator=@ActualDocument_Originator,Document_Date=@Document_Date where ActualDocumentUID=@ActualDocumentUID
+	if not exists (select StatusUID from DocumentStatus where DocumentUID=@ActualDocumentUID and ActivityType='Submitted')
+	begin
+		insert into DocumentStatus(StatusUID,DocumentUID,AcivityUserUID,Version,ActivityType,ActivityDate,Current_Status) 
+		values(@StatusUID,@ActualDocumentUID,@Step1UserUID,1.0,@ActualDocument_CurrentStatus,@IncomingRec_Date,@ActualDocument_CurrentStatus)
+	End
+end
+end
+
+
+//
+USE [ONTB_Server_Blob]
+GO
+/****** Object:  StoredProcedure [dbo].[Document_Insert_or_Update_with_RelativePath_Flow4]    Script Date: 4/13/2023 1:18:25 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER proc [dbo].[Document_Insert_or_Update_with_RelativePath_Flow4]
+@ActualDocumentUID uniqueidentifier,
+@ProjectUID uniqueidentifier,
+@WorkPackageUID uniqueidentifier,
+@DocumentUID uniqueidentifier,
+@ProjectRef_Number varchar(50),
+@Ref_Number varchar(75),
+@Doc_Type varchar(50),
+@IncomingRec_Date datetime,
+@FlowUID uniqueidentifier,
+@ActualDocument_Name varchar(250),
+@Description varchar(max),
+@ActualDocument_Version float,
+@ActualDocument_Type varchar(50),
+@Media_HC varchar(50),
+@Media_SC varchar(50),
+@Media_SCEF varchar(50),
+@Media_HCR varchar(50),
+@Media_SCR varchar(50),
+@Media_NA varchar(50),
+@ActualDocument_Path varchar(500),
+@Remarks varchar(max),
+@FileRef_Number varchar(100),
+@ActualDocument_CurrentStatus varchar(100),
+@FlowStep1_DisplayName varchar(50),
+@FlowStep2_DisplayName varchar(50),
+@FlowStep3_DisplayName varchar(50),
+@FlowStep4_DisplayName varchar(50),
+@Step1UserUID uniqueidentifier,
+@Step1User_TargetDate datetime,
+@Step2UserUID uniqueidentifier,
+@Step2User_TargetDate datetime,
+@Step3UserUID uniqueidentifier,
+@Step3User_TargetDate datetime,
+@Step4UserUID uniqueidentifier,
+@Step4User_TargetDate datetime,
+@ActualDocument_Originator varchar(50),
+@Document_Date datetime,
+@ActualDocument_RelativePath varchar(500),
+@ActualDocument_DirectoryName varchar(100),
+@UploadFilePhysicalpath varchar(1000),
+@CoverLetterUID uniqueidentifier,
+@SubmissionType varchar(50),
+@StatusUID as uniqueidentifier,
+@DocVersionUID as uniqueidentifier
+as
+begin
+if not exists (select ActualDocument_Name from ActualDocuments where ActualDocumentUID=@ActualDocumentUID)
+begin
+	insert into ActualDocuments(ActualDocumentUID,ProjectUID,WorkPackageUID,DocumentUID,ProjectRef_Number,Ref_Number,
+	Doc_Type,IncomingRec_Date,FlowUID,ActualDocument_Name,Description,ActualDocument_Version,ActualDocument_Type,
+	Media_HC,Media_SC,Media_SCEF,Media_HCR,Media_SCR,Media_NA,ActualDocument_Path,Remarks,FileRef_Number,
+	ActualDocument_CreatedDate,ActualDocument_CurrentStatus,Delete_Flag,ActualDocument_Originator,Document_Date,ActualDocument_RelativePath,ActualDocument_DirectoryName,FlowStep1_TargetDate,FlowStep2_TargetDate,FlowStep3_TargetDate,FlowStep4_TargetDate,CoverLetterUID,SubmissionType)
+	values(@ActualDocumentUID,@ProjectUID,@WorkPackageUID,@DocumentUID,@ProjectRef_Number,@Ref_Number,
+	@Doc_Type,@IncomingRec_Date,@FlowUID,@ActualDocument_Name,@Description,@ActualDocument_Version,@ActualDocument_Type,
+	@Media_HC,@Media_SC,@Media_SCEF,@Media_HCR,@Media_SCR,@Media_NA,@ActualDocument_Path,@Remarks,@FileRef_Number,
+	GETDATE(),@ActualDocument_CurrentStatus,'N',@ActualDocument_Originator,@Document_Date,@ActualDocument_RelativePath,@ActualDocument_DirectoryName,@Step1User_TargetDate,@Step2User_TargetDate,@Step3User_TargetDate,@Step4User_TargetDate,@CoverLetterUID,@SubmissionType)
+	declare @SubmitTargetDate datetime;
+	set @SubmitTargetDate=(select FlowStep1_TargetDate from Documents where DocumentUID=@DocumentUID);
+
+		  if(GETDATE() > @SubmitTargetDate)
+		  begin
+			declare @Step1Days int;
+			declare @Step2Days int;
+			declare @Step3Days int;
+			declare @Step4Days int;
+
+			set @Step1Days=(select FlowStep1_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			set @Step2Days=(select FlowStep2_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			set @Step3Days=(select FlowStep3_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			set @Step4Days=(select FlowStep4_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+
+			--update Documents set FlowStep1_TargetDate=GETDATE(),FlowStep2_TargetDate=DATEADD(DAY, @Step2Days, GETDATE()),
+			--FlowStep3_TargetDate=DATEADD(DAY, @Step3Days, GETDATE()),FlowStep4_TargetDate=DATEADD(DAY, @Step4Days, GETDATE()) where DocumentUID=@DocumentUID;
+			update ActualDocuments set FlowStep1_TargetDate=GETDATE(),FlowStep2_TargetDate=DATEADD(DAY, @Step2Days, GETDATE()),
+			FlowStep3_TargetDate=DATEADD(DAY, @Step3Days, GETDATE()),FlowStep4_TargetDate=DATEADD(DAY, @Step4Days, GETDATE())
+			where ActualDocumentUID=@ActualDocumentUID;
+		  end
+
+		  -- Insert to WordDocRead table
+		  declare @strPath varchar(500)=@ActualDocument_Path;
+		  set @strPath = (select reverse(left(reverse(@strPath),CHARINDEX('.',reverse(@strPath))-1)))
+
+		  if(@strPath = 'doc' or @strPath = 'docx')
+		  begin
+			  insert into WordDocRead(UID,Doc_path,Status,CreatedDate,DocumemtUID,Encrypted)
+			  values(NEWID(),@UploadFilePhysicalpath,'Pending',GETDATE(),@ActualDocumentUID,'Y')
+		  end
+
+	if @Doc_Type ='Document'
+	begin
+		
+		declare @CoverLetterPath varchar(max);
+		  if @ActualDocument_CurrentStatus='Submitted'
+		  begin
+			set @CoverLetterPath=(select top 1 ActualDocument_Path from ActualDocuments where DocumentUID=@DocumentUID and ActualDocument_CurrentStatus='Submitted' and Doc_Type='Cover Letter')
+		  end
+
+		
+
+		insert into DocumentStatus(StatusUID,DocumentUID,AcivityUserUID,Version,ActivityType,ActivityDate,Current_Status,CoverLetterFile,Origin,Status_Comments,Ref_Number) 
+		  values(@StatusUID,@ActualDocumentUID,@Step1UserUID,1.0,@ActualDocument_CurrentStatus,@IncomingRec_Date,@ActualDocument_CurrentStatus,@CoverLetterPath,@ActualDocument_Originator,@Remarks,@Ref_Number)
+
+		   -- Insert to Document Version table
+		  insert into DocumentVesrion(DocVersion_UID,DocStatus_UID,DocumentUID,Doc_Version,Doc_Type,Doc_FileName,Doc_Status,Doc_StatusDate)
+		  values(@DocVersionUID,@StatusUID,@ActualDocumentUID,1.0,@ActualDocument_Type,@ActualDocument_Path,'Checked In',GETDATE())
+
+		  
+		  
+		  -- Insert into DocumentFlowData
+		  declare @FlowStep1_UserRole uniqueidentifier;
+		  declare @FlowStep2_UserRole uniqueidentifier;
+		  declare @FlowStep3_UserRole uniqueidentifier;
+		  declare @FlowStep4_UserRole uniqueidentifier;
+		  --declare @FlowStep5_UserRole uniqueidentifier;
+		  set @FlowStep1_UserRole=(select UserRole from UserProjects where UserUID=@Step1UserUID and ProjectUID=@ProjectUID)
+		  set @FlowStep2_UserRole=(select UserRole from UserProjects where UserUID=@Step2UserUID and ProjectUID=@ProjectUID)
+		  set @FlowStep3_UserRole=(select UserRole from UserProjects where UserUID=@Step3UserUID and ProjectUID=@ProjectUID)
+		  set @FlowStep4_UserRole=(select UserRole from UserProjects where UserUID=@Step4UserUID and ProjectUID=@ProjectUID)
+
+		  if(GETDATE() > @SubmitTargetDate)
+		  begin
+			insert into DocumentFlowData(DocumentFlow_UID,FlowMasterUID,DocumentUID,FlowStep1_UserID,FlowStep1_UserRole,FlowStep1_TargetDate,FlowStep1_DisplayName,
+				FlowStep2_UserID,FlowStep2_UserRole,FlowStep2_TargetDate,FlowStep2_DisplayName,
+				FlowStep3_UserID,FlowStep3_UserRole,FlowStep3_TargetDate,FlowStep3_DisplayName,
+				FlowStep4_UserID,FlowStep4_UserRole,FlowStep4_TargetDate,FlowStep4_DisplayName,Delete_Flag)
+			  values(NEWID(),@FlowUID,@ActualDocumentUID,@Step1UserUID,@FlowStep1_UserRole,GETDATE(),@FlowStep1_DisplayName,
+				@Step2UserUID,@FlowStep2_UserRole,DATEADD(DAY, @Step2Days, GETDATE()),@FlowStep2_DisplayName,
+				@Step3UserUID,@FlowStep3_UserRole,DATEADD(DAY, @Step3Days, GETDATE()),@FlowStep3_DisplayName,
+				@Step4UserUID,@FlowStep4_UserRole,DATEADD(DAY, @Step4Days, GETDATE()),@FlowStep4_DisplayName,'N')
+		  end
+		  else
+		  begin
+			  insert into DocumentFlowData(DocumentFlow_UID,FlowMasterUID,DocumentUID,FlowStep1_UserID,FlowStep1_UserRole,FlowStep1_TargetDate,FlowStep1_DisplayName,
+				FlowStep2_UserID,FlowStep2_UserRole,FlowStep2_TargetDate,FlowStep2_DisplayName,
+				FlowStep3_UserID,FlowStep3_UserRole,FlowStep3_TargetDate,FlowStep3_DisplayName,
+				FlowStep4_UserID,FlowStep4_UserRole,FlowStep4_TargetDate,FlowStep4_DisplayName,Delete_Flag)
+			  values(NEWID(),@FlowUID,@ActualDocumentUID,@Step1UserUID,@FlowStep1_UserRole,@Step1User_TargetDate,@FlowStep1_DisplayName,
+				@Step2UserUID,@FlowStep2_UserRole,@Step2User_TargetDate,@FlowStep2_DisplayName,
+				@Step3UserUID,@FlowStep3_UserRole,@Step3User_TargetDate,@FlowStep3_DisplayName,
+				@Step4UserUID,@FlowStep4_UserRole,@Step4User_TargetDate,@FlowStep4_DisplayName,'N')
+			end
+	end
+end
+else
+begin
+	update ActualDocuments set ProjectRef_Number=@ProjectRef_Number,Ref_Number=@Ref_Number,Doc_Type=@Doc_Type,
+	IncomingRec_Date=@IncomingRec_Date,FlowUID=@FlowUID,ActualDocument_Name=@ActualDocument_Name,Description=@Description,
+	ActualDocument_Type=@ActualDocument_Type,Media_HC=@Media_HC,Media_SC=@Media_SC,Media_SCEF=@Media_SCEF,
+	Media_HCR=@Media_HCR,Media_SCR=@Media_SCR,Media_NA=@Media_NA,Remarks=@Remarks,FileRef_Number=@FileRef_Number,
+	ActualDocument_Originator=@ActualDocument_Originator,Document_Date=@Document_Date where ActualDocumentUID=@ActualDocumentUID
+	if not exists (select StatusUID from DocumentStatus where DocumentUID=@ActualDocumentUID and ActivityType='Submitted')
+	begin
+		insert into DocumentStatus(StatusUID,DocumentUID,AcivityUserUID,Version,ActivityType,ActivityDate,Current_Status,Origin,Status_Comments) 
+		values(@StatusUID,@ActualDocumentUID,@Step1UserUID,1.0,@ActualDocument_CurrentStatus,@IncomingRec_Date,@ActualDocument_CurrentStatus,@ActualDocument_Originator,@Remarks)
+	End
+end
+end
+
+//
+USE [ONTB_Server_Blob]
+GO
+/****** Object:  StoredProcedure [dbo].[Document_Insert_or_Update_with_RelativePath_Flow5]    Script Date: 4/13/2023 1:24:36 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+
+
+
+
+
+ALTER proc [dbo].[Document_Insert_or_Update_with_RelativePath_Flow5]
+@ActualDocumentUID uniqueidentifier,
+@ProjectUID uniqueidentifier,
+@WorkPackageUID uniqueidentifier,
+@DocumentUID uniqueidentifier,
+@ProjectRef_Number varchar(50),
+@Ref_Number varchar(75),
+@Doc_Type varchar(50),
+@IncomingRec_Date datetime,
+@FlowUID uniqueidentifier,
+@ActualDocument_Name varchar(250),
+@Description varchar(max),
+@ActualDocument_Version float,
+@ActualDocument_Type varchar(50),
+@Media_HC varchar(50),
+@Media_SC varchar(50),
+@Media_SCEF varchar(50),
+@Media_HCR varchar(50),
+@Media_SCR varchar(50),
+@Media_NA varchar(50),
+@ActualDocument_Path varchar(500),
+@Remarks varchar(max),
+@FileRef_Number varchar(100),
+@ActualDocument_CurrentStatus varchar(100),
+@FlowStep1_DisplayName varchar(50),
+@FlowStep2_DisplayName varchar(50),
+@FlowStep3_DisplayName varchar(50),
+@FlowStep4_DisplayName varchar(50),
+@FlowStep5_DisplayName varchar(50),
+@Step1UserUID uniqueidentifier,
+@Step1User_TargetDate datetime,
+@Step2UserUID uniqueidentifier,
+@Step2User_TargetDate datetime,
+@Step3UserUID uniqueidentifier,
+@Step3User_TargetDate datetime,
+@Step4UserUID uniqueidentifier,
+@Step4User_TargetDate datetime,
+@Step5UserUID uniqueidentifier,
+@Step5User_TargetDate datetime,
+@ActualDocument_Originator varchar(50),
+@Document_Date datetime,
+@ActualDocument_RelativePath varchar(500),
+@ActualDocument_DirectoryName varchar(100),
+@UploadFilePhysicalpath varchar(1000),
+@CoverLetterUID uniqueidentifier,
+@SubmissionType varchar(50),
+@StatusUID as uniqueidentifier,
+@DocVersionUID as uniqueidentifier
+as
+begin
+if not exists (select ActualDocument_Name from ActualDocuments where ActualDocumentUID=@ActualDocumentUID)
+begin
+	insert into ActualDocuments(ActualDocumentUID,ProjectUID,WorkPackageUID,DocumentUID,ProjectRef_Number,Ref_Number,
+	Doc_Type,IncomingRec_Date,FlowUID,ActualDocument_Name,Description,ActualDocument_Version,ActualDocument_Type,
+	Media_HC,Media_SC,Media_SCEF,Media_HCR,Media_SCR,Media_NA,ActualDocument_Path,Remarks,FileRef_Number,
+	ActualDocument_CreatedDate,ActualDocument_CurrentStatus,Delete_Flag,ActualDocument_Originator,Document_Date,ActualDocument_RelativePath,ActualDocument_DirectoryName,FlowStep1_TargetDate,FlowStep2_TargetDate,FlowStep3_TargetDate,FlowStep4_TargetDate,FlowStep5_TargetDate,CoverLetterUID,SubmissionType)
+	values(@ActualDocumentUID,@ProjectUID,@WorkPackageUID,@DocumentUID,@ProjectRef_Number,@Ref_Number,
+	@Doc_Type,@IncomingRec_Date,@FlowUID,@ActualDocument_Name,@Description,@ActualDocument_Version,@ActualDocument_Type,
+	@Media_HC,@Media_SC,@Media_SCEF,@Media_HCR,@Media_SCR,@Media_NA,@ActualDocument_Path,@Remarks,@FileRef_Number,
+	GETDATE(),@ActualDocument_CurrentStatus,'N',@ActualDocument_Originator,@Document_Date,@ActualDocument_RelativePath,@ActualDocument_DirectoryName,@Step1User_TargetDate,@Step2User_TargetDate,@Step3User_TargetDate,@Step4User_TargetDate,@Step5User_TargetDate,@CoverLetterUID,@SubmissionType)
+	declare @SubmitTargetDate datetime;
+		  set @SubmitTargetDate=(select FlowStep1_TargetDate from Documents where DocumentUID=@DocumentUID);
+
+		  if(GETDATE() > @SubmitTargetDate)
+		  begin
+			declare @Step1Days int;
+			declare @Step2Days int;
+			declare @Step3Days int;
+			declare @Step4Days int;
+			declare @Step5Days int;
+
+			set @Step1Days=(select FlowStep1_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			set @Step2Days=(select FlowStep2_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			set @Step3Days=(select FlowStep3_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			set @Step4Days=(select FlowStep4_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			set @Step5Days=(select FlowStep5_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+
+			--update Documents set FlowStep1_TargetDate=GETDATE(),FlowStep2_TargetDate=DATEADD(DAY, @Step2Days, GETDATE()),
+			--FlowStep3_TargetDate=DATEADD(DAY, @Step3Days, GETDATE()),FlowStep4_TargetDate=DATEADD(DAY, @Step4Days, GETDATE()), 
+			--FlowStep5_TargetDate=DATEADD(DAY, @Step5Days, GETDATE())  where DocumentUID=@DocumentUID;
+			update ActualDocuments set FlowStep1_TargetDate=GETDATE(),FlowStep2_TargetDate=DATEADD(DAY, @Step2Days, GETDATE()),
+			FlowStep3_TargetDate=DATEADD(DAY, @Step3Days, GETDATE()),FlowStep4_TargetDate=DATEADD(DAY, @Step4Days, GETDATE()),FlowStep5_TargetDate=DATEADD(DAY, @Step5Days, GETDATE())
+			where ActualDocumentUID=@ActualDocumentUID;
+		  end
+
+		  -- Insert to WordDocRead table
+		  declare @strPath varchar(500)=@ActualDocument_Path;
+		  set @strPath = (select reverse(left(reverse(@strPath),CHARINDEX('.',reverse(@strPath))-1)))
+
+		  if(@strPath = 'doc' or @strPath = 'docx')
+		  begin
+			  insert into WordDocRead(UID,Doc_path,Status,CreatedDate,DocumemtUID,Encrypted)
+			  values(NEWID(),@UploadFilePhysicalpath,'Pending',GETDATE(),@ActualDocumentUID,'Y')
+		  end
+
+	if @Doc_Type ='Document'
+	begin
+		
+
+		  declare @CoverLetterPath varchar(max);
+		  if @ActualDocument_CurrentStatus='Submitted'
+		  begin
+			set @CoverLetterPath=(select top 1 ActualDocument_Path from ActualDocuments where DocumentUID=@DocumentUID and ActualDocument_CurrentStatus='Submitted' and Doc_Type='Cover Letter')
+		  end
+
+		insert into DocumentStatus(StatusUID,DocumentUID,AcivityUserUID,Version,ActivityType,ActivityDate,Current_Status,CoverLetterFile,Origin,Status_Comments,Ref_Number) 
+		  values(@StatusUID,@ActualDocumentUID,@Step1UserUID,1.0,@ActualDocument_CurrentStatus,@IncomingRec_Date,@ActualDocument_CurrentStatus,@CoverLetterPath,@ActualDocument_Originator,@Remarks,@Ref_Number)
+
+		   -- Insert to Document Version table
+		  insert into DocumentVesrion(DocVersion_UID,DocStatus_UID,DocumentUID,Doc_Version,Doc_Type,Doc_FileName,Doc_Status,Doc_StatusDate)
+		  values(@DocVersionUID,@StatusUID,@ActualDocumentUID,1.0,@ActualDocument_Type,@ActualDocument_Path,'Checked In',GETDATE())
+
+		  
+		  -- Insert into DocumentFlowData
+		  declare @FlowStep1_UserRole uniqueidentifier;
+		  declare @FlowStep2_UserRole uniqueidentifier;
+		  declare @FlowStep3_UserRole uniqueidentifier;
+		  declare @FlowStep4_UserRole uniqueidentifier;
+		  declare @FlowStep5_UserRole uniqueidentifier;
+
+		  set @FlowStep1_UserRole=(select UserRole from UserProjects where UserUID=@Step1UserUID and ProjectUID=@ProjectUID)
+		  set @FlowStep2_UserRole=(select UserRole from UserProjects where UserUID=@Step2UserUID and ProjectUID=@ProjectUID)
+		  set @FlowStep3_UserRole=(select UserRole from UserProjects where UserUID=@Step3UserUID and ProjectUID=@ProjectUID)
+		  set @FlowStep4_UserRole=(select UserRole from UserProjects where UserUID=@Step4UserUID and ProjectUID=@ProjectUID)
+		  set @FlowStep5_UserRole=(select UserRole from UserProjects where UserUID=@Step5UserUID and ProjectUID=@ProjectUID)
+
+		  if(GETDATE() > @SubmitTargetDate)
+		  begin
+			insert into DocumentFlowData(DocumentFlow_UID,FlowMasterUID,DocumentUID,FlowStep1_UserID,FlowStep1_UserRole,FlowStep1_TargetDate,FlowStep1_DisplayName,
+			FlowStep2_UserID,FlowStep2_UserRole,FlowStep2_TargetDate,FlowStep2_DisplayName,
+			FlowStep3_UserID,FlowStep3_UserRole,FlowStep3_TargetDate,FlowStep3_DisplayName,
+			FlowStep4_UserID,FlowStep4_UserRole,FlowStep4_TargetDate,FlowStep4_DisplayName,
+			FlowStep5_UserID,FlowStep5_UserRole,FlowStep5_TargetDate,FlowStep5_DisplayName,Delete_Flag)
+		  values(NEWID(),@FlowUID,@ActualDocumentUID,@Step1UserUID,@FlowStep1_UserRole,GETDATE(),@FlowStep1_DisplayName,
+			@Step2UserUID,@FlowStep2_UserRole,DATEADD(DAY, @Step2Days, GETDATE()),@FlowStep2_DisplayName,
+			@Step3UserUID,@FlowStep3_UserRole,DATEADD(DAY, @Step3Days, GETDATE()),@FlowStep3_DisplayName,
+			@Step4UserUID,@FlowStep4_UserRole,DATEADD(DAY, @Step4Days, GETDATE()),@FlowStep4_DisplayName,
+			@Step5UserUID,@FlowStep5_UserRole,DATEADD(DAY, @Step5Days, GETDATE()),@FlowStep5_DisplayName,'N')
+		  end
+		  else
+		  begin
+			insert into DocumentFlowData(DocumentFlow_UID,FlowMasterUID,DocumentUID,FlowStep1_UserID,FlowStep1_UserRole,FlowStep1_TargetDate,FlowStep1_DisplayName,
+			FlowStep2_UserID,FlowStep2_UserRole,FlowStep2_TargetDate,FlowStep2_DisplayName,
+			FlowStep3_UserID,FlowStep3_UserRole,FlowStep3_TargetDate,FlowStep3_DisplayName,
+			FlowStep4_UserID,FlowStep4_UserRole,FlowStep4_TargetDate,FlowStep4_DisplayName,
+			FlowStep5_UserID,FlowStep5_UserRole,FlowStep5_TargetDate,FlowStep5_DisplayName,Delete_Flag)
+		  values(NEWID(),@FlowUID,@ActualDocumentUID,@Step1UserUID,@FlowStep1_UserRole,@Step1User_TargetDate,@FlowStep1_DisplayName,
+			@Step2UserUID,@FlowStep2_UserRole,@Step2User_TargetDate,@FlowStep2_DisplayName,
+			@Step3UserUID,@FlowStep3_UserRole,@Step3User_TargetDate,@FlowStep3_DisplayName,
+			@Step4UserUID,@FlowStep4_UserRole,@Step4User_TargetDate,@FlowStep4_DisplayName,
+			@Step5UserUID,@FlowStep5_UserRole,@Step5User_TargetDate,@FlowStep5_DisplayName,'N')
+		  end
+	      
+	end
+end
+else
+begin
+	update ActualDocuments set ProjectRef_Number=@ProjectRef_Number,Ref_Number=@Ref_Number,Doc_Type=@Doc_Type,
+	IncomingRec_Date=@IncomingRec_Date,FlowUID=@FlowUID,ActualDocument_Name=@ActualDocument_Name,Description=@Description,
+	ActualDocument_Type=@ActualDocument_Type,Media_HC=@Media_HC,Media_SC=@Media_SC,Media_SCEF=@Media_SCEF,
+	Media_HCR=@Media_HCR,Media_SCR=@Media_SCR,Media_NA=@Media_NA,Remarks=@Remarks,FileRef_Number=@FileRef_Number,
+	ActualDocument_Originator=@ActualDocument_Originator,Document_Date=@Document_Date where ActualDocumentUID=@ActualDocumentUID
+	if not exists (select StatusUID from DocumentStatus where DocumentUID=@ActualDocumentUID and ActivityType='Submitted')
+	begin
+		insert into DocumentStatus(StatusUID,DocumentUID,AcivityUserUID,Version,ActivityType,ActivityDate,Current_Status,Origin,Status_Comments) 
+		values(@StatusUID,@ActualDocumentUID,@Step1UserUID,1.0,@ActualDocument_CurrentStatus,@IncomingRec_Date,@ActualDocument_CurrentStatus,@ActualDocument_Originator,@Remarks)
+	End
+end
+end
+
+
+//
+USE [ONTB_Server_Blob]
+GO
+/****** Object:  StoredProcedure [dbo].[Document_Insert_or_Update_with_RelativePath_FlowAll]    Script Date: 4/13/2023 1:28:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[Document_Insert_or_Update_with_RelativePath_FlowAll]
+@ActualDocumentUID uniqueidentifier,
+@ProjectUID uniqueidentifier,
+@WorkPackageUID uniqueidentifier,
+@DocumentUID uniqueidentifier,
+@ProjectRef_Number varchar(50),
+@Ref_Number varchar(75),
+@Doc_Type varchar(50),
+@IncomingRec_Date datetime,
+@FlowUID uniqueidentifier,
+@ActualDocument_Name varchar(250),
+@Description varchar(max),
+@ActualDocument_Version float,
+@ActualDocument_Type varchar(50),
+@Media_HC varchar(50),
+@Media_SC varchar(50),
+@Media_SCEF varchar(50),
+@Media_HCR varchar(50),
+@Media_SCR varchar(50),
+@Media_NA varchar(50),
+@ActualDocument_Path varchar(500),
+@Remarks varchar(max),
+@FileRef_Number varchar(100),
+@ActualDocument_CurrentStatus varchar(100),
+@Step1UserUID uniqueidentifier,
+@Step1User_TargetDate datetime,
+@Step2UserUID uniqueidentifier,
+@Step2User_TargetDate datetime,
+@Step3UserUID uniqueidentifier,
+@Step3User_TargetDate datetime,
+@Step4UserUID uniqueidentifier,
+@Step4User_TargetDate datetime,
+@Step5UserUID uniqueidentifier,
+@Step5User_TargetDate datetime,
+@Step6UserUID uniqueidentifier,
+@Step6User_TargetDate datetime,
+@Step7UserUID uniqueidentifier=null,
+@Step7User_TargetDate datetime=null,
+@Step8UserUID uniqueidentifier=null,
+@Step8User_TargetDate datetime=null,
+@Step9UserUID uniqueidentifier=null,
+@Step9User_TargetDate datetime=null,
+@Step10UserUID uniqueidentifier=null,
+@Step10User_TargetDate datetime=null,
+@Step11UserUID uniqueidentifier=null,
+@Step11User_TargetDate datetime=null,
+@Step12UserUID uniqueidentifier=null,
+@Step12User_TargetDate datetime=null,
+@Step13UserUID uniqueidentifier=null,
+@Step13User_TargetDate datetime=null,
+@Step14UserUID uniqueidentifier=null,
+@Step14User_TargetDate datetime=null,
+@Step15UserUID uniqueidentifier=null,
+@Step15User_TargetDate datetime=null,
+@Step16UserUID uniqueidentifier=null,
+@Step16User_TargetDate datetime=null,
+@Step17UserUID uniqueidentifier=null,
+@Step17User_TargetDate datetime=null,
+@Step18UserUID uniqueidentifier=null,
+@Step18User_TargetDate datetime=null,
+@Step19UserUID uniqueidentifier=null,
+@Step19User_TargetDate datetime=null,
+@Step20UserUID uniqueidentifier=null,
+@Step20User_TargetDate datetime=null,
+@ActualDocument_Originator varchar(50),
+@Document_Date datetime,
+@ActualDocument_RelativePath varchar(500),
+@ActualDocument_DirectoryName varchar(100),
+@UploadFilePhysicalpath varchar(1000),
+@CoverLetterUID uniqueidentifier,
+@SubmissionType varchar(50),
+@Steps as int,
+@StatusUID as uniqueidentifier,
+@DocVersionUID as uniqueidentifier
+as
+begin
+if not exists (select ActualDocument_Name from ActualDocuments where ActualDocumentUID=@ActualDocumentUID)
+begin
+	insert into ActualDocuments(ActualDocumentUID,ProjectUID,WorkPackageUID,DocumentUID,ProjectRef_Number,Ref_Number,
+	Doc_Type,IncomingRec_Date,FlowUID,ActualDocument_Name,Description,ActualDocument_Version,ActualDocument_Type,
+	Media_HC,Media_SC,Media_SCEF,Media_HCR,Media_SCR,Media_NA,ActualDocument_Path,Remarks,FileRef_Number,
+	ActualDocument_CreatedDate,ActualDocument_CurrentStatus,Delete_Flag,ActualDocument_Originator,Document_Date,ActualDocument_RelativePath,ActualDocument_DirectoryName,FlowStep1_TargetDate,FlowStep2_TargetDate,FlowStep3_TargetDate,FlowStep4_TargetDate,FlowStep5_TargetDate,CoverLetterUID,SubmissionType,
+	[FlowStep6_TargetDate]
+           ,[FlowStep7_TargetDate]
+           ,[FlowStep8_TargetDate]
+           ,[FlowStep9_TargetDate]
+           ,[FlowStep10_TargetDate]
+           ,[FlowStep11_TargetDate]
+           ,[FlowStep12_TargetDate]
+           ,[FlowStep13_TargetDate]
+           ,[FlowStep14_TargetDate]
+           ,[FlowStep15_TargetDate]
+           ,[FlowStep16_TargetDate]
+           ,[FlowStep17_TargetDate]
+           ,[FlowStep18_TargetDate]
+           ,[FlowStep19_TargetDate]
+           ,[FlowStep20_TargetDate])
+	values(@ActualDocumentUID,@ProjectUID,@WorkPackageUID,@DocumentUID,@ProjectRef_Number,@Ref_Number,
+	@Doc_Type,@IncomingRec_Date,@FlowUID,@ActualDocument_Name,@Description,@ActualDocument_Version,@ActualDocument_Type,
+	@Media_HC,@Media_SC,@Media_SCEF,@Media_HCR,@Media_SCR,@Media_NA,@ActualDocument_Path,@Remarks,@FileRef_Number,
+	GETDATE(),@ActualDocument_CurrentStatus,'N',@ActualDocument_Originator,@Document_Date,@ActualDocument_RelativePath,@ActualDocument_DirectoryName,@Step1User_TargetDate,@Step2User_TargetDate,@Step3User_TargetDate,@Step4User_TargetDate,@Step5User_TargetDate,@CoverLetterUID,@SubmissionType,
+	@Step6User_TargetDate
+           ,@Step7User_TargetDate
+           ,@Step8User_TargetDate
+           ,@Step9User_TargetDate
+           ,@Step10User_TargetDate
+           ,@Step11User_TargetDate
+           ,@Step12User_TargetDate
+           ,@Step13User_TargetDate
+           ,@Step14User_TargetDate
+          ,@Step15User_TargetDate
+           ,@Step16User_TargetDate
+          ,@Step17User_TargetDate
+          ,@Step18User_TargetDate
+          ,@Step19User_TargetDate
+           ,@Step20User_TargetDate)
+
+
+	declare @SubmitTargetDate datetime;
+		  set @SubmitTargetDate=(select FlowStep1_TargetDate from Documents where DocumentUID=@DocumentUID);
+
+		  if(GETDATE() > @SubmitTargetDate)
+		  begin
+			declare @Step1Days int=0;
+			declare @Step2Days int=0;
+			declare @Step3Days int=0;
+			declare @Step4Days int=0;
+			declare @Step5Days int=0;
+			declare @Step6Days int=0;
+			declare @Step7Days int=0;
+			declare @Step8Days int=0;
+			declare @Step9Days int=0;
+			declare @Step10Days int=0;
+			declare @Step11Days int=0;
+			declare @Step12Days int=0;
+			declare @Step13Days int=0;
+			declare @Step14Days int=0;
+			declare @Step15Days int=0;
+			declare @Step16Days int=0;
+			declare @Step17Days int=0;
+			declare @Step18Days int=0;
+			declare @Step19Days int=0;
+			declare @Step20Days int=0;
+
+			set @Step1Days=(select FlowStep1_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			set @Step2Days=(select FlowStep2_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			set @Step3Days=(select FlowStep3_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			set @Step4Days=(select FlowStep4_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			set @Step5Days=(select FlowStep5_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			set @Step6Days=(select FlowStep6_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+
+			if @Steps >=7
+			Begin
+			  set @Step7Days=(select FlowStep7_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			END
+
+			if @Steps >=8
+			Begin
+			  set @Step8Days=(select FlowStep8_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			END
+
+		   if @Steps >=9
+			Begin
+			  set @Step9Days=(select FlowStep9_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			END
+			if @Steps >=10
+			Begin
+			  set @Step10Days=(select FlowStep10_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			END
+
+			if @Steps >=11
+			Begin
+			  set @Step11Days=(select FlowStep11_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			END
+
+			if @Steps >=12
+			Begin
+			  set @Step12Days=(select FlowStep12_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			END
+
+			if @Steps >=13
+			Begin
+			  set @Step13Days=(select FlowStep13_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			END
+
+			if @Steps >=14
+			Begin
+			  set @Step14Days=(select FlowStep14_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			END
+			if @Steps >=15
+			Begin
+			  set @Step15Days=(select FlowStep15_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			END
+
+				if @Steps >=16
+			Begin
+			  set @Step16Days=(select FlowStep16_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			END
+
+				if @Steps >=17
+			Begin
+			  set @Step17Days=(select FlowStep17_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			END
+
+				if @Steps >=18
+			Begin
+			  set @Step18Days=(select FlowStep18_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			END
+				if @Steps >=19
+			Begin
+			  set @Step19Days=(select FlowStep19_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			END
+
+				if @Steps =20
+			Begin
+			  set @Step20Days=(select FlowStep20_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			END
+
+			--update Documents set FlowStep1_TargetDate=GETDATE(),FlowStep2_TargetDate=DATEADD(DAY, @Step2Days, GETDATE()),
+			--FlowStep3_TargetDate=DATEADD(DAY, @Step3Days, GETDATE()),FlowStep4_TargetDate=DATEADD(DAY, @Step4Days, GETDATE()), 
+			--FlowStep5_TargetDate=DATEADD(DAY, @Step5Days, GETDATE())  where DocumentUID=@DocumentUID;
+			update ActualDocuments set FlowStep1_TargetDate=GETDATE(),FlowStep2_TargetDate=(select [dbo].[Fun_CalculateHolidayOffset] (GETDATE(),@Step2Days)),
+			FlowStep3_TargetDate=(select [dbo].[Fun_CalculateHolidayOffset] (GETDATE(),@Step3Days)),FlowStep4_TargetDate=(select [dbo].[Fun_CalculateHolidayOffset] (GETDATE(),@Step4Days)),FlowStep5_TargetDate=(select [dbo].[Fun_CalculateHolidayOffset] (GETDATE(),@Step5Days)),
+			FlowStep6_TargetDate=(select [dbo].[Fun_CalculateHolidayOffset] (GETDATE(),@Step6Days)),
+			FlowStep7_TargetDate=(select [dbo].[Fun_CalculateHolidayOffset] (GETDATE(),@Step7Days)),
+			FlowStep8_TargetDate=(select [dbo].[Fun_CalculateHolidayOffset] (GETDATE(),@Step8Days)),
+			FlowStep9_TargetDate=(select [dbo].[Fun_CalculateHolidayOffset] (GETDATE(),@Step9Days)),
+			FlowStep10_TargetDate=(select [dbo].[Fun_CalculateHolidayOffset] (GETDATE(),@Step10Days)),
+			FlowStep11_TargetDate=(select [dbo].[Fun_CalculateHolidayOffset] (GETDATE(),@Step11Days)),
+			FlowStep12_TargetDate=(select [dbo].[Fun_CalculateHolidayOffset] (GETDATE(),@Step12Days)),
+			FlowStep13_TargetDate=(select [dbo].[Fun_CalculateHolidayOffset] (GETDATE(),@Step13Days)),
+			FlowStep14_TargetDate=(select [dbo].[Fun_CalculateHolidayOffset] (GETDATE(),@Step14Days)),
+			FlowStep15_TargetDate=(select [dbo].[Fun_CalculateHolidayOffset] (GETDATE(),@Step15Days)),
+			FlowStep16_TargetDate=(select [dbo].[Fun_CalculateHolidayOffset] (GETDATE(),@Step16Days)),
+			FlowStep17_TargetDate=(select [dbo].[Fun_CalculateHolidayOffset] (GETDATE(),@Step17Days)),
+			FlowStep18_TargetDate=(select [dbo].[Fun_CalculateHolidayOffset] (GETDATE(),@Step18Days)),
+			FlowStep19_TargetDate=(select [dbo].[Fun_CalculateHolidayOffset] (GETDATE(),@Step19Days)),
+			FlowStep20_TargetDate=(select [dbo].[Fun_CalculateHolidayOffset] (GETDATE(),@Step20Days))
+			where ActualDocumentUID=@ActualDocumentUID;
+		  end
+
+		  -- Insert to WordDocRead table
+		  declare @strPath varchar(500)=@ActualDocument_Path;
+		  set @strPath = (select reverse(left(reverse(@strPath),CHARINDEX('.',reverse(@strPath))-1)))
+
+		  if(@strPath = 'doc' or @strPath = 'docx')
+		  begin
+			  insert into WordDocRead(UID,Doc_path,Status,CreatedDate,DocumemtUID,Encrypted)
+			  values(NEWID(),@UploadFilePhysicalpath,'Pending',GETDATE(),@ActualDocumentUID,'Y')
+		  end
+
+	if @Doc_Type ='Document'
+	begin
+		
+
+		  declare @CoverLetterPath varchar(max);
+		  if @ActualDocument_CurrentStatus='Reconciliation'
+		  begin
+			set @CoverLetterPath=(select top 1 ActualDocument_Path from ActualDocuments where DocumentUID=@DocumentUID and ActualDocument_CurrentStatus='Reconciliation' and Doc_Type='Cover Letter')
+		  end
+		  else 
+		  Begin
+		  set @CoverLetterPath=(select top 1 ActualDocument_Path from ActualDocuments where DocumentUID=@DocumentUID and ActualDocument_CurrentStatus=@ActualDocument_CurrentStatus and Doc_Type='Cover Letter')
+
+		  End
+
+		insert into DocumentStatus(StatusUID,DocumentUID,AcivityUserUID,Version,ActivityType,ActivityDate,Current_Status,CoverLetterFile,Origin,Status_Comments,Ref_Number) 
+		  values(@StatusUID,@ActualDocumentUID,@Step1UserUID,1.0,@ActualDocument_CurrentStatus,@IncomingRec_Date,@ActualDocument_CurrentStatus,@CoverLetterPath,@ActualDocument_Originator,@Remarks,@Ref_Number)
+
+		   -- Insert to Document Version table
+		  insert into DocumentVesrion(DocVersion_UID,DocStatus_UID,DocumentUID,Doc_Version,Doc_Type,Doc_FileName,Doc_Status,Doc_StatusDate)
+		  values(@DocVersionUID,@StatusUID,@ActualDocumentUID,1.0,@ActualDocument_Type,@ActualDocument_Path,'Checked In',GETDATE())
+
+		  
+		  
+	end
+end
+else
+begin
+	update ActualDocuments set ProjectRef_Number=@ProjectRef_Number,Ref_Number=@Ref_Number,Doc_Type=@Doc_Type,
+	IncomingRec_Date=@IncomingRec_Date,FlowUID=@FlowUID,ActualDocument_Name=@ActualDocument_Name,Description=@Description,
+	ActualDocument_Type=@ActualDocument_Type,Media_HC=@Media_HC,Media_SC=@Media_SC,Media_SCEF=@Media_SCEF,
+	Media_HCR=@Media_HCR,Media_SCR=@Media_SCR,Media_NA=@Media_NA,Remarks=@Remarks,FileRef_Number=@FileRef_Number,
+	ActualDocument_Originator=@ActualDocument_Originator,Document_Date=@Document_Date where ActualDocumentUID=@ActualDocumentUID
+	if not exists (select StatusUID from DocumentStatus where DocumentUID=@ActualDocumentUID and ActivityType='Submitted')
+	begin
+		insert into DocumentStatus(StatusUID,DocumentUID,AcivityUserUID,Version,ActivityType,ActivityDate,Current_Status,Origin,Status_Comments) 
+		values(@StatusUID,@ActualDocumentUID,@Step1UserUID,1.0,@ActualDocument_CurrentStatus,@IncomingRec_Date,@ActualDocument_CurrentStatus,@ActualDocument_Originator,@Remarks)
+	End
+end
+end
+
+//
+USE [ONTB_Server_Blob]
+GO
+/****** Object:  StoredProcedure [dbo].[Document_Insert_or_Update_with_RelativePath]    Script Date: 4/13/2023 1:41:05 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+
+
+
+
+
+
+ALTER proc [dbo].[Document_Insert_or_Update_with_RelativePath]
+@ActualDocumentUID uniqueidentifier,
+@ProjectUID uniqueidentifier,
+@WorkPackageUID uniqueidentifier,
+@DocumentUID uniqueidentifier,
+@ProjectRef_Number varchar(50),
+@Ref_Number varchar(75),
+@Doc_Type varchar(50),
+@IncomingRec_Date datetime,
+@FlowUID uniqueidentifier,
+@ActualDocument_Name varchar(250),
+@Description varchar(max),
+@ActualDocument_Version float,
+@ActualDocument_Type varchar(50),
+@Media_HC varchar(50),
+@Media_SC varchar(50),
+@Media_SCEF varchar(50),
+@Media_HCR varchar(50),
+@Media_SCR varchar(50),
+@Media_NA varchar(50),
+@ActualDocument_Path varchar(500),
+@Remarks varchar(max),
+@FileRef_Number varchar(100),
+@ActualDocument_CurrentStatus varchar(100),
+@FlowStep1_DisplayName varchar(50),
+@FlowStep2_DisplayName varchar(50),
+@FlowStep3_DisplayName varchar(50),
+@Step1UserUID uniqueidentifier,
+@Step1User_TargetDate datetime,
+@Step2UserUID uniqueidentifier,
+@Step2User_TargetDate datetime,
+@Step3UserUID uniqueidentifier,
+@Step3User_TargetDate datetime,
+@ActualDocument_Originator varchar(50),
+@Document_Date datetime,
+@ActualDocument_RelativePath varchar(500),
+@ActualDocument_DirectoryName varchar(100),
+@UploadFilePhysicalpath varchar(1000),
+@CoverLetterUID uniqueidentifier,
+@SubmissionType varchar(50),
+@StatusUID as uniqueidentifier,
+@DocVersionUID as uniqueidentifier
+as
+begin
+if not exists (select ActualDocument_Name from ActualDocuments where ActualDocumentUID=@ActualDocumentUID)
+begin
+	insert into ActualDocuments(ActualDocumentUID,ProjectUID,WorkPackageUID,DocumentUID,ProjectRef_Number,Ref_Number,
+	Doc_Type,IncomingRec_Date,FlowUID,ActualDocument_Name,Description,ActualDocument_Version,ActualDocument_Type,
+	Media_HC,Media_SC,Media_SCEF,Media_HCR,Media_SCR,Media_NA,ActualDocument_Path,Remarks,FileRef_Number,
+	ActualDocument_CreatedDate,ActualDocument_CurrentStatus,Delete_Flag,ActualDocument_Originator,Document_Date,ActualDocument_RelativePath,ActualDocument_DirectoryName,CoverLetterUID,SubmissionType)
+	values(@ActualDocumentUID,@ProjectUID,@WorkPackageUID,@DocumentUID,@ProjectRef_Number,@Ref_Number,
+	@Doc_Type,@IncomingRec_Date,@FlowUID,@ActualDocument_Name,@Description,@ActualDocument_Version,@ActualDocument_Type,
+	@Media_HC,@Media_SC,@Media_SCEF,@Media_HCR,@Media_SCR,@Media_NA,@ActualDocument_Path,@Remarks,@FileRef_Number,
+	GETDATE(),@ActualDocument_CurrentStatus,'N',@ActualDocument_Originator,@Document_Date,@ActualDocument_RelativePath,@ActualDocument_DirectoryName,@CoverLetterUID,@SubmissionType)
+
+	declare @SubmitTargetDate datetime;
+		  set @SubmitTargetDate=(select FlowStep1_TargetDate from Documents where DocumentUID=@DocumentUID);
+
+		  if(GETDATE() > @SubmitTargetDate)
+		  begin
+			declare @Step1Days int;
+			declare @Step2Days int;
+			declare @Step3Days int;
+
+			set @Step1Days=(select FlowStep1_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			set @Step2Days=(select FlowStep2_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+			set @Step3Days=(select FlowStep3_Duration from DocumentFlowDisplayMaster where FlowMasterUID=@FlowUID);
+
+			update Documents set FlowStep1_TargetDate=GETDATE(),FlowStep2_TargetDate=DATEADD(DAY, @Step2Days, GETDATE()),
+			FlowStep3_TargetDate=DATEADD(DAY, @Step3Days, GETDATE()) where DocumentUID=@DocumentUID;
+		  end
+
+	-- Insert to WordDocRead table
+		  declare @strPath varchar(500)=@ActualDocument_Path;
+		  set @strPath = (select reverse(left(reverse(@strPath),CHARINDEX('.',reverse(@strPath))-1)))
+
+		  if(@strPath = 'doc' or @strPath = 'docx')
+		  begin
+			  insert into WordDocRead(UID,Doc_path,Status,CreatedDate,DocumemtUID,Encrypted)
+			  values(NEWID(),@UploadFilePhysicalpath,'Pending',GETDATE(),@ActualDocumentUID,'Y')
+		  end
+
+	if @Doc_Type ='Document'
+	begin
+		
+	
+
+		   declare @CoverLetterPath varchar(max);
+		  if @ActualDocument_CurrentStatus='Submitted'
+		  begin
+			set @CoverLetterPath=(select top 1 ActualDocument_Path from ActualDocuments where DocumentUID=@DocumentUID and ActualDocument_CurrentStatus='Submitted' and Doc_Type='Cover Letter')
+		  end
+
+		insert into DocumentStatus(StatusUID,DocumentUID,AcivityUserUID,Version,ActivityType,ActivityDate,Current_Status,Origin,Status_Comments,Ref_Number,CoverLetterFile) 
+		  values(@StatusUID,@ActualDocumentUID,@Step1UserUID,1.0,@ActualDocument_CurrentStatus,@IncomingRec_Date,@ActualDocument_CurrentStatus,@ActualDocument_Originator,@Remarks,@Ref_Number,@CoverLetterPath)
+
+		   -- Insert to Document Version table
+		  insert into DocumentVesrion(DocVersion_UID,DocStatus_UID,DocumentUID,Doc_Version,Doc_Type,Doc_FileName,Doc_Status,Doc_StatusDate)
+		  values(@DocVersionUID,@StatusUID,@ActualDocumentUID,1.0,@ActualDocument_Type,@ActualDocument_Path,'Checked In',GETDATE())
+		  
+		  -- Insert into DocumentFlowData
+		  declare @FlowStep1_UserRole uniqueidentifier;
+		  declare @FlowStep2_UserRole uniqueidentifier;
+		  declare @FlowStep3_UserRole uniqueidentifier;
+		  --declare @FlowStep4_UserRole uniqueidentifier;
+		  --declare @FlowStep5_UserRole uniqueidentifier;
+		  set @FlowStep1_UserRole=(select UserRole from UserProjects where UserUID=@Step1UserUID and ProjectUID=@ProjectUID)
+		  set @FlowStep2_UserRole=(select UserRole from UserProjects where UserUID=@Step2UserUID and ProjectUID=@ProjectUID)
+		  set @FlowStep3_UserRole=(select UserRole from UserProjects where UserUID=@Step3UserUID and ProjectUID=@ProjectUID)
+
+	      insert into DocumentFlowData(DocumentFlow_UID,FlowMasterUID,DocumentUID,FlowStep1_UserID,FlowStep1_UserRole,FlowStep1_TargetDate,FlowStep1_DisplayName,
+			FlowStep2_UserID,FlowStep2_UserRole,FlowStep2_TargetDate,FlowStep2_DisplayName,
+			FlowStep3_UserID,FlowStep3_UserRole,FlowStep3_TargetDate,FlowStep3_DisplayName,Delete_Flag)
+		  values(NEWID(),@FlowUID,@ActualDocumentUID,@Step1UserUID,@FlowStep1_UserRole,@Step1User_TargetDate,@FlowStep1_DisplayName,
+			@Step2UserUID,@FlowStep2_UserRole,@Step2User_TargetDate,@FlowStep2_DisplayName,
+			@Step3UserUID,@FlowStep3_UserRole,@Step3User_TargetDate,@FlowStep3_DisplayName,'N')
+	end
+end
+else
+begin
+	update ActualDocuments set ProjectRef_Number=@ProjectRef_Number,Ref_Number=@Ref_Number,Doc_Type=@Doc_Type,
+	IncomingRec_Date=@IncomingRec_Date,FlowUID=@FlowUID,ActualDocument_Name=@ActualDocument_Name,Description=@Description,
+	ActualDocument_Type=@ActualDocument_Type,Media_HC=@Media_HC,Media_SC=@Media_SC,Media_SCEF=@Media_SCEF,
+	Media_HCR=@Media_HCR,Media_SCR=@Media_SCR,Media_NA=@Media_NA,Remarks=@Remarks,FileRef_Number=@FileRef_Number,
+	ActualDocument_Originator=@ActualDocument_Originator,Document_Date=@Document_Date where ActualDocumentUID=@ActualDocumentUID
+	if not exists (select StatusUID from DocumentStatus where DocumentUID=@ActualDocumentUID and ActivityType='Submitted')
+	begin
+		insert into DocumentStatus(StatusUID,DocumentUID,AcivityUserUID,Version,ActivityType,ActivityDate,Current_Status,Origin,Status_Comments,Ref_Number) 
+		values(@StatusUID,@ActualDocumentUID,@Step1UserUID,1.0,@ActualDocument_CurrentStatus,@IncomingRec_Date,@ActualDocument_CurrentStatus,@ActualDocument_Originator,@Remarks,@Ref_Number)
+	End
+end
+end
+
+//added on 13/04/2023
+USE [CP02_Blob]
+GO
+
+/****** Object:  Table [dbo].[DocumentsAttachments_Blob]    Script Date: 4/13/2023 5:56:22 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[DocumentsAttachments_Blob](
+	[DocumentAttachmentBlob] [uniqueidentifier] NOT NULL,
+	[AttachmentUID] [uniqueidentifier] NULL,
+	[ActualDocumentUID] [uniqueidentifier] NULL,
+	[StatusUID] [uniqueidentifier] NULL,
+	[BlobData] [varbinary](max) NULL,
+	[DeleteFlag] [varchar](1) NULL,
+	[CreatedDate] [datetime] NULL,
+ CONSTRAINT [PK_DocumentsAttachments_Blob] PRIMARY KEY CLUSTERED 
+(
+	[DocumentAttachmentBlob] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[DocumentsAttachments_Blob] ADD  CONSTRAINT [DF_DocumentsAttachments_Blob_DeleteFlag]  DEFAULT ('N') FOR [DeleteFlag]
+GO
+
+ALTER TABLE [dbo].[DocumentsAttachments_Blob] ADD  CONSTRAINT [DF_DocumentsAttachments_Blob_CreatedDate]  DEFAULT (getdate()) FOR [CreatedDate]
+GO
+
+//
+-- ================================================
+-- Template generated from Template Explorer using:
+-- Create Procedure (New Menu).SQL
+--
+-- Use the Specify Values for Template Parameters 
+-- command (Ctrl-Shift-M) to fill in the parameter 
+-- values below.
+--
+-- This block of comments will not be included in
+-- the definition of the procedure.
+-- ================================================
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [usp_InsertDocumentsAttachmentsBlob] 
+	-- Add the parameters for the stored procedure here
+@AttachmentUID as uniqueidentifier,
+@ActualDocumentUID as uniqueidentifier,
+@StatusUID as uniqueidentifier,
+@BlobData as varbinary(max)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	INSERT INTO [dbo].[DocumentsAttachments_Blob]
+           ([DocumentAttachmentBlob]
+           ,[AttachmentUID]
+           ,[ActualDocumentUID]
+		   ,[StatusUID]
+           ,[BlobData]
+           ,[DeleteFlag]
+           )
+     VALUES
+           (NEWID()
+           ,@AttachmentUID
+           ,@ActualDocumentUID
+           ,@StatusUID
+           ,@BlobData
+           ,'N'
+ )
+END
+GO
+
+//added on 14/04/2023
+-- ================================================
+-- Template generated from Template Explorer using:
+-- Create Procedure (New Menu).SQL
+--
+-- Use the Specify Values for Template Parameters 
+-- command (Ctrl-Shift-M) to fill in the parameter 
+-- values below.
+--
+-- This block of comments will not be included in
+-- the definition of the procedure.
+-- ================================================
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [usp_GetAttachmentBlob_by_attachmentUID] 
+	-- Add the parameters for the stored procedure here
+@AttachmentUID as uniqueidentifier
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	select * From DocumentsAttachments_Blob Where AttachmentUID=@AttachmentUID and DeleteFlag='N'
+END
+GO
+
+//added on 17/04/2023
+-- ================================================
+-- Template generated from Template Explorer using:
+-- Create Procedure (New Menu).SQL
+--
+-- Use the Specify Values for Template Parameters 
+-- command (Ctrl-Shift-M) to fill in the parameter 
+-- values below.
+--
+-- This block of comments will not be included in
+-- the definition of the procedure.
+-- ================================================
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [usp_ReplaceDocsFlow2old_Blob]
+	-- Add the parameters for the stored procedure here
+@CoverLetterUID as uniqueidentifier,
+@StatusUID as uniqueidentifier,
+@DocVersionUID as uniqueidentifier,
+@ActualDocument_Blob varbinary(max),
+@CoverLetter_Blob as varbinary(max)
+ 
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	SET NOCOUNT ON;
+	
+
+    -- Insert statements for procedure here
+	
+
+	Update ActualDocumentBlob set Blob_Data=@ActualDocument_Blob
+	Where ActualDocumentUID=@CoverLetterUID
+
+	--- update document status table
+	Update DocumentStatus_Blob set CoverFileBlob_Data=@CoverLetter_Blob Where StatusUID = @StatusUID
+
+	---- update document Version table
+	Update  DocumentVersionBlob set ResubmitFile_Blob=@ActualDocument_Blob  Where DocVersion_UID=@DocVersionUID
+
+END
+GO
+
+
+//
+USE [ONTB_Server_Blob]
+GO
+/****** Object:  StoredProcedure [dbo].[usp_ReplaceDocsFlow2old]    Script Date: 4/17/2023 2:22:06 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+create PROCEDURE [dbo].[usp_GetReplaceDocsFlow2old_UIDs_ForBlob] 
+	-- Add the parameters for the stored procedure here
+
+@ActualDocumentUID as uniqueidentifier
+
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+	declare @CoverLetterUID as uniqueidentifier;
+	declare @StatusUID as uniqueidentifier;
+	declare @DocVersionUID as uniqueidentifier;
+	set @CoverLetterUID =(select CoverLetterUID from ActualDocuments Where ActualDocumentUID=@ActualDocumentUID)
+    -- Insert statements for procedure here
+	
+
+	set @StatusUID=(select StatusUID From DocumentStatus Where DocumentUID=@ActualDocumentUID and ActivityType='Submitted')
+
+	set @DocVersionUID =(select DocVersion_UID From DocumentVesrion Where DocumentUID=@ActualDocumentUID and Doc_Version=1)
+
+	select @CoverLetterUID as CoverLetterUID,@StatusUID as StatusUID,@DocVersionUID as DocVersionUID from ActualDocuments Where ActualDocumentUID=@ActualDocumentUID
+	
+END
+
+//
+USE [CP02_Blob]
+GO
+/****** Object:  StoredProcedure [dbo].[usp_ReplaceDocsFlow2old_Blob]    Script Date: 4/24/2023 2:27:42 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[usp_ReplaceDocsFlow2old_Blob]
+	-- Add the parameters for the stored procedure here
+@ActualDocumentUID as uniqueidentifier,
+@CoverLetterUID as uniqueidentifier,
+@StatusUID as uniqueidentifier,
+@DocVersionUID as uniqueidentifier,
+@ActualDocument_Blob varbinary(max),
+@CoverLetter_Blob as varbinary(max)
+ 
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	SET NOCOUNT ON;
+	
+
+    -- Insert statements for procedure here
+	Update ActualDocumentBlob set Blob_Data=@ActualDocument_Blob
+	Where ActualDocumentUID=@ActualDocumentUID
+
+
+	Update ActualDocumentBlob set Blob_Data=@CoverLetter_Blob
+	Where ActualDocumentUID=@CoverLetterUID
+
+	--- update document status table
+	Update DocumentStatus_Blob set CoverFileBlob_Data=@CoverLetter_Blob Where StatusUID = @StatusUID
+
+	---- update document Version table
+	Update  DocumentVersionBlob set ResubmitFile_Blob=@ActualDocument_Blob  Where DocVersion_UID=@DocVersionUID
+
+END
+

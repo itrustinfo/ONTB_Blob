@@ -1,0 +1,30 @@
+ public int InsertUploadedIssueDocumentBlob(Guid IssueDocBlobUID, string issue_uid, byte[] docBytes, string flName, string flPath)
+        {
+            int sresult = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("InsertUploadedIssueDocumentBlob"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@docName", flName);
+                        cmd.Parameters.AddWithValue("@docPath", flPath);
+                        cmd.Parameters.AddWithValue("@IssueBlobUID", IssueDocBlobUID);
+                        cmd.Parameters.AddWithValue("@issue_uid", issue_uid);
+                        cmd.Parameters.AddWithValue("@docBytes", docBytes);
+                        sresult = (int)cmd.ExecuteNonQuery();
+                        con.Close();
+
+                    }
+                }
+                return sresult;
+            }
+            catch (Exception ex)
+            {
+                return sresult;
+            }
+        }
