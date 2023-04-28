@@ -238,51 +238,51 @@ namespace ProjectManagementTool._content_pages.Convert_to_blob
                 LblMessage.Visible = true;
             }
 
-            //else if (RBList.SelectedValue == "General Documents")
-            //{
-            //    DataSet ds = getdt.GetAllGeneralDocuments();
-            //    if (ds.Tables[0].Rows.Count > 0)
-            //    {
-            //        TotalDocuments = ds.Tables[0].Rows.Count;
-            //        for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
-            //        {
-            //            Guid GeneralDocumentUID = new Guid(ds.Tables[0].Rows[i]["GeneralDocumentUID"].ToString());
-            //            try
-            //            {
-            //                string path = Server.MapPath(ds.Tables[0].Rows[i]["GeneralDocument_Path"].ToString());
-            //                if (File.Exists(path))
-            //                {
-            //                    byte[] filetobytes = DBGetData.FileToByteArray(path);
-            //                    int gDoc = getdt.GeneralDocumentBlobInsertorUpdate(Guid.NewGuid(), GeneralDocumentUID, filetobytes);
-            //                    if (gDoc > 0)
-            //                    {
-            //                        SuccessFullyConverted += 1;
-            //                        int alog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), GeneralDocumentUID, "GeneralDocuments", "Success", path);
-            //                    }
-            //                    else
-            //                    {
-            //                        Errored += 1;
-            //                        int elog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), GeneralDocumentUID, "GeneralDocuments", "Failure", path);
-            //                    }
-            //                }
-            //                else
-            //                {
-            //                    FileNotFound += 1;
-            //                    int elog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), GeneralDocumentUID, "GeneralDocuments", "Failure", path);
-            //                }
+            else if (RBList.SelectedValue == "General Documents")
+            {
+                DataSet ds = getdt.GetAllGeneralDocuments();
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    TotalDocuments = ds.Tables[0].Rows.Count;
+                    for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                    {
+                        Guid GeneralDocumentUID = new Guid(ds.Tables[0].Rows[i]["GeneralDocumentUID"].ToString());
+                        try
+                        {
+                            string path = Server.MapPath(ds.Tables[0].Rows[i]["GeneralDocument_Path"].ToString());
+                            if (File.Exists(path))
+                            {
+                                byte[] filetobytes = getdt.FileToByteArray(path);
+                                int gDoc = getdt.GeneralDocumentBlobInsertorUpdate(Guid.NewGuid(), GeneralDocumentUID, filetobytes);
+                                if (gDoc > 0)
+                                {
+                                    SuccessFullyConverted += 1;
+                                    int alog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), GeneralDocumentUID, "GeneralDocuments", "Success", path);
+                                }
+                                else
+                                {
+                                    Errored += 1;
+                                    int elog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), GeneralDocumentUID, "GeneralDocuments", "Failure", path);
+                                }
+                            }
+                            else
+                            {
+                                FileNotFound += 1;
+                                int elog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), GeneralDocumentUID, "GeneralDocuments", "Failure", path);
+                            }
 
-            //            }
-            //            catch (Exception ex)
-            //            {
-            //                Errored += 1;
-            //            }
-            //        }
-            //    }
+                        }
+                        catch (Exception ex)
+                        {
+                            Errored += 1;
+                        }
+                    }
+                }
 
-            //    LblMessage.Text = "Total Documents : " + TotalDocuments + ", FileNotFound : " + FileNotFound + " Converted Documents : " + SuccessFullyConverted + ", Errored Documents : " + Errored;
-            //    LblProgress.Visible = false;
-            //    LblMessage.Visible = true;
-            //}
+                LblMessage.Text = "Total Documents : " + TotalDocuments + ", FileNotFound : " + FileNotFound + " Converted Documents : " + SuccessFullyConverted + ", Errored Documents : " + Errored;
+                LblProgress.Visible = false;
+                LblMessage.Visible = true;
+            }
             //else if (RBList.SelectedValue == "Document Status")
             //{
             //    //added by zuber

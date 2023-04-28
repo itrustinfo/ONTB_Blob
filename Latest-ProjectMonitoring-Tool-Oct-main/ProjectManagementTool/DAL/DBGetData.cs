@@ -25075,6 +25075,73 @@ namespace ProjectManager.DAL
             }
             return ds;
         }
+
+        public DataSet GetGeneralDocumentBlob_by_UID(Guid GeneralDocumentUID)
+        {
+            DataSet ds = new DataSet();
+            SqlConnection con = new SqlConnection(db.GetConnectionString());
+            try
+            {
+                SqlDataAdapter cmd = new SqlDataAdapter("usp_GeneralDocumentBlob_by_UID", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.Parameters.AddWithValue("@GeneralDocumentUID", GeneralDocumentUID);
+                cmd.Fill(ds);
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+
+            }
+            return ds;
+        }
+
+        //added on 12/08/2022 for Arun blob chnages
+        public DataSet GetAllGeneralDocuments()
+        {
+            DataSet ds = new DataSet();
+            SqlConnection con = new SqlConnection(db.GetConnectionString());
+            try
+            {
+                SqlDataAdapter cmd = new SqlDataAdapter("usp_GetAll_GeneralDocuments", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.Fill(ds);
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+
+            }
+            return ds;
+        }
+
+        public int GeneralDocumentBlobInsertorUpdate(Guid GeneralDocumentBlobUID, Guid GeneralDocumentUID, byte[] GeneralDocumentBlob)
+        {
+            int sresult = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("usp_GeneralDocumentBlobInsertorUpdate"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@GeneralDocumentBlobUID", GeneralDocumentBlobUID);
+                        cmd.Parameters.AddWithValue("@GeneralDocumentUID", GeneralDocumentUID);
+                        cmd.Parameters.AddWithValue("@GeneralDocumentBlob", GeneralDocumentBlob);
+                        sresult = cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                sresult = 0;
+            }
+            return sresult;
+        }
+
     }
 
 

@@ -131,7 +131,7 @@ namespace ProjectManager.DAL
         public int InsertIntoGeneralDocuments(Guid GeneralDocumentUID, Guid StructureUID, string Ref_Number,
         DateTime IncomingRec_Date, string GeneralDocument_Name, string Description, double ActualDocument_Version, string ActualDocument_Type,
          string Media_HC, string Media_SC, string Media_SCEF, string Media_HCR, string Media_SCR, string Media_NA, string ActualDocument_Path, string Remarks,
-         string FileRef_Number, string ActualDocument_CurrentStatus, DateTime Document_Date, string ActualDocument_RelativePath, string ActualDocument_DirectoryName, string UploadFilePhysicalpath,Guid Created_By)
+         string FileRef_Number, string ActualDocument_CurrentStatus, DateTime Document_Date, string ActualDocument_RelativePath, string ActualDocument_DirectoryName, string UploadFilePhysicalpath,Guid Created_By, byte[] Blob_Data)
         {
             int sresult = 0;
             try
@@ -166,6 +166,7 @@ namespace ProjectManager.DAL
                         cmd.Parameters.AddWithValue("@GeneralDocument_DirectoryName", ActualDocument_DirectoryName);
                         cmd.Parameters.AddWithValue("@UploadFilePhysicalpath", UploadFilePhysicalpath);
                         cmd.Parameters.AddWithValue("@Created_By", Created_By);
+                        cmd.Parameters.AddWithValue("@Blob_Data", Blob_Data);
                         con.Open();
                         sresult = (int)cmd.ExecuteNonQuery();
                         con.Close();

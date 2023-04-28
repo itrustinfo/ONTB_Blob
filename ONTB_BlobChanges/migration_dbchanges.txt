@@ -192,3 +192,41 @@ set @sql = N'SELECT * FROM DocumentsAttachments INNER JOIN
 print @sql
 EXEC(@sql)
 end
+
+
+//added on 28/04/2023
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create proc [dbo].[usp_GetAll_GeneralDocuments]
+as
+begin
+set nocount on;
+select * from GeneralDocuments where Delete_Flag='N'
+and GeneralDocumentUID not in (select GeneralDocumentUID from GeneralDocumentsBlob) order by GeneralDocument_CreatedDate asc
+end
+
+
+//
+/****** Object:  StoredProcedure [dbo].[usp_GeneralDocumentBlobInsertorUpdate]    Script Date: 4/28/2023 12:53:52 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create proc [dbo].[usp_GeneralDocumentBlobInsertorUpdate]
+@GeneralDocumentBlobUID uniqueidentifier,
+@GeneralDocumentUID uniqueidentifier,
+@GeneralDocumentBlob varbinary(max)
+as
+begin
+if not exists(select GeneralDocumentBlobUID from GeneralDocumentsBlob where GeneralDocumentBlobUID=@GeneralDocumentBlobUID and Delete_Flag='N')
+begin
+	 insert into GeneralDocumentsBlob(GeneralDocumentBlobUID,GeneralDocumentUID,GeneralDocumentBlob)
+	 values(@GeneralDocumentBlobUID,@GeneralDocumentUID,@GeneralDocumentBlob)
+end
+else
+begin
+ update GeneralDocumentsBlob set GeneralDocumentBlob=@GeneralDocumentBlob where GeneralDocumentUID=@GeneralDocumentUID
+end
+end

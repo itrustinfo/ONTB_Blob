@@ -1725,3 +1725,158 @@ BEGIN
 
 END
 
+
+//added on 27/04/2023
+/****** Object:  Table [dbo].[GeneralDocumentsBlob]    Script Date: 4/27/2023 12:55:11 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[GeneralDocumentsBlob](
+	[GeneralDocumentBlobUID] [uniqueidentifier] NOT NULL,
+	[GeneralDocumentUID] [uniqueidentifier] NULL,
+	[GeneralDocumentBlob] [varbinary](max) NULL,
+	[Delete_Flag] [varchar](1) NULL,
+ CONSTRAINT [PK_GeneralDocumentsBlob] PRIMARY KEY CLUSTERED 
+(
+	[GeneralDocumentBlobUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[GeneralDocumentsBlob] ADD  CONSTRAINT [DF_GeneralDocumentsBlob_Delete_Flag]  DEFAULT ('N') FOR [Delete_Flag]
+GO
+
+
+//
+USE [ONTB_Server_Blob]
+GO
+/****** Object:  StoredProcedure [dbo].[usp_InsertIntoGeneralDocuments]    Script Date: 4/27/2023 12:57:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+ALTER PROCEDURE [dbo].[usp_InsertIntoGeneralDocuments] 
+	-- Add the parameters for the stored procedure here
+@GeneralDocumentUID as uniqueidentifier,
+@StructureUID as uniqueidentifier,
+@Ref_Number as varchar(75),
+@GeneralDocument_Name as varchar(250),
+@GeneralDocument_Description as varchar(max),
+@GeneralDocument_Version as varchar(max),
+@GeneralDocument_Type as varchar(max),
+@Media_HC varchar(50),
+@Media_SC varchar(50),
+@Media_SCEF varchar(50),
+@Media_HCR varchar(50),
+@Media_SCR varchar(50),
+@Media_NA varchar(50),
+@IncomingRec_Date as datetime,
+@Document_Date as datetime,
+@GeneralDocument_Path as varchar(500),
+@GeneralDocument_RelativePath as varchar(500),
+@GeneralDocument_DirectoryName as varchar(500),
+@FileRef_Number as varchar(100),
+@GeneralDocument_CurrentStatus as varchar(100),
+@Remarks as varchar(max),
+@UploadFilePhysicalpath varchar(1000),
+@Created_By as uniqueidentifier,
+@Blob_Data as varbinary(max)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	if not exists (select * from GeneralDocuments where GeneralDocumentUID=@GeneralDocumentUID)
+begin	
+	INSERT INTO [dbo].[GeneralDocuments]
+           ([GeneralDocumentUID]
+           ,[StructureUID]
+           ,[Ref_Number]
+           ,[GeneralDocument_Name]
+           ,[GeneralDocument_Description]
+           ,[GeneralDocument_Version]
+           ,[GeneralDocument_Type]
+           ,[GeneralDocument_Originator]
+           ,[Media_HC]
+           ,[Media_SC]
+           ,[Media_SCEF]
+           ,[Media_HCR]
+           ,[Media_SCR]
+           ,[Media_NA]
+           ,[IncomingRec_Date]
+           ,[Document_Date]
+           ,[GeneralDocument_Path]
+           ,[GeneralDocument_RelativePath]
+           ,[GeneralDocument_DirectoryName]
+           ,[FileRef_Number]
+           ,[GeneralDocument_CreatedDate]
+           ,[GeneralDocument_CurrentStatus]
+           ,[Remarks]
+           ,[Delete_Flag]
+		   ,[Created_By])
+     VALUES
+           (@GeneralDocumentUID
+           ,@StructureUID
+           ,@Ref_Number
+           ,@GeneralDocument_Name
+           ,@GeneralDocument_Description
+           ,@GeneralDocument_Version
+           ,@GeneralDocument_Type
+           ,NULL
+           ,@Media_HC
+           ,@Media_SC
+           ,@Media_SCEF
+           ,@Media_HCR
+           ,@Media_SCR
+           ,@Media_NA
+           ,@IncomingRec_Date
+           ,@Document_Date
+           ,@GeneralDocument_Path
+           ,@GeneralDocument_RelativePath
+           ,@GeneralDocument_DirectoryName
+           ,@FileRef_Number
+           ,GETDATE()
+           ,@GeneralDocument_CurrentStatus
+           ,@Remarks
+           ,'N'
+		   ,@Created_By)
+
+		    -- Insert into GeneralDocumentsBlob Table
+	insert into GeneralDocumentsBlob(GeneralDocumentBlobUID,GeneralDocumentUID,GeneralDocumentBlob)
+	values(NEWID(),@GeneralDocumentUID,@Blob_Data)
+
+		   -- Insert to WordDocRead table
+	declare @strPath varchar(500)=@GeneralDocument_Path;
+	set @strPath = (select reverse(left(reverse(@strPath),CHARINDEX('.',reverse(@strPath))-1)))
+
+	if(@strPath = 'doc' or @strPath = 'docx')
+	begin
+		insert into WordDocRead(UID,Doc_path,Status,CreatedDate,DocumemtUID,Encrypted)
+		values(NEWID(),@UploadFilePhysicalpath,'Pending',GETDATE(),@GeneralDocumentUID,'Y')
+	end
+
+		   END
+END
+
+
+//
+/****** Object:  StoredProcedure [dbo].[usp_GeneralDocumentBlob_by_UID]    Script Date: 4/27/2023 1:16:47 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create proc [dbo].[usp_GeneralDocumentBlob_by_UID]
+@GeneralDocumentUID uniqueidentifier
+as
+begin
+select GeneralDocumentBlobUID,GeneralDocumentUID,GeneralDocumentBlob from GeneralDocumentsBlob
+where GeneralDocumentUID=@GeneralDocumentUID and Delete_Flag='N'
+end

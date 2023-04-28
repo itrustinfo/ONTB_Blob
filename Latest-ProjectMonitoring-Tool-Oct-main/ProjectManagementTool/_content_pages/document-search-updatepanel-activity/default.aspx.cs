@@ -1463,9 +1463,27 @@ namespace ProjectManagementTool._content_pages.document_search_updatepanel_activ
                 {
                     path = Server.MapPath(ds.Tables[0].Rows[0]["GeneralDocument_Path"].ToString());
 
-                    string getExtension = System.IO.Path.GetExtension(path);
+                    byte[] bytes;
+                    string filepath = Server.MapPath("~/_PreviewLoad/" + Path.GetFileName(path));
+                    //FileInfo fi = new FileInfo(filepath);
+                    //string filepath = path;
+                    DataSet docBlob = getdt.GetGeneralDocumentBlob_by_UID(new Guid(UID));
+                    if (docBlob.Tables[0].Rows.Count > 0)
+                    {
+                        bytes = (byte[])docBlob.Tables[0].Rows[0]["GeneralDocumentBlob"];
+
+                        BinaryWriter Writer = null;
+                        Writer = new BinaryWriter(File.OpenWrite(filepath));
+
+                        // Writer raw data                
+                        Writer.Write(bytes);
+                        Writer.Flush();
+                        Writer.Close();
+                    }
+
+                    string getExtension = System.IO.Path.GetExtension(filepath);
                     string outPath = path.Replace(getExtension, "") + "_download" + getExtension;
-                    getdt.DecryptFile(path, outPath);
+                    getdt.DecryptFile(filepath, outPath);
                     System.IO.FileInfo file = new System.IO.FileInfo(outPath);
 
                     if (file.Exists)

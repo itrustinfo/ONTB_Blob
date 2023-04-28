@@ -137,20 +137,37 @@ namespace ProjectManagementTool._modal_pages
                     {
                         //string path = Request.QueryString["previewpath"].Replace('!', '&');
                         string path= ds.Tables[0].Rows[0]["GeneralDocument_Path"].ToString();
-                        string FilePath = Server.MapPath(path);
-                        if (File.Exists(FilePath))
-                        {
+                       string FilePath = Server.MapPath(path);
+                        //if (File.Exists(FilePath))
+                        //{
                             int Cnt = getdata.DocumentHistroy_InsertorUpdate(Guid.NewGuid(), new Guid(Request.QueryString["GeneralDocumentUID"]), new Guid(Session["UserUID"].ToString()), "Viewed", "General Documents");
                             if (Cnt <= 0)
                             {
                                 Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('Error Code: DDH-01. there is a problem with updating histroy. Please contact system admin.');</script>");
                             }
+                            byte[] bytes;
+                            string filepath = Server.MapPath("~/_PreviewLoad/" + Path.GetFileName(path));
+                            //FileInfo fi = new FileInfo(filepath);
+                            //string filepath = path;
+                            DataSet docBlob = getdata.GetGeneralDocumentBlob_by_UID(new Guid(Request.QueryString["GeneralDocumentUID"]));
+                            if (docBlob.Tables[0].Rows.Count > 0)
+                            {
+                                bytes = (byte[])docBlob.Tables[0].Rows[0]["GeneralDocumentBlob"];
 
-                            string getExtension = System.IO.Path.GetExtension(FilePath);
+                                BinaryWriter Writer = null;
+                                Writer = new BinaryWriter(File.OpenWrite(filepath));
+
+                                // Writer raw data                
+                                Writer.Write(bytes);
+                                Writer.Flush();
+                                Writer.Close();
+                            }
+
+                            string getExtension = System.IO.Path.GetExtension(filepath);
                             //string outPath = FilePath.Replace(getExtension, "") + "_download" + getExtension;
                             string sFileName = Path.GetFileName(FilePath).Replace(getExtension, "") + "_download" + getExtension;
                             string outPath = "/_PreviewLoad/" + sFileName;
-                            getdata.DecryptFile(FilePath, Server.MapPath(outPath));
+                            getdata.DecryptFile(filepath, Server.MapPath(outPath));
 
                             if (getExtension == ".pdf" || getExtension == ".PDF")
                             {
@@ -184,7 +201,7 @@ namespace ProjectManagementTool._modal_pages
                         }
                     }
                         
-                }
+                //}
                 
             }
         }

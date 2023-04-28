@@ -5806,10 +5806,27 @@ namespace ProjectManager._content_pages.documents_ontb
                 if (ds.Tables[0].Rows.Count > 0)
                 {
                     path = Server.MapPath(ds.Tables[0].Rows[0]["GeneralDocument_Path"].ToString());
+                    byte[] bytes;
+                    string filepath = Server.MapPath("~/_PreviewLoad/" + Path.GetFileName(path));
+                    //FileInfo fi = new FileInfo(filepath);
+                    //string filepath = path;
+                    DataSet docBlob = getdata.GetGeneralDocumentBlob_by_UID(new Guid(UID));
+                    if (docBlob.Tables[0].Rows.Count > 0)
+                    {
+                        bytes = (byte[])docBlob.Tables[0].Rows[0]["GeneralDocumentBlob"];
 
-                    string getExtension = System.IO.Path.GetExtension(path);
+                        BinaryWriter Writer = null;
+                        Writer = new BinaryWriter(File.OpenWrite(filepath));
+
+                        // Writer raw data                
+                        Writer.Write(bytes);
+                        Writer.Flush();
+                        Writer.Close();
+                    }
+
+                    string getExtension = System.IO.Path.GetExtension(filepath);
                     string outPath = path.Replace(getExtension, "") + "_download" + getExtension;
-                    getdata.DecryptFile(path, outPath);
+                    getdata.DecryptFile(filepath, outPath);
                     System.IO.FileInfo file = new System.IO.FileInfo(outPath);
 
                     if (file.Exists)

@@ -150,6 +150,8 @@ namespace ProjectManagementTool._modal_pages
 
 
                                     EncryptFile(Server.MapPath(savedPath), Server.MapPath(CoverPagePath));
+
+                                    byte[] filetobytes =getdata.FileToByteArray(Server.MapPath(CoverPagePath));
                                     //
                                     endate = DateTime.Now;
                                     Guid GeneralDocumentUID = Guid.NewGuid();
@@ -173,7 +175,7 @@ namespace ProjectManagementTool._modal_pages
                                                                    IncomingRec_Date, sFileName, txtdesc.Text, 1, Extn,
                                                                   DDLDocumentMedia.Items[0].Selected == true ? "true" : "false", DDLDocumentMedia.Items[1].Selected == true ? "true" : "false", DDLDocumentMedia.Items[2].Selected == true ? "true" : "false", DDLDocumentMedia.Items[3].Selected == true ? "true" : "false",
                                                                   DDLDocumentMedia.Items[4].Selected == true ? "true" : "false", DDLDocumentMedia.Items[5].Selected == true ? "true" : "false", CoverPagePath, txtremarks.Text, txtFileRefNumber.Text, "Submitted", Document_Date,
-                                                                  "", "", UploadFilePhysicalpath, new Guid(Session["UserUID"].ToString()));
+                                                                  "", "", UploadFilePhysicalpath, new Guid(Session["UserUID"].ToString()), filetobytes);
                                     if (cnt == 0)
                                     {
                                         Page.ClientScript.RegisterStartupScript(Page.GetType(), "Error", "<script language='javascript'>alert('Error Code : AGD 01 There is a problem with this feature. Please contact system admin.');</script>");
@@ -356,6 +358,7 @@ namespace ProjectManagementTool._modal_pages
                                                 CoverPagePath = sDocumentPath + "/" + sFileName + "_1" + Extn;
                                             }
                                             EncryptFile(Server.MapPath(savedPath), Server.MapPath(CoverPagePath));
+                                            byte[] filetobytes =getdata.FileToByteArray(Server.MapPath(CoverPagePath));
                                             endate = DateTime.Now;
                                             TimeDuration = (endate - startdate).TotalSeconds;
                                             Guid GeneralDocumentUID = Guid.NewGuid();
@@ -377,7 +380,7 @@ namespace ProjectManagementTool._modal_pages
                                                                    IncomingRec_Date, sFileName, txtdesc.Text, 1, Extn,
                                                                   DDLDocumentMedia.Items[0].Selected == true ? "true" : "false", DDLDocumentMedia.Items[1].Selected == true ? "true" : "false", DDLDocumentMedia.Items[2].Selected == true ? "true" : "false", DDLDocumentMedia.Items[3].Selected == true ? "true" : "false",
                                                                   DDLDocumentMedia.Items[4].Selected == true ? "true" : "false", DDLDocumentMedia.Items[5].Selected == true ? "true" : "false", CoverPagePath, txtremarks.Text, txtFileRefNumber.Text, "Submitted", Document_Date,
-                                                                  RelativePath, Foldername[Foldername.Length - 1], UploadFilePhysicalpath, new Guid(Session["UserUID"].ToString()));
+                                                                  RelativePath, Foldername[Foldername.Length - 1], UploadFilePhysicalpath, new Guid(Session["UserUID"].ToString()), filetobytes);
                                             if (cnt > 0)
                                             {
 
