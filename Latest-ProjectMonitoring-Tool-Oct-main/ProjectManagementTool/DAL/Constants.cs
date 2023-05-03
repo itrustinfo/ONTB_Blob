@@ -46,8 +46,8 @@ namespace ProjectManagementTool.DAL
                                                                     "Network Design Reviewed by Project Co-ordinator",
                                                                     "Recommend-Rejected by Client",
                                                                     "Recommend-Rejected by PMC",
-        "Back to DTL by AEE","Back to DTL by EE","No Action by PC","PC Recommended-Code A","PC Recommended-Code B","PC Recommended-Code C","PC Recommended-Code D","No Action by PC"};
-        public static List<string> AeeApproval = new List<string>() { "Code A", "Code B", "Network Design DTL Reviewed", "ONTB DTL Verified", "Code B-AE Approval","Code A-AE Approval"};
+        "Back to DTL by AEE","Back to DTL by EE","No Action by PC","No Action by PC"};
+        public static List<string> AeeApproval = new List<string>() { "Code A", "Code B", "Network Design DTL Reviewed", "ONTB DTL Verified", "Code B-AE Approval","Code A-AE Approval","PC Recommended-Code A", "PC Recommended-Code B", "PC Recommended-Code C", "PC Recommended-Code D"};
 
         public static List<string> DTLBacktoContractor = new List<string>() { "Code C", "Code D","Document Rejected sent Back to Contractor"};
 
