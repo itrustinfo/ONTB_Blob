@@ -19732,7 +19732,7 @@ namespace ProjectManager.DAL
         }
 
         public Boolean InsertorUpdateUsers(Guid UserUID, string FirstName, string LastName, string EmailID, string Mobilenumber, string Address1, string Address2, string Username,
-                    string password, string TypeOfUser, Guid Admin_Under, string Profile_Pic, string DocumentMail, string ProjecMasterMail, string IsContractor, string UserTypeID)
+                    string password, string TypeOfUser, Guid Admin_Under, string Profile_Pic, string DocumentMail, string ProjecMasterMail, string IsContractor, string UserTypeID, string IsPMC, string Discipline)
         {
             Boolean sresult = false;
             try
@@ -19763,6 +19763,8 @@ namespace ProjectManager.DAL
                         cmd.Parameters.AddWithValue("@ProjecMasterMail", ProjecMasterMail);
                         cmd.Parameters.AddWithValue("@IsContractor", IsContractor);
                         cmd.Parameters.AddWithValue("@UserTypeID", UserTypeID);
+                        cmd.Parameters.AddWithValue("@IsPMC", IsPMC);
+                        cmd.Parameters.AddWithValue("@Discipline", Discipline);
 
                         con.Open();
                         cmd.ExecuteNonQuery();
@@ -25141,6 +25143,165 @@ namespace ProjectManager.DAL
             }
             return sresult;
         }
+
+
+        //added on 12/05/2023 for STP  user status report
+        //added on 05/05/2023 
+        public DataSet GetAutoForwardedDocs(string ProjectName, string FlowName, DateTime startdate, DateTime enddate)
+        {
+            DataSet ds = new DataSet();
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+                SqlDataAdapter cmd = new SqlDataAdapter("usp_GetAutoForwardedDocs", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.Parameters.AddWithValue("@ProjectName", ProjectName);
+                cmd.SelectCommand.Parameters.AddWithValue("@FlowName", FlowName);
+                cmd.SelectCommand.Parameters.AddWithValue("@startdate", startdate);
+                cmd.SelectCommand.Parameters.AddWithValue("@enddate", enddate);
+                cmd.Fill(ds);
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+            }
+            return ds;
+        }
+
+        public string GetPrevStatus(Guid ActualDocumentUID, string Status)
+        {
+            DataSet ds = new DataSet();
+            string prevstatus = string.Empty;
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+                SqlDataAdapter cmd = new SqlDataAdapter("usp_GetPrevStatus", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.Parameters.AddWithValue("@ActualDocumentUID", ActualDocumentUID);
+                cmd.SelectCommand.Parameters.AddWithValue("@Status", Status);
+                cmd.Fill(ds);
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    prevstatus = ds.Tables[0].Rows[0]["PrevStatus"].ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+            }
+            return prevstatus;
+        }
+
+        public DataSet GetNextStep_By_DocumentUID_forreport(Guid ActualDocumentUID, string CurrentStatus)
+        {
+            DataSet ds = new DataSet();
+            SqlConnection con = new SqlConnection(db.GetConnectionString());
+            try
+            {
+
+
+                //SqlCommand cmd = new SqlCommand("GetNextStep_By_DocumentUID", con);
+                //cmd.CommandType = CommandType.StoredProcedure;
+                //cmd.Parameters.AddWithValue("@ActualDocumentUID", ActualDocumentUID);
+                //cmd.Parameters.AddWithValue("@CurrentStatus", CurrentStatus);
+                SqlDataAdapter cmd = new SqlDataAdapter("GetNextStep_By_DocumentUID_forreport", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.Parameters.AddWithValue("@ActualDocumentUID", ActualDocumentUID);
+                cmd.SelectCommand.Parameters.AddWithValue("@CurrentStatus", CurrentStatus);
+                cmd.Fill(ds);
+
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+
+            }
+            return ds;
+        }
+
+        //added on 09/05/2023
+        public DataTable UserDocumentStatus_forREportPending(DateTime documentDate)
+        {
+            DataTable ds = new DataTable();
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+                SqlDataAdapter cmd = new SqlDataAdapter("usp_UserDocumentStatus_forREportPending", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.Parameters.AddWithValue("@DocumentDate", documentDate);
+                cmd.SelectCommand.CommandTimeout = 0;
+                cmd.Fill(ds);
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+            }
+            return ds;
+        }
+
+        public DataSet GetNextUserDocumentsReport_pending(string ProjectName, string UID)
+        {
+            DataSet ds = new DataSet();
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+                SqlDataAdapter cmd = new SqlDataAdapter("usp_GetNextUserDocumentsReport_pending", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.Parameters.AddWithValue("@ProjectName", ProjectName);
+                cmd.SelectCommand.Parameters.AddWithValue("@UserUIDs", UID);
+                cmd.SelectCommand.CommandTimeout = 0;
+                cmd.Fill(ds);
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+            }
+            return ds;
+        }
+
+        //added on 06/05/2023 for saji
+        public DataSet GetUsers_under_selected_projects()
+        {
+            DataSet ds = new DataSet();
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+                SqlDataAdapter cmd = new SqlDataAdapter("GetUsers_under_selected_projects", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.Fill(ds);
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+            }
+            return ds;
+        }
+
+        //--------------------------------------
+
+        public DataTable UserStatusSummary_ByDate(Guid userUID, DateTime FromDate, DateTime ToDate)
+        {
+            DataTable ds = new DataTable();
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+                SqlDataAdapter cmd = new SqlDataAdapter("userStatusSummaryByDate", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.Parameters.AddWithValue("@UserUID", userUID);
+                cmd.SelectCommand.Parameters.AddWithValue("@FromDate", FromDate);
+                cmd.SelectCommand.Parameters.AddWithValue("@ToDate", ToDate);
+                cmd.Fill(ds);
+                cmd.SelectCommand.CommandTimeout = 0;
+                cmd.Fill(ds);
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+            }
+            return ds;
+        }
+
+        //---------------------------------
 
     }
 

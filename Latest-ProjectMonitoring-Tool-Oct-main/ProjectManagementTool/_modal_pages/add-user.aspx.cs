@@ -105,6 +105,13 @@ namespace ProjectManagementTool._modal_pages
                         RBLType.SelectedValue = ((int)UserTypeEnum.Contractor).ToString();
                     }
                 }
+                //
+                if (ds.Tables[0].Rows[0]["IsPMC"].ToString() == "Y")
+                {
+                    chkPMC.Checked = true;
+                }
+                ddlDiscipline.SelectedValue = ds.Tables[0].Rows[0]["Discipline"].ToString();
+                //
             }
         }
 
@@ -135,6 +142,8 @@ namespace ProjectManagementTool._modal_pages
                     Guid UserUID = Guid.NewGuid();
                     string docmail = "N";
                     string projecmastermail ="N";
+                    string IsPMC = "N";
+                    string Discipline = string.Empty;
                     if (Request.QueryString["UserUID"] != null)
                     {
                         UserUID = new Guid(Request.QueryString["UserUID"]);
@@ -179,6 +188,14 @@ namespace ProjectManagementTool._modal_pages
                     {
                         projecmastermail = "Y";
                     }
+                    if (chkPMC.Checked)
+                        IsPMC = "Y";
+
+                    if(ddlDiscipline.SelectedIndex !=0)
+                    {
+                        Discipline = ddlDiscipline.SelectedItem.ToString();
+                    }
+
                     string userType = RBLType.SelectedValue;
                     string IsContractor = string.Empty;
                     if(!string.IsNullOrEmpty(userType))
@@ -187,7 +204,7 @@ namespace ProjectManagementTool._modal_pages
                             IsContractor = "Y";
                     }
 
-                    bool ret = getdt.InsertorUpdateUsers(UserUID, txtfirstname.Text, txtlastname.Text, txtemailid.Text, txtmobile.Text, txtaddress1.Text, txtaddress2.Text, txtloginusername.Text, txtloginpassword.Text, DDlUserType.SelectedValue, new Guid(Session["UserUID"].ToString()), PicPath,docmail,projecmastermail, IsContractor, userType);
+                    bool ret = getdt.InsertorUpdateUsers(UserUID, txtfirstname.Text, txtlastname.Text, txtemailid.Text, txtmobile.Text, txtaddress1.Text, txtaddress2.Text, txtloginusername.Text, txtloginpassword.Text, DDlUserType.SelectedValue, new Guid(Session["UserUID"].ToString()), PicPath,docmail,projecmastermail, IsContractor, userType,IsPMC,Discipline);
                     if (ret)
                     {
                         Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>parent.location.href=parent.location.href;</script>");

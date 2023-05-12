@@ -25,7 +25,10 @@ namespace ProjectManagementTool._content_pages.report_mis_details
             }
             if (!IsPostBack)
             {
-                BindData();
+                if (Request.QueryString["type"] != null)
+                    BindData();
+                else if (Request.QueryString["Rtype"] != null)
+                    getReportData();
             }
         }
 
@@ -284,9 +287,15 @@ namespace ProjectManagementTool._content_pages.report_mis_details
                 {
                     //e.Row.Cells[1].Text = ds.Tables[0].Rows[0]["TopVersion"].ToString();
 
+                    try
+                    {
+                        string newVersionFileName = Path.GetFileNameWithoutExtension(Server.MapPath(ds.Tables[0].Rows[0]["Doc_Path"].ToString()));
+                        lblDocumentName.Text = newVersionFileName.Substring(0, (newVersionFileName.Length - 2)) + " [ Ver. " + ds.Tables[0].Rows[0]["TopVersion"].ToString() + " ]";
+                    }
+                    catch(Exception ex)
+                    {
 
-                    string newVersionFileName = Path.GetFileNameWithoutExtension(Server.MapPath(ds.Tables[0].Rows[0]["Doc_Path"].ToString()));
-                    lblDocumentName.Text = newVersionFileName.Substring(0, (newVersionFileName.Length - 2)) + " [ Ver. " + ds.Tables[0].Rows[0]["TopVersion"].ToString() + " ]";
+                    }
                     e.Row.Cells[4 + 2].Text = ds.Tables[0].Rows[0]["ActivityType"].ToString();
                 }
                 //
@@ -472,6 +481,45 @@ namespace ProjectManagementTool._content_pages.report_mis_details
                 catch (Exception ex)
                 {
                     Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('Document not uploaded for this flow.Please Contact Document controller!');</script>");
+                }
+            }
+        }
+
+        private void getReportData()
+        {
+            GrdDocuments.Columns[10].Visible = false;
+            btnback.Visible = false;
+
+            string str = string.Empty;
+            string pname = Request.QueryString["ProjectName"].ToString();
+            string flowname = Request.QueryString["FlowName"].ToString();
+            LblDocumentHeading.Text = "Document List > " + pname + " > " + flowname;
+            if (Request.QueryString["Rtype"].ToString() == "A")
+                str = HttpContext.Current.Session["docuidsA_" + pname + "_" + flowname].ToString();// HttpContext.Current.Session["docuidsA"].ToString();
+            else
+                str = HttpContext.Current.Session["docuidsP_" + pname + "_" + flowname].ToString();
+
+            if (str.Contains(","))
+            {
+                str = str.Substring(0, str.Length - 1);
+            }
+            DataSet ds = getdt.GetNextUserDocumentsReport_pending(Request.QueryString["ProjectName"].ToString(), str);
+            if (ds != null)
+            {
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+
+                    GrdDocuments.DataSource = getdt.GetNextUserDocumentsReport_pending(Request.QueryString["ProjectName"].ToString(), str).Tables[0].AsEnumerable()
+             .OrderByDescending(r => r.Field<DateTime>("IncomingRec_Date"))
+             .CopyToDataTable();
+                    GrdDocuments.DataBind();
+                }
+                else
+                {
+                    GrdDocuments.DataSource = getdt.GetNextUserDocumentsReport_pending(Request.QueryString["ProjectName"].ToString(), str).Tables[0].AsEnumerable()
+             .OrderByDescending(r => r.Field<DateTime>("IncomingRec_Date"))
+             .CopyToDataTable();
+                    GrdDocuments.DataBind();
                 }
             }
         }

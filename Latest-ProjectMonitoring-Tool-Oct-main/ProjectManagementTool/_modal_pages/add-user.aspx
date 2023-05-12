@@ -120,6 +120,24 @@ function isNumber(evt) {
                             <asp:ListItem Value="1">&nbsp;project master mail reminder</asp:ListItem>
                         </asp:CheckBoxList>
                     </div>
+                   <div class="form-group" id="divPMC" runat="server">
+                       <asp:CheckBox runat="server" ID="chkPMC" Text="&nbsp;PMC"></asp:CheckBox>
+                    </div>
+                 <div class="form-group" id="divDiscipline" runat="server">
+                        <label class="lblCss" for="DDlUserType">Discipline</label>
+                        <asp:DropDownList ID="ddlDiscipline" runat="server" CssClass="form-control">
+                            <asp:ListItem Value="0">--Select Discipline--</asp:ListItem>
+                            <asp:ListItem Value="Civil and Structural">Civil and Structural</asp:ListItem>
+                            <asp:ListItem Value="Civil Drawings">Civil Drawings</asp:ListItem>
+                            <asp:ListItem Value="Electrical">Electrical</asp:ListItem>
+                            <asp:ListItem Value="Environmental">Environmental</asp:ListItem>
+                            <asp:ListItem Value="General">General</asp:ListItem>
+                            <asp:ListItem Value="Instrumentation and Automation">Instrumentation and Automation</asp:ListItem>
+                            <asp:ListItem Value="Mechanical">Mechanical</asp:ListItem>
+                            <asp:ListItem Value="Process">Process</asp:ListItem>
+                           
+                        </asp:DropDownList>
+                    </div>
                      <div class="form-group">
                         <label class="lblCss" for="ProfileUpload">Profile Image</label>
                         <div class="custom-file">

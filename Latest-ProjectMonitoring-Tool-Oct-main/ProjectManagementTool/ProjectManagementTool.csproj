@@ -201,6 +201,7 @@
     <Content Include="_content_pages\report-issues\default.aspx" />
     <Content Include="_content_pages\report-mis-details\default.aspx" />
     <Content Include="_content_pages\report-mis-status-summary\default.aspx" />
+    <Content Include="_content_pages\report-mis-user-details\default.aspx" />
     <Content Include="_content_pages\report-MonthlyPhysical-Progress\default.aspx" />
     <Content Include="_content_pages\report-physicalprogress\default.aspx" />
     <Content Include="_content_pages\report-projectphysicalprogress\default.aspx" />
@@ -211,6 +212,7 @@
     <Content Include="_content_pages\report-resourcedeployment\default.aspx" />
     <Content Include="_content_pages\report-suez-physical-progress\default.aspx" />
     <Content Include="_content_pages\report-summary-design-and-drawing-works-dwg-issue\default.aspx" />
+    <Content Include="_content_pages\report-user-status1\default.aspx" />
     <Content Include="_content_pages\report-wkpg-master-datasettings\default.aspx" />
     <Content Include="_content_pages\report-wkpg-master-data\default.aspx" />
     <Content Include="_content_pages\reports-RA\Default.aspx" />
@@ -965,6 +967,13 @@
     <Compile Include="_content_pages\report-mis-status-summary\default.aspx.designer.cs">
       <DependentUpon>default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="_content_pages\report-mis-user-details\default.aspx.cs">
+      <DependentUpon>default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="_content_pages\report-mis-user-details\default.aspx.designer.cs">
+      <DependentUpon>default.aspx</DependentUpon>
+    </Compile>
     <Compile Include="_content_pages\report-MonthlyPhysical-Progress\default.aspx.cs">
       <DependentUpon>default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1033,6 +1042,13 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="_content_pages\report-summary-design-and-drawing-works-dwg-issue\default.aspx.designer.cs">
+      <DependentUpon>default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="_content_pages\report-user-status1\default.aspx.cs">
+      <DependentUpon>default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="_content_pages\report-user-status1\default.aspx.designer.cs">
       <DependentUpon>default.aspx</DependentUpon>
     </Compile>
     <Compile Include="_content_pages\report-wkpg-master-datasettings\default.aspx.cs">
