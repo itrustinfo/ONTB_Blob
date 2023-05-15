@@ -22181,23 +22181,23 @@ namespace ProjectManager.DAL
         }
 
         //added on 03/08/2022 for saji
-        public DataSet GetUploadedIssueImages(string issue_uid)
-        {
-            DataSet ds = new DataSet();
-            try
-            {
-                SqlConnection con = new SqlConnection(db.GetConnectionString());
-                SqlDataAdapter cmd = new SqlDataAdapter("GetUploadedIssueImages", con);
-                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
-                cmd.SelectCommand.Parameters.AddWithValue("@issue_uid", issue_uid);
-                cmd.Fill(ds);
-            }
-            catch (Exception ex)
-            {
-                ds = null;
-            }
-            return ds;
-        }
+        //public DataSet GetUploadedIssueImages(string issue_uid)
+        //{
+        //    DataSet ds = new DataSet();
+        //    try
+        //    {
+        //        SqlConnection con = new SqlConnection(db.GetConnectionString());
+        //        SqlDataAdapter cmd = new SqlDataAdapter("GetUploadedIssueImages", con);
+        //        cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+        //        cmd.SelectCommand.Parameters.AddWithValue("@issue_uid", issue_uid);
+        //        cmd.Fill(ds);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ds = null;
+        //    }
+        //    return ds;
+        //}
 
         //added on 03/08/2022
         public int InsertBack_To_PMC_Users(Guid UID, Guid ActualDocumentUID, Guid PMCUser)
@@ -22757,23 +22757,23 @@ namespace ProjectManager.DAL
         }
 
         //added on 19/08/2022 for saji
-        public DataSet GetUploadedIssueStatusImages(string issue_remark_uid)
-        {
-            DataSet ds = new DataSet();
-            try
-            {
-                SqlConnection con = new SqlConnection(db.GetConnectionString());
-                SqlDataAdapter cmd = new SqlDataAdapter("GetUploadedIssueStatusImages", con);
-                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
-                cmd.SelectCommand.Parameters.AddWithValue("@issue_remark_uid", issue_remark_uid);
-                cmd.Fill(ds);
-            }
-            catch (Exception ex)
-            {
-                ds = null;
-            }
-            return ds;
-        }
+        //public DataSet GetUploadedIssueStatusImages(string issue_remark_uid)
+        //{
+        //    DataSet ds = new DataSet();
+        //    try
+        //    {
+        //        SqlConnection con = new SqlConnection(db.GetConnectionString());
+        //        SqlDataAdapter cmd = new SqlDataAdapter("GetUploadedIssueStatusImages", con);
+        //        cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+        //        cmd.SelectCommand.Parameters.AddWithValue("@issue_remark_uid", issue_remark_uid);
+        //        cmd.Fill(ds);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ds = null;
+        //    }
+        //    return ds;
+        //}
 
         //added on 20/08/2022 for saji
         public DataSet GetSummarydesignanddrawingworksdwgIssue(Guid WorkPackageUID)
@@ -25302,6 +25302,212 @@ namespace ProjectManager.DAL
         }
 
         //---------------------------------
+
+        //added for blob for saji on 15/05/2023
+        public int InsertUploadedIssueDocument(string name, string path, string issue_uid, byte[] doc_blob)
+        {
+            int sresult = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("InsertUploadedIssueDocument"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@name", name);
+                        cmd.Parameters.AddWithValue("@path", path);
+                        cmd.Parameters.AddWithValue("@issue_uid", issue_uid);
+                        cmd.Parameters.AddWithValue("@docBlob", doc_blob);
+                        sresult = (int)cmd.ExecuteNonQuery();
+                        con.Close();
+
+                    }
+                }
+                return sresult;
+            }
+            catch (Exception ex)
+            {
+                return sresult;
+            }
+        }
+
+
+
+        public byte[] DownloadIssueDocument(int issue_doc_uid, out string file_name)
+        {
+
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+
+                SqlDataReader sdr = null;
+
+                byte[] file_in_bytes = null;
+
+
+                using (SqlCommand cmd = new SqlCommand("DownloadIssueDoc"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Id", issue_doc_uid);
+                    cmd.Connection = con;
+                    con.Open();
+                    sdr = cmd.ExecuteReader();
+                    sdr.Read();
+                    file_in_bytes = (byte[])sdr["DocBlob"];
+                    file_name = sdr["docPath"].ToString();
+
+                    con.Close();
+                }
+
+                return file_in_bytes;
+            }
+            catch (Exception ex)
+            {
+                file_name = "";
+                return null;
+            }
+        }
+
+
+        public DataSet GetUploadedIssueImages(string issue_uid)
+        {
+            DataSet ds = new DataSet();
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+                SqlDataAdapter cmd = new SqlDataAdapter("GetUploadedIssueImages", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.Parameters.AddWithValue("@issue_uid", issue_uid);
+                cmd.Fill(ds);
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+            }
+            return ds;
+        }
+
+        public int InsertUploadedDocument(string name, string path, string issue_remarks_uid, byte[] doc_blob)
+        {
+            int sresult = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("InsertUploadedDocument"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@name", name);
+                        cmd.Parameters.AddWithValue("@path", path);
+                        cmd.Parameters.AddWithValue("@issue_remarks_uid", issue_remarks_uid);
+                        cmd.Parameters.AddWithValue("@docBlob", doc_blob);
+                        sresult = (int)cmd.ExecuteNonQuery();
+                        con.Close();
+
+                    }
+                }
+                return sresult;
+            }
+            catch (Exception ex)
+            {
+                return sresult;
+            }
+        }
+
+
+    public byte[] DownloadDocument(string issue_remarks_doc_uid, out string file_name)
+        {
+
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+
+                SqlDataReader sdr = null;
+
+                byte[] file_in_bytes = null;
+
+                using (SqlCommand cmd = new SqlCommand("DownloadIssueRemarksDoc"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Id", issue_remarks_doc_uid);
+                    cmd.Connection = con;
+                    con.Open();
+                    sdr = cmd.ExecuteReader();
+                    sdr.Read();
+                    file_in_bytes = (byte[])sdr["DocBlob"];
+                    file_name = sdr["DocPath"].ToString();
+
+                    con.Close();
+                }
+
+                return file_in_bytes;
+            }
+            catch (Exception ex)
+            {
+                file_name = "";
+                return null;
+            }
+        }
+
+
+
+       public DataSet GetUploadedIssueStatusImages(string issue_remark_uid)
+        {
+            DataSet ds = new DataSet();
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+                SqlDataAdapter cmd = new SqlDataAdapter("GetUploadedIssueStatusImages", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.Parameters.AddWithValue("@issue_remark_uid", issue_remark_uid);
+                cmd.Fill(ds);
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+            }
+            return ds;
+        }
+
+        public byte[] DownloadIssueStatusDocument(string issue_status_doc_uid, out string file_name)
+        {
+
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+
+                SqlDataReader sdr = null;
+
+                byte[] file_in_bytes = null;
+
+                using (SqlCommand cmd = new SqlCommand("DownloadIssueStatusDoc"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Id", issue_status_doc_uid);
+                    cmd.Connection = con;
+                    con.Open();
+                    sdr = cmd.ExecuteReader();
+                    sdr.Read();
+                    file_in_bytes = (byte[])sdr["DocBlob"];
+                    file_name = sdr["DocPath"].ToString();
+
+                    con.Close();
+                }
+
+                return file_in_bytes;
+            }
+            catch (Exception ex)
+            {
+                file_name = "";
+                return null;
+            }
+        }
 
     }
 

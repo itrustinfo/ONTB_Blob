@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Configuration;
@@ -174,7 +175,7 @@ namespace ProjectManagementTool._content_pages.issues
         private void BindProject()
         {
             DataSet ds = new DataSet();
-            if (Session["TypeOfUser"].ToString() == "U" || Session["TypeOfUser"].ToString() =="MD" || Session["TypeOfUser"].ToString() == "VP" || Session["TypeOfUser"].ToString() == "NJSD")
+            if (Session["TypeOfUser"].ToString() == "U" || Session["TypeOfUser"].ToString() =="MD" || Session["TypeOfUser"].ToString() == "VP")
             {
                 ds = gettk.GetAllProjects();
             }
@@ -226,7 +227,6 @@ namespace ProjectManagementTool._content_pages.issues
                     {
                         PopulateTreeView(dschild, child, child.Value, 1);
                     }
-
                 }
                 else if (Level == 1)
                 {
@@ -318,7 +318,7 @@ namespace ProjectManagementTool._content_pages.issues
                 //AddIssues.Visible = true;
                 //DataSet ds = getdt.GetWorkPackages_By_ProjectUID(new Guid(DDlProject.SelectedValue));
                 DataSet ds = new DataSet();
-                if (Session["TypeOfUser"].ToString() == "U" || Session["TypeOfUser"].ToString() == "MD" || Session["TypeOfUser"].ToString() == "VP" || Session["TypeOfUser"].ToString() == "NJSD")
+                if (Session["TypeOfUser"].ToString() == "U" || Session["TypeOfUser"].ToString() == "MD" || Session["TypeOfUser"].ToString() == "VP")
                 {
                     ds = getdt.GetWorkPackages_By_ProjectUID(new Guid(DDlProject.SelectedValue));
                 }
@@ -478,12 +478,10 @@ namespace ProjectManagementTool._content_pages.issues
         {
             Session["ActivityUID"] = ActivityUID;
 
-           
-
             if (IssuesFor == "WorkPackage")
             {
-
                 DataSet ds = getdt.getIssuesList_by_WorkPackageUID_IssueStatus(new Guid(ActivityUID),status,DDLUser.SelectedValue );
+
                 if (ds.Tables[0].Rows.Count > 0)
                 {
                     printreport.Visible = true;
@@ -598,7 +596,11 @@ namespace ProjectManagementTool._content_pages.issues
                     GridView obj_grdview = new GridView();
                     obj_grdview.Visible = true;
 
+
+                    // DataSet ds1 = getdt.GetUploadedIssueDocBlobs(e.Row.Cells[14].Text);
+
                     DataSet ds1 = getdt.GetUploadedIssueDocuments(e.Row.Cells[14].Text);
+
 
                     ds1.Tables[0].Columns.Add("action-1");
                     ds1.Tables[0].Columns.Add("action-2");
@@ -641,8 +643,11 @@ namespace ProjectManagementTool._content_pages.issues
                             linkUpload.CommandName = "download";
                             linkUpload.CssClass = "fas fa-download";
                             linkUpload.ToolTip = "Download";
-                           
-                            linkUpload.CommandArgument = grd_view_row.Cells[2].Text + "/" + grd_view_row.Cells[1].Text;
+                           // linkUpload.Text =  grd_view_row.Cells[1].Text;
+
+                            // linkUpload.CommandArgument = grd_view_row.Cells[2].Text + "/" + grd_view_row.Cells[1].Text;
+                            linkUpload.CommandArgument = grd_view_row.Cells[0].Text; // grd_view_row.Cells[2].Text + "/" + grd_view_row.Cells[1].Text;
+
 
                             linkUpload.Click += linkUpload_Click;
 
@@ -683,7 +688,7 @@ namespace ProjectManagementTool._content_pages.issues
 
                             //-------------------------------------------------
 
-                            string ext = linkUpload.CommandArgument.Substring(linkUpload.CommandArgument.Length - 3, 3);
+                            string ext = grd_view_row.Cells[1].Text.Substring(grd_view_row.Cells[1].Text.Count() - 3, 3);
 
                             if (ext == "jpg" || ext == "png" || ext == "pdf" || ext == "peg" || ext == "bmp")
                             {
@@ -694,7 +699,7 @@ namespace ProjectManagementTool._content_pages.issues
                                 //  linkView.Text = "View";
                                 linkView.CssClass = "fas fa-eye";
                                 linkView.ToolTip = "Preview";
-                                linkView.CommandArgument = grd_view_row.Cells[2].Text + "/" + grd_view_row.Cells[1].Text;
+                                linkView.CommandArgument = grd_view_row.Cells[0].Text; //  grd_view_row.Cells[2].Text + "/" + grd_view_row.Cells[1].Text;
 
                                 linkView.Click += LinkView_Click;
 
@@ -773,34 +778,113 @@ namespace ProjectManagementTool._content_pages.issues
             throw new NotImplementedException();
         }
 
+        //private void LinkView_Click(object sender, EventArgs e)
+        //{
+        //    if (Session["issue_status_preview"] != null)
+        //    {
+        //        Session["issue_status_preview"] = null;
+        //        return;
+        //    }
+
+
+        //    LinkButton new_link = (LinkButton)sender;
+        //    byte[] bytes;
+
+        //    string filename = "";
+
+        //    bytes = getdt.DownloadIssueDocument(Convert.ToInt32(new_link.CommandArgument), out filename);
+
+        //    string path = Server.MapPath(filename);
+
+        //    string filepath = Server.MapPath("~/_PreviewLoad/" + Path.GetFileName(path));
+
+        //    BinaryWriter Writer = null;
+        //    Writer = new BinaryWriter(File.OpenWrite(filepath));
+
+        //    // Writer raw data                
+        //    Writer.Write(bytes);
+        //    Writer.Flush();
+        //    Writer.Close();
+
+        //    string Extension = System.IO.Path.GetExtension(filepath);
+        //    string outPath = filepath.Replace(Extension, "") + "_download" + Extension;
+
+        //    getdt.DecryptFile(filepath, outPath);
+
+        //    System.IO.FileInfo file = new System.IO.FileInfo(outPath);
+
+        //    string docPath = "~/_PreviewLoad/" + file.Name;
+
+
+        //    if (file.Exists)
+        //    {
+        //        if (Extension == ".jpg" || Extension == ".png" || Extension == ".jpeg" || Extension == ".bmp")
+        //        {
+        //            ScriptManager.RegisterStartupScript(this, this.GetType(), "Pop", "showImgModal('" + docPath + "');", true);
+        //        }
+        //        else if (Extension == ".pdf")
+        //        {
+        //            ScriptManager.RegisterStartupScript(this, this.GetType(), "Pop", "showPdfModal('" + docPath + "');", true);
+        //        }
+        //    }
+        //}
+
         private void LinkView_Click(object sender, EventArgs e)
         {
             if (Session["issue_status_preview"] != null)
             {
                 Session["issue_status_preview"] = null;
                 return;
-            } 
-         
+            }
+
+            //LinkButton new_link = (LinkButton)sender;
+
+            //string path = Server.MapPath(new_link.CommandArgument);
+
+            //string Extension = System.IO.Path.GetExtension(path);
+            //string outPath = path.Replace(Extension, "") + "_download" + Extension;
+            //getdt.DecryptFile(path, outPath);
+            //System.IO.FileInfo file = new System.IO.FileInfo(outPath);
+
+            //string fname = "/Documents/Issues/" + file.Name; // + "?status=" + status;
+
             LinkButton new_link = (LinkButton)sender;
+            byte[] bytes;
 
-            string path = Server.MapPath(new_link.CommandArgument);
+            string filename = "";
 
-            string Extension = System.IO.Path.GetExtension(path);
-            string outPath = path.Replace(Extension, "") + "_download" + Extension;
-            getdt.DecryptFile(path, outPath);
+            bytes = getdt.DownloadIssueDocument(Convert.ToInt32(new_link.CommandName), out filename);
+
+           // string path = Server.MapPath(filename);
+
+            string filepath = Server.MapPath("~/_PreviewLoad/" + filename);
+
+            BinaryWriter Writer = null;
+            Writer = new BinaryWriter(File.OpenWrite(filepath));
+
+            // Writer raw data                
+            Writer.Write(bytes);
+            Writer.Flush();
+            Writer.Close();
+
+            string Extension = System.IO.Path.GetExtension(filepath);
+            string outPath = filepath.Replace(Extension, "") + "_download" + Extension;
+            getdt.DecryptFile(filepath, outPath);
+
             System.IO.FileInfo file = new System.IO.FileInfo(outPath);
 
-            string fname = "/Documents/Issues/" + file.Name; // + "?status=" + status;
+            string docPath = "/_PreviewLoad/" + file.Name;
+
 
             if (file.Exists)
             {
                 if (Extension == ".jpg" || Extension == ".png" || Extension == ".jpeg" || Extension == ".bmp")
                 {
-                   ScriptManager.RegisterStartupScript(this, this.GetType(), "Pop", "showImgModal('" + fname + "');", true);
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "Pop", "showImgModal('" + docPath + "');", true);
                 }
                 else if (Extension == ".pdf")
                 {
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "Pop", "showPdfModal('" + fname + "');", true);
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "Pop", "showPdfModal('" + docPath + "');", true);
                 }
             }
         }
@@ -808,6 +892,8 @@ namespace ProjectManagementTool._content_pages.issues
         private void linkDelete_Click(object sender, EventArgs e)
         {
             LinkButton new_link = (LinkButton)sender;
+
+           // int file_count = getdt.DeleteIssueBlob(new_link.CommandName);
 
             int file_count = getdt.DeleteUploadedIssueDoc(Convert.ToInt32(new_link.CommandName));
 
@@ -824,38 +910,70 @@ namespace ProjectManagementTool._content_pages.issues
                 }
             }
 
-            BindIssues(Session["selected_item"].ToString(), TreeView1.SelectedNode.Value,DDLUser.SelectedValue);
+            BindIssues(Session["selected_item"].ToString(), TreeView1.SelectedNode.Value, DDLUser.SelectedValue);
         }
 
         private void linkUpload_Click(object sender, EventArgs e)
         {
-            LinkButton new_link = (LinkButton)sender;
-
-            string path = Server.MapPath(new_link.CommandArgument);
-
-            string getExtension = System.IO.Path.GetExtension(path);
-            string outPath = path.Replace(getExtension, "") + "_download" + getExtension;
-            getdt.DecryptFile(path, outPath);
-            System.IO.FileInfo file = new System.IO.FileInfo(outPath);
-
-            if (file.Exists)
+            try
             {
-                Response.Clear();
 
-                Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
+                LinkButton new_link = (LinkButton)sender;
+                byte[] bytes;
 
-                Response.AddHeader("Content-Length", file.Length.ToString());
+                string filename = "";
 
-                Response.ContentType = "application/octet-stream";
+                bytes = getdt.DownloadIssueDocument(Convert.ToInt32(new_link.CommandArgument), out filename);
 
-                Response.TransmitFile(outPath);
+                string path = Server.MapPath(filename);
 
-                Response.End();
+                string filepath = Server.MapPath("~/_PreviewLoad/" + Path.GetFileName(path));
 
+                BinaryWriter Writer = null;
+                Writer = new BinaryWriter(File.OpenWrite(filepath));
+
+                // Writer raw data                
+                Writer.Write(bytes);
+                Writer.Flush();
+                Writer.Close();
+
+                string getExtension = System.IO.Path.GetExtension(filepath);
+                string outPath = filepath.Replace(getExtension, "") + "_download" + getExtension;
+                getdt.DecryptFile(filepath, outPath);
+
+                System.IO.FileInfo file = new System.IO.FileInfo(outPath);
+
+                if (file.Exists)
+                {
+
+                    Response.Clear();
+
+                    Response.AddHeader("Content-Disposition", "attachment; filename=" + Path.GetFileName(path));
+
+                    Response.AddHeader("Content-Length", file.Length.ToString());
+
+                    Response.ContentType = "application/octet-stream";
+
+                    Response.WriteFile(file.FullName);
+                    Response.Flush();
+                    Response.SuppressContent = true;
+                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    //Response.End();
+
+                }
+                else
+                {
+                    Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('File not found.');</script>");
+                }
+
+                if (File.Exists(outPath))
+                {
+                    File.Delete(outPath);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('File does not exist.');</script>");
+                Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('There is a problem downloading file. Please contact system admin. Description: " + ex.Message + "');</script>");
             }
         }
 
@@ -882,43 +1000,8 @@ namespace ProjectManagementTool._content_pages.issues
         protected void GrdIssues_RowCommand(object sender, GridViewCommandEventArgs e)
         {
             string IssueUID = e.CommandArgument.ToString();
-            if (e.CommandName == "download")
-            {
-                DataSet ds = getdt.getIssuesList_by_UID(new Guid(IssueUID));
-                if (ds.Tables[0].Rows.Count > 0)
-                {
-                    string path = Server.MapPath(ds.Tables[0].Rows[0]["Issue_Document"].ToString());
 
-                    string getExtension = System.IO.Path.GetExtension(path);
-                    string outPath = path.Replace(getExtension, "") + "_download" + getExtension;
-                    getdt.DecryptFile(path, outPath);
-                    System.IO.FileInfo file = new System.IO.FileInfo(outPath);
-
-                    if (file.Exists)
-                    {
-                        Response.Clear();
-
-                        Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
-
-                        Response.AddHeader("Content-Length", file.Length.ToString());
-
-                        Response.ContentType = "application/octet-stream";
-
-                        Response.WriteFile(file.FullName);
-
-                        Response.End();
-
-                    }
-
-                    else
-                    {
-
-                        //Response.Write("This file does not exist.");
-                        Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('File does not exist.');</script>");
-
-                    }
-                }
-            }
+           
 
             if (e.CommandName == "delete")
             {
@@ -926,11 +1009,10 @@ namespace ProjectManagementTool._content_pages.issues
                 int cnt = getdt.Issue_Delete(new Guid(IssueUID), new Guid(Session["UserUID"].ToString()));
                 if (cnt > 0)
                 {
-                    BindIssues(TreeView1.SelectedNode.Target, TreeView1.SelectedNode.Value,DDLUser.SelectedValue);
+                    BindIssues(TreeView1.SelectedNode.Target, TreeView1.SelectedNode.Value, DDLUser.SelectedValue);
                     IssueCountLoad(TreeView1.SelectedNode.Target, TreeView1.SelectedNode.Value);
                 }
             }
-
 
         }
 

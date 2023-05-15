@@ -223,11 +223,11 @@ namespace ProjectManagementTool._modal_pages
 
                 int Cnt = getdata.InsertorUpdateIssues(Issue_Uid, new Guid(TaskUID), txtIssue_Description.Text, CDReportingDate, new Guid(ddlReportingUser.SelectedValue), new Guid(ddlAssignedUser.SelectedValue), CDAssignedDate, CDProposeClosureDate, new Guid(ddlApprovingUser.SelectedValue), CDApprovingDate, ddlStatus.SelectedItem.Text, txtRemarks.Text, new Guid(WorkPackageID), new Guid(ProjectUID), DecryptPagePath);
 
-                if (Cnt>0)
+                if (Cnt > 0)
                 {
-                    if (FileUploadDoc.HasFiles )
+                    if (FileUploadDoc.HasFiles)
                     {
-                        
+
                         string FileDirectory = "/Documents/Issues/";
 
 
@@ -235,10 +235,12 @@ namespace ProjectManagementTool._modal_pages
                         {
                             Directory.CreateDirectory(Server.MapPath(FileDirectory));
                         }
-                                                
+
 
                         foreach (HttpPostedFile postedFile in FileUploadDoc.PostedFiles)
                         {
+                            byte[] filetobytes = null;
+
                             string fileName = Path.GetFileName(postedFile.FileName);
                             postedFile.SaveAs(Server.MapPath(FileDirectory) + fileName);
 
@@ -251,74 +253,130 @@ namespace ProjectManagementTool._modal_pages
 
                             files_path = files_path + Server.MapPath(DecryptPagePath) + ",";
 
+                            string fName = sFileName + "_DE" + Extn;
+
+                            if (File.Exists(Server.MapPath(DecryptPagePath)))
+                            {
+                                fName = sFileName + "_DE_" + (new Random()).Next().ToString() + Extn;
+                                DecryptPagePath = FileDirectory + "/" + fName;
+                            }
+
+
                             getdata.EncryptFile(Server.MapPath(savedPath), Server.MapPath(DecryptPagePath));
 
-                            getdata.InsertUploadedIssueDocument(sFileName + "_DE" + Extn, FileDirectory, Issue_Uid.ToString());
+                            filetobytes = getdata.FileToByteArray(Server.MapPath(DecryptPagePath));
+
+                            getdata.InsertUploadedIssueDocument(fName, FileDirectory, Issue_Uid.ToString(), filetobytes);
+
                         }
 
                     }
 
-                    DataSet ds_wp_emails = getdata.GetWorkPackageEmails(new Guid(ProjectUID), new Guid(Session["WorkPackageUID"].ToString()));
 
-                    string to_email_ids = "";
-                    string ProjectName = getdata.getProjectNameby_ProjectUID(new Guid(ProjectUID));
-                    foreach (DataRow email in ds_wp_emails.Tables[0].Rows)
+                    if (Cnt > 0)
                     {
-                         to_email_ids = to_email_ids + email.ItemArray[1].ToString() + ",";
+                        //if (FileUploadDoc.HasFiles)
+                        //{
+
+                        //    string FileDirectory = "/Documents/Issues/";
+                        //    string DocPath = "";
+
+                        //    if (!Directory.Exists(Server.MapPath(FileDirectory)))
+                        //    {
+                        //        Directory.CreateDirectory(Server.MapPath(FileDirectory));
+                        //    }
+
+                        //    byte[] filetobytes = null;
+
+                        //    foreach (HttpPostedFile postedFile in FileUploadDoc.PostedFiles)
+                        //    {
+
+                        //        filetobytes = null;
+
+                        //        string fileName = Path.GetFileName(postedFile.FileName);
+                        //        postedFile.SaveAs(Server.MapPath(FileDirectory) + fileName);
+
+                        //        string sFileName = Path.GetFileNameWithoutExtension(postedFile.FileName);
+                        //        string Extn = Path.GetExtension(postedFile.FileName);
+
+                        //        string savedPath = FileDirectory  + fileName;
+
+                        //        DocPath = FileDirectory  + sFileName + "_DE" + Extn;
+
+                        //        getdata.EncryptFile(Server.MapPath(savedPath), Server.MapPath(DocPath));
+
+                        //        filetobytes = DBGetData.FileToByteArray(Server.MapPath(DocPath));
+
+                        //        Guid new_guid = Guid.NewGuid();
+                        //        getdata.InsertUploadedIssueDocumentBlob(new_guid, Issue_Uid.ToString(), filetobytes, fileName, savedPath);
+
+                        //    }
+
+                        //}
+
+
+
+                        DataSet ds_wp_emails = getdata.GetWorkPackageEmails(new Guid(ProjectUID), new Guid(Session["WorkPackageUID"].ToString()));
+
+                        string to_email_ids = "";
+                        string ProjectName = getdata.getProjectNameby_ProjectUID(new Guid(ProjectUID));
+                        foreach (DataRow email in ds_wp_emails.Tables[0].Rows)
+                        {
+                            to_email_ids = to_email_ids + email.ItemArray[1].ToString() + ",";
+                        }
+
+                        if (to_email_ids.Length > 0)
+                            to_email_ids = to_email_ids.Substring(0, to_email_ids.Length - 1);
+
+                        if (files_path.Length > 0)
+                            files_path = files_path.Substring(0, files_path.Length - 1);
+
+                        string sHtmlString = "";
+                        string RefNostring = "";
+
+                        sHtmlString = "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>" + "<html xmlns='http://www.w3.org/1999/xhtml'>" +
+                                         "<head>" + "<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />" + "<style>table, th, td {border: 1px solid black; padding:6px;}</style></head>" +
+                                            "<body style='font-family:Verdana, Arial, sans-serif; font-size:12px; font-style:normal;'>";
+                        sHtmlString += "<div style='width:80%; float:left; padding:1%; border:2px solid #011496; border-radius:5px;'>" +
+                                           "<div style='float:left; width:100%; border-bottom:2px solid #011496;'>";
+
+                        if (WebConfigurationManager.AppSettings["Domain"] == "NJSEI")
+                        {
+                            sHtmlString += "<div style='float:left; width:7%;'><img src='https://dm.njsei.com/_assets/images/NJSEI%20Logo.jpg' width='50' /></div>";
+                            RefNostring = "NJSEI Ref Number";
+                        }
+                        else
+                        {
+                            sHtmlString += "<div style='float:left; width:7%;'><h2>" + WebConfigurationManager.AppSettings["Domain"] + "</h2></div>";
+                            RefNostring = "ONTB Ref Number";
+                        }
+
+                        sHtmlString += "<div style='float:left; width:70%;'><h2 style='margin-top:10px;'>Project Monitoring Tool</h2></div>" +
+                                   "</div>";
+                        sHtmlString += "<div style='width:100%; float:left;'><br/>Dear User,<br/><br/><span style='font-weight:bold;'>" + "New Issue is registered and its details are as follows" + "</span> <br/><br/></div>";
+                        sHtmlString += "<div style='width:100%; float:left;'><table style='width:100%;'>" +
+                                        "<tr><td><b>Project Name </b></td><td style='text-align:center;'><b>:</b></td><td>" + ProjectName + "</td></tr>" +
+                                        "<tr><td><b>Activity Name </b></td><td style='text-align:center;'><b>:</b></td><td>" + txtactivityname.Text + "</td></tr>" +
+                                        "<tr><td><b>Issue Description </b></td><td style='text-align:center;'><b>:</b></td><td>" + txtIssue_Description.Text + "</td></tr>" +
+                                        "<tr><td><b>Reporting Date </b></td><td style='text-align:center;'><b>:</b></td><td>" + CDReportingDate.ToString("dd/MMM/yyyy") + "</td></tr>" +
+                                        "<tr><td><b>Reporting User </b></td><td style='text-align:center;'><b>:</b></td><td>" + ddlReportingUser.SelectedItem.Text + "</td></tr>" +
+                                        "<tr><td><b>Remarks </b></td><td style='text-align:center;'><b>:</b></td><td>" + txtRemarks.Text + "</td></tr>";
+                        sHtmlString += "</table></div>";
+                        sHtmlString += "<div style='width:100%; float:left;'><br/><br/>Sincerely, <br/> MIS System.</div></div></body></html>";
+
+
+                        DataTable dtemailCred = getdata.GetEmailCredentials();
+
+                        if (ds_wp_emails.Tables[0].Rows.Count > 0)
+                            getdata.StoreEmaildataToMailQueue(Guid.NewGuid(), new Guid(Session["UserUID"].ToString()), dtemailCred.Rows[0][0].ToString(), to_email_ids, "Issue", sHtmlString, "", files_path);
+
+
+                        Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>parent.location.href=parent.location.href;</script>");
+
                     }
 
-                    if (to_email_ids.Length >0)
-                      to_email_ids = to_email_ids.Substring(0, to_email_ids.Length - 1);
-
-                    if (files_path.Length >0)
-                      files_path = files_path.Substring(0, files_path.Length - 1);
-
-                    string sHtmlString = "";
-                    string RefNostring = "";
-
-                    sHtmlString = "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>" + "<html xmlns='http://www.w3.org/1999/xhtml'>" +
-                                     "<head>" + "<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />" + "<style>table, th, td {border: 1px solid black; padding:6px;}</style></head>" +
-                                        "<body style='font-family:Verdana, Arial, sans-serif; font-size:12px; font-style:normal;'>";
-                    sHtmlString += "<div style='width:80%; float:left; padding:1%; border:2px solid #011496; border-radius:5px;'>" +
-                                       "<div style='float:left; width:100%; border-bottom:2px solid #011496;'>";
-
-                    if (WebConfigurationManager.AppSettings["Domain"] == "NJSEI")
-                    {
-                        sHtmlString += "<div style='float:left; width:7%;'><img src='https://dm.njsei.com/_assets/images/NJSEI%20Logo.jpg' width='50' /></div>";
-                        RefNostring = "NJSEI Ref Number";
-                    }
-                    else
-                    {
-                        sHtmlString += "<div style='float:left; width:7%;'><h2>" + WebConfigurationManager.AppSettings["Domain"] + "</h2></div>";
-                        RefNostring = "ONTB Ref Number";
-                    }
-
-                    sHtmlString += "<div style='float:left; width:70%;'><h2 style='margin-top:10px;'>Project Monitoring Tool</h2></div>" +
-                               "</div>";
-                    sHtmlString += "<div style='width:100%; float:left;'><br/>Dear User,<br/><br/><span style='font-weight:bold;'>" + "New Issue is registered and its details are as follows"  + "</span> <br/><br/></div>";
-                    sHtmlString += "<div style='width:100%; float:left;'><table style='width:100%;'>" +
-                                    "<tr><td><b>Project Name </b></td><td style='text-align:center;'><b>:</b></td><td>" + ProjectName + "</td></tr>" +
-                                    "<tr><td><b>Activity Name </b></td><td style='text-align:center;'><b>:</b></td><td>" + txtactivityname.Text + "</td></tr>" +
-                                    "<tr><td><b>Issue Description </b></td><td style='text-align:center;'><b>:</b></td><td>" + txtIssue_Description.Text + "</td></tr>" +
-                                    "<tr><td><b>Reporting Date </b></td><td style='text-align:center;'><b>:</b></td><td>" + CDReportingDate.ToString("dd/MMM/yyyy") + "</td></tr>" +
-                                    "<tr><td><b>Reporting User </b></td><td style='text-align:center;'><b>:</b></td><td>" + ddlReportingUser.SelectedItem.Text + "</td></tr>" +
-                                    "<tr><td><b>Remarks </b></td><td style='text-align:center;'><b>:</b></td><td>" + txtRemarks.Text + "</td></tr>";
-                    sHtmlString += "</table></div>";
-                    sHtmlString += "<div style='width:100%; float:left;'><br/><br/>Sincerely, <br/> MIS System.</div></div></body></html>";
-
-
-                    DataTable dtemailCred = getdata.GetEmailCredentials();
-
-                    if (ds_wp_emails.Tables[0].Rows.Count >0)
-                       getdata.StoreEmaildataToMailQueue(Guid.NewGuid(), new Guid(Session["UserUID"].ToString()), dtemailCred.Rows[0][0].ToString(), to_email_ids, "Issue", sHtmlString,"",files_path);
-
-
-                    Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>parent.location.href=parent.location.href;</script>");
-
-                }
-
-              //  if (Cnt > 0)
-               // {
+                    //  if (Cnt > 0)
+                    // {
                     //if (Request.QueryString["Issue_Uid"] == null)
                     //{
                     //    if (Request.QueryString["IssueFor"] == "WorkPackage")
@@ -329,10 +387,11 @@ namespace ProjectManagementTool._modal_pages
                     //    {
                     //        Session["SelectedActivity"] = TaskUID;
                     //    }
-                        
-                    //}
-               // }
 
+                    //}
+                    // }
+
+                }
             }
             catch (Exception ex)
             {

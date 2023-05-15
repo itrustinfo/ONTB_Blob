@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -27,11 +28,7 @@ namespace ProjectManagementTool._modal_pages
                     IssueBind();
                     HideActionButtons();
                     BindIssueStatus();
-
-                    if (Session["TypeOfUser"].ToString() == "NJSD")
-                    {
-                        AddStatus.Visible = false;
-                    }
+                   
                 }
             }
         }
@@ -62,16 +59,7 @@ namespace ProjectManagementTool._modal_pages
 
         protected void GrdIssueStatus_RowDataBound(object sender, GridViewRowEventArgs e)
         {
-            //if (e.Row.RowType == DataControlRowType.DataRow)
-            //{
-            //    if (e.Row.Cells[3].Text == "&nbsp;")
-            //    {
-            //        LinkButton lnk = (LinkButton)e.Row.FindControl("lnkdown");
-            //        lnk.Enabled = false;
-            //        lnk.Text = "No File";
-            //    }
-            //}
-
+           
             if (e.Row.RowType == DataControlRowType.DataRow)
             {
                 if (e.Row.Cells[5].Controls.Count == 0)
@@ -80,13 +68,16 @@ namespace ProjectManagementTool._modal_pages
 
                     GridView obj_grdview = new GridView();
                     obj_grdview.Visible = true;
+                    obj_grdview.Attributes.Add("width", "100%");
+
+                    obj_grdview.RowDeleting += Obj_grdview_RowDeleting;
 
                     DataSet ds = getdata.GetUploadedDocuments(grd_row.Cells[4].Text);
 
                     ds.Tables[0].Columns.Add("action-1");
-                    ds.Tables[0].Columns.Add("action-2");
+                    ds.Tables[0].Columns.Add("action-2 ");
                     ds.Tables[0].Columns.Add("action-3");
-
+                   
                     int count = ds.Tables[0].Rows.Count;
 
                     if (count == 0)
@@ -109,8 +100,10 @@ namespace ProjectManagementTool._modal_pages
                         foreach (GridViewRow grd_view_row in obj_grdview.Rows)
                         {
                             grd_view_row.Cells[0].Visible = false;
-                            grd_view_row.Cells[2].Visible = false;
                             grd_view_row.Cells[1].Visible = false;
+                            grd_view_row.Cells[4].Visible = false;
+                           // grd_view_row.Cells[6].Visible = false;
+                           // grd_view_row.Cells[7].Visible = false;
 
                             LinkButton new_link1 = new LinkButton();
 
@@ -118,41 +111,54 @@ namespace ProjectManagementTool._modal_pages
                             new_link1.CommandName = "download";
                             new_link1.CssClass = "fas fa-download";
                             new_link1.ToolTip = "Download";
-                            new_link1.CommandArgument = grd_view_row.Cells[2].Text + "/" + grd_view_row.Cells[1].Text;
+                            new_link1.CommandArgument = grd_view_row.Cells[0].Text;
                             new_link1.Click += New_link1_Click;
 
-                            grd_view_row.Cells[3].Controls.Add(new_link1);
+                            grd_view_row.Cells[2].Controls.Add(new_link1);
 
-                            if (ViewState["isDelete"].ToString() == "true")
-                            {
-                                LinkButton new_link2 = new LinkButton();
+                            //if (ViewState["isDelete"].ToString() == "true")
+                            //{
+                            //    LinkButton new_link2 = new LinkButton();
 
-                                new_link2.ID = "delete_" + grd_view_row.Cells[1].Text;
-                                new_link2.CommandName = grd_view_row.Cells[0].Text;
-                                new_link2.CssClass = "fas fa-trash";
-                                new_link2.ToolTip = "Delete";
-                                new_link2.CommandArgument = grd_view_row.Cells[2].Text + "/" + grd_view_row.Cells[1].Text;
-                                new_link2.Click += New_link2_Click;
+                            //    new_link2.ID = "delete_" + grd_view_row.Cells[1].Text;
+                            //    new_link2.CommandName = grd_view_row.Cells[0].Text;
+                            //    new_link2.CssClass = "fas fa-trash";
+                            //    new_link2.ToolTip = "Delete";
+                            //    new_link2.CommandArgument = grd_view_row.Cells[2].Text + "/" + grd_view_row.Cells[1].Text;
+                            //    new_link2.Click += New_link2_Click;
 
-                                grd_view_row.Cells[4].Controls.Add(new_link2);
-                            }
+                            //    grd_view_row.Cells[4].Controls.Add(new_link2);
+                            //}
+
+                            LinkButton new_link2 = new LinkButton();
+
+                            new_link2.ID = "delete_" + grd_view_row.Cells[0].Text;
+                            new_link2.CommandName = "Delete";
+                            // new_link2.Text = "Delete";
+                            new_link2.CssClass = "fas fa-trash";
+                            new_link2.ToolTip = "Delete";
+                            new_link2.CommandArgument = grd_view_row.Cells[0].Text;
+                            new_link2.Click += New_link2_Click;
+
+                            grd_view_row.Cells[3].Controls.Add(new_link2);
+
 
                             LinkButton linkInfo = new LinkButton();
 
-                            linkInfo.ID = "info_" + grd_view_row.Cells[1].Text;
-                            linkInfo.CommandName = grd_view_row.Cells[0].Text;
+                            linkInfo.ID = "info_" + grd_view_row.Cells[0].Text;
+                            linkInfo.CommandName = "";
 
                             linkInfo.CssClass = "fas fa-info";
                             linkInfo.ToolTip = grd_view_row.Cells[1].Text;
-                            linkInfo.CommandArgument = grd_view_row.Cells[2].Text + "/" + grd_view_row.Cells[1].Text;
+                            linkInfo.CommandArgument = "";
 
                             linkInfo.Click += LinkInfo_Click; ;
 
                             grd_view_row.Cells[5].Controls.Add(linkInfo);
 
-                            string ext = new_link1.CommandArgument.Substring(new_link1.CommandArgument.Length - 3, 3);
+                            string ext = linkInfo.ToolTip.Substring(linkInfo.ToolTip.Length - 3, 3);
 
-                            if (ext == "jpg" || ext == "png" || ext == "peg" || ext == "bmp" )
+                            if (ext == "jpg" || ext == "png" || ext == "peg" || ext == "bmp" || ext == "mp4" )
                             {
                                 //LinkButton linkView = new LinkButton();
 
@@ -174,10 +180,7 @@ namespace ProjectManagementTool._modal_pages
                         }
 
                         if (!preview) e.Row.Cells[6].Text = "";
-
                         obj_grdview.HeaderRow.Visible = false;
-
-
                         grd_row.Cells[5].Controls.Add(obj_grdview);
                     }
 
@@ -185,6 +188,11 @@ namespace ProjectManagementTool._modal_pages
                 }
 
             }
+        }
+
+        private void Obj_grdview_RowDeleting(object sender, GridViewDeleteEventArgs e)
+        {
+            return;
         }
 
         private void LinkInfo_Click(object sender, EventArgs e)
@@ -222,7 +230,7 @@ namespace ProjectManagementTool._modal_pages
         {
             LinkButton new_link = (LinkButton)sender;
 
-            int file_count = getdata.DeleteUploadedDoc(Convert.ToInt32(new_link.CommandName));
+            int file_count = getdata.DeleteUploadedDoc(Convert.ToInt32(new_link.CommandArgument));
 
             if (file_count != 0)
             {
@@ -245,84 +253,148 @@ namespace ProjectManagementTool._modal_pages
         }
 
 
+        //private void New_link1_Click1(object sender, EventArgs e)
+        //{
+        //    // for downloading a doc, click on its name, it will be downloaded to system download folder.
+        //    // here decryption is not taking place and while uploading doc encryption is also not taking place.
+
+        //    LinkButton new_link = (LinkButton)sender;
+
+        //    //  string path = Server.MapPath(new_link.CommandArgument);
+        //    //  System.IO.FileInfo file = new System.IO.FileInfo(path);
+
+        //    string path = Server.MapPath(new_link.CommandArgument);
+
+        //    string getExtension = System.IO.Path.GetExtension(path);
+        //    string outPath = path.Replace(getExtension, "") + "_download" + getExtension;
+        //    getdata.DecryptFile(path, outPath);
+        //    System.IO.FileInfo file = new System.IO.FileInfo(outPath);
+
+        //    if (file.Exists)
+        //    {
+        //        Response.Clear();
+
+        //        Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
+
+        //        Response.AddHeader("Content-Length", file.Length.ToString());
+
+        //        Response.ContentType = "application/octet-stream";
+
+        //        Response.TransmitFile(outPath);
+
+        //        Response.End();
+
+        //    }
+        //    else
+        //    {
+        //        Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('File does not exist.');</script>");
+        //    }
+        //}
+
         private void New_link1_Click(object sender, EventArgs e)
         {
-            // for downloading a doc, click on its name, it will be downloaded to system download folder.
-            // here decryption is not taking place and while uploading doc encryption is also not taking place.
-
-            LinkButton new_link = (LinkButton)sender;
-
-            //  string path = Server.MapPath(new_link.CommandArgument);
-            //  System.IO.FileInfo file = new System.IO.FileInfo(path);
-
-            string path = Server.MapPath(new_link.CommandArgument);
-
-            string getExtension = System.IO.Path.GetExtension(path);
-            string outPath = path.Replace(getExtension, "") + "_download" + getExtension;
-            getdata.DecryptFile(path, outPath);
-            System.IO.FileInfo file = new System.IO.FileInfo(outPath);
-
-            if (file.Exists)
+            try
             {
-                Response.Clear();
 
-                Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
+                LinkButton new_link = (LinkButton)sender;
+                byte[] bytes;
 
-                Response.AddHeader("Content-Length", file.Length.ToString());
+                string filename = "";
 
-                Response.ContentType = "application/octet-stream";
+                bytes = getdata.DownloadDocument(new_link.CommandArgument, out filename);
 
-                Response.TransmitFile(outPath);
+                string path = Server.MapPath(filename);
 
-                Response.End();
+                string filepath = Server.MapPath("~/_PreviewLoad/" + Path.GetFileName(path));
 
+                BinaryWriter Writer = null;
+                Writer = new BinaryWriter(File.OpenWrite(filepath));
+
+                // Writer raw data                
+                Writer.Write(bytes);
+                Writer.Flush();
+                Writer.Close();
+
+                string getExtension = System.IO.Path.GetExtension(filepath);
+                string outPath = filepath.Replace(getExtension, "") + "_download" + getExtension;
+                getdata.DecryptFile(filepath, outPath);
+
+                System.IO.FileInfo file = new System.IO.FileInfo(outPath);
+
+                if (file.Exists)
+                {
+
+                    Response.Clear();
+
+                    Response.AddHeader("Content-Disposition", "attachment; filename=" + Path.GetFileName(path));
+
+                    Response.AddHeader("Content-Length", file.Length.ToString());
+
+                    Response.ContentType = "application/octet-stream";
+
+                    Response.WriteFile(file.FullName);
+                    Response.Flush();
+                    Response.SuppressContent = true;
+                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    //Response.End();
+                }
+                else
+                {
+                    Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('File not found.');</script>");
+                }
+
+                if (File.Exists(outPath))
+                {
+                    File.Delete(outPath);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('File does not exist.');</script>");
+                Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('There is a problem downloading file. Please contact system admin. Description: " + ex.Message + "');</script>");
             }
         }
 
         protected void GrdIssueStatus_RowCommand(object sender, GridViewCommandEventArgs e)
         {
             string IssueStatusUID = e.CommandArgument.ToString();
-            if (e.CommandName == "download")
-            {
-                DataSet ds = getdata.GetIssueStatus_by_IssueRemarksUID(new Guid(IssueStatusUID));
-                if (ds.Tables[0].Rows.Count > 0)
-                {
-                    string path = Server.MapPath(ds.Tables[0].Rows[0]["Issue_Document"].ToString());
 
-                    string getExtension = System.IO.Path.GetExtension(path);
-                    string outPath = path.Replace(getExtension, "") + "_download" + getExtension;
-                    getdata.DecryptFile(path, outPath);
-                    System.IO.FileInfo file = new System.IO.FileInfo(outPath);
+            //if (e.CommandName == "download")
+            //{
+            //    DataSet ds = getdata.GetIssueStatus_by_IssueRemarksUID(new Guid(IssueStatusUID));
+            //    if (ds.Tables[0].Rows.Count > 0)
+            //    {
+            //        string path = Server.MapPath(ds.Tables[0].Rows[0]["Issue_Document"].ToString());
 
-                    if (file.Exists)
-                    {
-                        Response.Clear();
+            //        string getExtension = System.IO.Path.GetExtension(path);
+            //        string outPath = path.Replace(getExtension, "") + "_download" + getExtension;
+            //        getdata.DecryptFile(path, outPath);
+            //        System.IO.FileInfo file = new System.IO.FileInfo(outPath);
 
-                        Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
+            //        if (file.Exists)
+            //        {
+            //            Response.Clear();
 
-                        Response.AddHeader("Content-Length", file.Length.ToString());
+            //            Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
 
-                        Response.ContentType = "application/octet-stream";
+            //            Response.AddHeader("Content-Length", file.Length.ToString());
 
-                        Response.WriteFile(file.FullName);
+            //            Response.ContentType = "application/octet-stream";
 
-                        Response.End();
+            //            Response.WriteFile(file.FullName);
 
-                    }
+            //            Response.End();
 
-                    else
-                    {
+            //        }
 
-                        //Response.Write("This file does not exist.");
-                        Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('File does not exist.');</script>");
+            //        else
+            //        {
 
-                    }
-                }
-            }
+            //            //Response.Write("This file does not exist.");
+            //            Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('File does not exist.');</script>");
+
+            //        }
+            //    }
+            //}
 
             if (e.CommandName == "delete")
             {

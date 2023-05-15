@@ -15,12 +15,30 @@ namespace ProjectManagementTool._modal_pages
     {
 
         /// <summary>
-        /// GrdIssueImages control.
+        /// btnNext control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView GrdIssueImages;
+        protected global::System.Web.UI.WebControls.Button btnNext;
+
+        /// <summary>
+        /// btnPrv control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnPrv;
+
+        /// <summary>
+        /// image control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlImage image;
     }
 }
