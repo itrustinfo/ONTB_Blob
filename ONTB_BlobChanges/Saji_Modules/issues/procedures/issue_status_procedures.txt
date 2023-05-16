@@ -1,0 +1,112 @@
+Alter table UploadedDocs add DocBlob varbinary(max) null
+
+/****** Object:  StoredProcedure [dbo].[InsertUploadedDocument]    Script Date: 5/15/2023 3:09:38 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[InsertUploadedDocument] 
+@name nvarchar(max),
+@path nvarchar(max),
+@issue_remarks_uid nvarchar(max),
+@docBlob varbinary(max)
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+	insert into UploadedDocs(doc_name,doc_path,issue_remarks_uid,DocBlob)
+	values(@name,@path,@issue_remarks_uid,@docBlob);
+END
+
+=----------------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[DownloadIssueRemarksDoc]    Script Date: 5/15/2023 3:13:46 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[DownloadIssueRemarksDoc] 
+@id nvarchar(max)
+AS
+BEGIN
+SET NOCOUNT ON;
+SELECT DocBlob, (doc_path + doc_name) as DocPath from UploadedDocs where uploaded_doc_id = @id;
+END
+
+------------------------------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[GetUploadedIssueStatusImages]    Script Date: 5/15/2023 3:17:47 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[GetUploadedIssueStatusImages] 
+@issue_remark_uid nvarchar(max)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SELECT uploaded_doc_id, doc_name, doc_path + doc_name as IssueImage from UploadedDocs where issue_remarks_uid = @issue_remark_uid and (DeleteFlag is null or DeleteFlag <> 'Y');
+	--SELECT IssueRemarksBlobUID,DocName,DocPath from IssueRemarksBlob where IssueRemarksUID = @issue_remark_uid and (Delete_Flag is null or Delete_Flag <> 'Y');
+END
+
+--------------------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[ups_Issues_Remarks_Delete]    Script Date: 5/15/2023 3:30:20 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[ups_Issues_Remarks_Delete]
+@IssueRemarksUID uniqueidentifier,
+@UserUID uniqueidentifier
+as
+begin
+update IssueRemarks set Delete_Flag='Y' where IssueRemarksUID=@IssueRemarksUID;
+update UploadedDocs set DeleteFlag = 'Y' where issue_remarks_uid = @IssueRemarksUID;
+
+declare @LastUpdatedStatus varchar(50);
+
+if not exists(select Issue_Status from IssueRemarks where IssueRemarksUID=@IssueRemarksUID and Delete_Flag='N')
+begin
+	set @LastUpdatedStatus='Open';
+end
+else
+begin
+	set @LastUpdatedStatus=(select top 1 Issue_Status from IssueRemarks where IssueRemarksUID=@IssueRemarksUID and Delete_Flag='N' order by IssueRemark_Date desc);
+end
+
+update Issues set Issue_Status=@LastUpdatedStatus where Issue_Uid=(select Issue_Uid from IssueRemarks where IssueRemarksUID=@IssueRemarksUID);
+
+
+insert into ActivityDeleteLogs(DeleteLog_UID,Activity_UID,Activity_UserUID,Activity_For)
+	values(NEWID(),@IssueRemarksUID,@UserUID,'Issue Status');
+end
+
+-------------------------------------------------
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[DownloadIssueStatusDoc] 
+@id nvarchar(max)
+AS
+BEGIN
+SET NOCOUNT ON;
+SELECT DocBlob, (doc_path + doc_name) as DocPath from UploadedDocs where uploaded_doc_id = @id;
+END

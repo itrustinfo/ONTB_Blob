@@ -99,11 +99,29 @@ namespace ProjectManagementTool._modal_pages
                 }
 
                 string DocPath = "";
+                byte[] filetobytes = null;
+
                 if (FileUpload1.HasFile)
                 {
                     string InputFile = System.IO.Path.GetExtension(FileUpload1.FileName);
                     FileUpload1.SaveAs(Server.MapPath("~/Documents/" + FileUpload1.FileName));
                     DocPath = "~/Documents/" + FileUpload1.FileName;
+
+                    
+
+                    //string fileName = Path.GetFileName(FileUpload1.FileName);
+                    //FileUpload1.SaveAs(Server.MapPath("~/Documents/") + fileName);
+
+                    //string sFileName = Path.GetFileNameWithoutExtension(FileUpload1.FileName);
+                    //Extn = Path.GetExtension(FileUpload1.FileName);
+
+                    //string savedPath = "~/Documents/" + fileName;
+
+                    //DocPath = "~/Documents/" + sFileName + "_DE" + Extn;
+
+                    //getdata.EncryptFile(Server.MapPath(savedPath), Server.MapPath(DocPath));
+
+                    filetobytes = getdata.FileToByteArray(Server.MapPath(DocPath));
                 }
 
                 string sDate1 = "", sDate2 = "",sDate3="";
@@ -129,7 +147,8 @@ namespace ProjectManagementTool._modal_pages
                 txtinterest.Value = txtpremiumamount.Value.Replace(",", "").Replace("₹ ", "").Replace("$ ", "").Replace("¥ ", "").Replace("₹", "").Replace("$", "").Replace("¥", "").Trim();
                 txtpenalty.Value = txtpremiumamount.Value.Replace(",", "").Replace("₹ ", "").Replace("$ ", "").Replace("¥ ", "").Replace("₹", "").Replace("$", "").Replace("¥", "").Trim();
 
-                bool result = getdata.InsertorUpdateInsurancePremium(PremiumUID, new Guid(Request.QueryString["InsuranceUID"]), float.Parse(txtpremiumamount.Value), float.Parse(txtinterest.Value), float.Parse(txtpenalty.Value), CDate1, CDate2, CDate3, DocPath, txtrenarks.Text);
+                bool result = getdata.InsertorUpdateInsurancePremium(PremiumUID, new Guid(Request.QueryString["InsuranceUID"]), float.Parse(txtpremiumamount.Value), float.Parse(txtinterest.Value), float.Parse(txtpenalty.Value), CDate1, CDate2, CDate3, DocPath, txtrenarks.Text,filetobytes);
+                
                 if (result)
                 {
                     if (WebConfigurationManager.AppSettings["Dbsync"] == "Yes")

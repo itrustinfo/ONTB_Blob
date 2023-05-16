@@ -480,6 +480,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="ITextEvents.cs" />
+    <Compile Include="Models\DocFile.cs" />
     <Compile Include="Models\Models\UploadNewPhoto.cs" />
     <Compile Include="Models\TaskNode.cs" />
     <Compile Include="Models\tClass.cs" />

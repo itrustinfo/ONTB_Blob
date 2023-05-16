@@ -329,6 +329,13 @@
 
 <ItemStyle CssClass="hiddencol"></ItemStyle>
                                                 </asp:BoundField>
+                                                        <asp:TemplateField>
+                                                            <ItemTemplate>
+                                                                <a id="printDocs" target="_blank"  href="/_content_pages/doctobrowser/default.aspx?Issue_Uid=<%#Eval("Issue_Uid")%>&PrjID=<%#Eval("ProjectUID")%>"  hidden="hidden" ><span title="print" class="fas fa-print"></span></a>
+                                                                <asp:LinkButton ID="lnkdown" runat="server" CommandArgument='<%#Eval("Issue_Uid")%>' CausesValidation="false" CommandName="download"><span title="download all" class="fas fa-download"></span></asp:LinkButton>
+                                                            </ItemTemplate>
+                                                        </asp:TemplateField>
+
                                                     </Columns>
                                                     <PagerSettings Position="TopAndBottom" />
                                                 </asp:GridView>

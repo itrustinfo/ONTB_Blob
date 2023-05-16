@@ -1,0 +1,94 @@
+/****** Object:  Table [dbo].[BankDocBlobs]    Script Date: 5/16/2023 3:46:45 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[BankDocBlobs](
+	[BankDocBlobUID] [uniqueidentifier] NOT NULL,
+	[BankDoc_UID] [uniqueidentifier] NULL,
+	[BlobData] [varbinary](max) NULL,
+	[DeleteFlag] [nvarchar](1) NULL,
+	[DocName] [nvarchar](max) NULL,
+	[DocPath] [nvarchar](max) NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+
+
+/****** Object:  StoredProcedure [dbo].[InsertUploadedBankDocumentBlob]    Script Date: 4/19/2023 4:16:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[InsertUploadedBankDocumentBlob] 
+@BankBlobUID uniqueidentifier,
+@bank_doc_uid nvarchar(max),
+@docBytes varbinary(max),
+@docName nvarchar(max),
+@docPath nvarchar(max)
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+	insert into BankDocBlobs(BankDocBlobUID,BankDoc_UID,BlobData,DeleteFlag,DocName,DocPath)
+	values(@BankBlobUID,@bank_doc_uid,@docBytes,'N',@docName,@docPath);
+END
+
+-----------------------------------------------
+/****** Object:  StoredProcedure [dbo].[ups_BankDocuments_selectBy_BankUID]    Script Date: 4/19/2023 4:18:39 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER proc [dbo].[ups_BankDocuments_selectBy_BankUID]
+@Bank_GuaranteeUID uniqueidentifier
+as 
+begin
+set nocount on;
+select A.BankDoc_UID,A.Bank_GuaranteeUID,A.Document_Name,A.Document_Type,A.Document_File,B.BankDocBlobUID from BankDocuments A, BankDocBlobs B where A.BankDoc_UID = B.BankDoc_UID and A.Bank_GuaranteeUID=@Bank_GuaranteeUID and A.Delete_Flag='N'
+end
+-----------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[DownloadBankDocBlob]    Script Date: 4/19/2023 4:21:11 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[DownloadBankDocBlob] 
+@id nvarchar(max)
+AS
+BEGIN
+SET NOCOUNT ON;
+SELECT BlobData, DocPath from BankDocBlobs where BankDocBlobUID = @id;
+END
+---------------------------------------
+/****** Object:  StoredProcedure [dbo].[usp_BankDocuments_Delete]    Script Date: 4/19/2023 4:22:42 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[usp_BankDocuments_Delete]
+@BankDoc_UID uniqueidentifier,
+@UserUID uniqueidentifier
+as
+begin
+
+update BankDocuments set Delete_Flag='Y' where BankDoc_UID=@BankDoc_UID;
+update BankDocBlobs set DeleteFlag='Y' where BankDoc_UID = @BankDoc_UID;
+
+insert into ActivityDeleteLogs(DeleteLog_UID,Activity_UID,Activity_UserUID,Activity_For)
+	values(NEWID(),@BankDoc_UID,@UserUID,'Bank Documents');
+end
+
+----------------------------------------
+
+
+---------------------------------------------------------------------

@@ -21548,23 +21548,23 @@ namespace ProjectManager.DAL
 
         //-------------------------------------------------
 
-        public DataSet GetUploadedIssueDocuments(string issue_uid)
-        {
-            DataSet ds = new DataSet();
-            try
-            {
-                SqlConnection con = new SqlConnection(db.GetConnectionString());
-                SqlDataAdapter cmd = new SqlDataAdapter("GetUploadedIssueDocuments", con);
-                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
-                cmd.SelectCommand.Parameters.AddWithValue("@issue_uid", issue_uid);
-                cmd.Fill(ds);
-            }
-            catch (Exception ex)
-            {
-                ds = null;
-            }
-            return ds;
-        }
+        //public DataSet GetUploadedIssueDocuments(string issue_uid)
+        //{
+        //    DataSet ds = new DataSet();
+        //    try
+        //    {
+        //        SqlConnection con = new SqlConnection(db.GetConnectionString());
+        //        SqlDataAdapter cmd = new SqlDataAdapter("GetUploadedIssueDocuments", con);
+        //        cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+        //        cmd.SelectCommand.Parameters.AddWithValue("@issue_uid", issue_uid);
+        //        cmd.Fill(ds);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ds = null;
+        //    }
+        //    return ds;
+        //}
 
         //------------------------------------------------------
         public int DeleteUploadedIssueDoc(int uploadedDocId)
@@ -25420,43 +25420,6 @@ namespace ProjectManager.DAL
             }
         }
 
-
-    public byte[] DownloadDocument(string issue_remarks_doc_uid, out string file_name)
-        {
-
-            try
-            {
-                SqlConnection con = new SqlConnection(db.GetConnectionString());
-
-                SqlDataReader sdr = null;
-
-                byte[] file_in_bytes = null;
-
-                using (SqlCommand cmd = new SqlCommand("DownloadIssueRemarksDoc"))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@Id", issue_remarks_doc_uid);
-                    cmd.Connection = con;
-                    con.Open();
-                    sdr = cmd.ExecuteReader();
-                    sdr.Read();
-                    file_in_bytes = (byte[])sdr["DocBlob"];
-                    file_name = sdr["DocPath"].ToString();
-
-                    con.Close();
-                }
-
-                return file_in_bytes;
-            }
-            catch (Exception ex)
-            {
-                file_name = "";
-                return null;
-            }
-        }
-
-
-
        public DataSet GetUploadedIssueStatusImages(string issue_remark_uid)
         {
             DataSet ds = new DataSet();
@@ -25508,6 +25471,288 @@ namespace ProjectManager.DAL
                 return null;
             }
         }
+
+        //added on 16/05/2023 for saji
+        public DataSet GetUploadedIssueDocuments(string issue_uid)
+        {
+            DataSet ds = new DataSet();
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+                SqlDataAdapter cmd = new SqlDataAdapter("GetUploadedIssueDocuments", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.Parameters.AddWithValue("@issue_uid", issue_uid);
+                cmd.Fill(ds);
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+            }
+            return ds;
+        }
+
+
+        public DataSet GetUploadedAllIssueStatusDocuments(string issue_uid)
+        {
+            DataSet ds = new DataSet();
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+                SqlDataAdapter cmd = new SqlDataAdapter("GetUploadedIssueStatusDocuments", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.Parameters.AddWithValue("@issue_uid", issue_uid);
+                cmd.Fill(ds);
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+            }
+            return ds;
+        }
+
+       
+        public byte[] DownloadDocument(string issue_remarks_doc_uid, out string file_name)
+        {
+
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+
+                SqlDataReader sdr = null;
+
+                byte[] file_in_bytes = null;
+
+                using (SqlCommand cmd = new SqlCommand("DownloadIssueRemarksDoc"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Id", issue_remarks_doc_uid);
+                    cmd.Connection = con;
+                    con.Open();
+                    sdr = cmd.ExecuteReader();
+                    sdr.Read();
+                    file_in_bytes = (byte[])sdr["DocBlob"];
+                    file_name = sdr["DocPath"].ToString();
+
+                    con.Close();
+                }
+
+                return file_in_bytes;
+            }
+            catch (Exception ex)
+            {
+                file_name = "";
+                return null;
+            }
+        }
+
+        public int InsertUploadedBankDocumentBlob(Guid BankDocBlobUID, string bank_doc_uid, byte[] docBytes, string flName, string flPath)
+        {
+            int sresult = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("InsertUploadedBankDocumentBlob"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@docName", flName);
+                        cmd.Parameters.AddWithValue("@docPath", flPath);
+                        cmd.Parameters.AddWithValue("@BankBlobUID", BankDocBlobUID);
+                        cmd.Parameters.AddWithValue("@bank_doc_uid", bank_doc_uid);
+                        cmd.Parameters.AddWithValue("@docBytes", docBytes);
+                        sresult = (int)cmd.ExecuteNonQuery();
+                        con.Close();
+
+                    }
+                }
+                return sresult;
+            }
+            catch (Exception ex)
+            {
+                return sresult;
+            }
+        }
+
+        public byte[] DownloadBankDocument(string bank_doc_blob_uid, out string file_name)
+        {
+
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+
+                SqlDataReader sdr = null;
+
+                byte[] file_in_bytes = null;
+
+                using (SqlCommand cmd = new SqlCommand("DownloadBankDocBlob"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Id", bank_doc_blob_uid);
+                    cmd.Connection = con;
+                    con.Open();
+                    sdr = cmd.ExecuteReader();
+                    sdr.Read();
+                    file_in_bytes = (byte[])sdr["BlobData"];
+                    file_name = sdr["DocPath"].ToString();
+
+                    con.Close();
+                }
+
+                return file_in_bytes;
+            }
+            catch (Exception ex)
+            {
+                file_name = "";
+                return null;
+            }
+        }
+
+        public int InsertUploadedInsuranceDocumentBlob(Guid InsuranceDocBlobUID, string insurance_doc_uid, byte[] docBytes, string flName, string flPath)
+        {
+            int sresult = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("InsertUploadedInsuranceDocumentBlob"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@docName", flName);
+                        cmd.Parameters.AddWithValue("@docPath", flPath);
+                        cmd.Parameters.AddWithValue("@InsuranceBlobUID", InsuranceDocBlobUID);
+                        cmd.Parameters.AddWithValue("@insurance_doc_uid", insurance_doc_uid);
+                        cmd.Parameters.AddWithValue("@docBytes", docBytes);
+                        sresult = (int)cmd.ExecuteNonQuery();
+                        con.Close();
+
+                    }
+                }
+                return sresult;
+            }
+            catch (Exception ex)
+            {
+                return sresult;
+            }
+        }
+
+        public byte[] DownloadInsuranceDocument(string insurance_doc_blob_uid, out string file_name)
+        {
+
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+
+                SqlDataReader sdr = null;
+
+                byte[] file_in_bytes = null;
+
+                using (SqlCommand cmd = new SqlCommand("DownloadInsuranceDocBlob"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Id", insurance_doc_blob_uid);
+                    cmd.Connection = con;
+                    con.Open();
+                    sdr = cmd.ExecuteReader();
+                    sdr.Read();
+                    file_in_bytes = (byte[])sdr["BlobData"];
+                    file_name = sdr["DocPath"].ToString();
+
+                    con.Close();
+                }
+
+                return file_in_bytes;
+            }
+            catch (Exception ex)
+            {
+                file_name = "";
+                return null;
+            }
+        }
+
+       public Boolean InsertorUpdateInsurancePremium(Guid PremiumUID, Guid InsuranceUID, float Premium_Paid, float Interest, float Penalty, DateTime Premium_PaidDate, DateTime Premium_DueDate, DateTime Next_PremiumDate, string Premium_Receipt, string Remarks, byte[] receipt_blob)
+        {
+            Boolean sresult = false;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("usp_InsertorUpdateInsurancePremium"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@PremiumUID", PremiumUID);
+                        cmd.Parameters.AddWithValue("@InsuranceUID", InsuranceUID);
+                        cmd.Parameters.AddWithValue("@Premium_Paid", Premium_Paid);
+                        cmd.Parameters.AddWithValue("@Interest", Interest);
+                        cmd.Parameters.AddWithValue("@Penalty", Penalty);
+                        cmd.Parameters.AddWithValue("@Premium_PaidDate", Premium_PaidDate);
+                        cmd.Parameters.AddWithValue("@Premium_DueDate", Premium_DueDate);
+                        cmd.Parameters.AddWithValue("@Next_PremiumDate", Next_PremiumDate);
+                        cmd.Parameters.AddWithValue("@Premium_Receipt", Premium_Receipt);
+                        cmd.Parameters.AddWithValue("@Remarks", Remarks);
+                        cmd.Parameters.AddWithValue("@BlobData", receipt_blob);
+                        cmd.ExecuteNonQuery();
+                        con.Close();
+                        sresult = true;
+                    }
+                }
+                return sresult;
+            }
+            catch (Exception ex)
+            {
+                return sresult = false;
+            }
+        }
+
+
+
+      public byte[] DownloadInsurancePremiumReceipt(string premium_uid, out string file_name)
+        {
+
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+
+                SqlDataReader sdr = null;
+
+                byte[] file_in_bytes = null;
+
+                using (SqlCommand cmd = new SqlCommand("DownloadInsurancePremiumReceiptBlob"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Id", premium_uid);
+                    cmd.Connection = con;
+                    con.Open();
+                    sdr = cmd.ExecuteReader();
+                    sdr.Read();
+                    file_in_bytes = (byte[])sdr["Blob_Data"];
+                    file_name = sdr["DocPath"].ToString();
+
+                    con.Close();
+                }
+
+                return file_in_bytes;
+            }
+            catch (Exception ex)
+            {
+                file_name = "";
+                return null;
+            }
+        }
+
+
+
+
+
+
 
     }
 

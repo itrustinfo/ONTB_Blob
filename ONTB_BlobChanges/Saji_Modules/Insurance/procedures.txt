@@ -1,0 +1,192 @@
+---------------------------------------------
+
+/****** Object:  Table [dbo].[InsurancePremiumBlob]    Script Date: 4/26/2023 1:56:42 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[InsurancePremiumBlob](
+	[PremiumBlobUID] [uniqueidentifier] NOT NULL,
+	[PremiumUID] [uniqueidentifier] NULL,
+	[Blob_Data] [varbinary](max) NULL,
+	[Delete_Flag] [varchar](1) NULL,
+ CONSTRAINT [PK_InsurancePremiumBlob] PRIMARY KEY CLUSTERED 
+(
+	[PremiumBlobUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[InsurancePremiumBlob] ADD  CONSTRAINT [DF_InsurancePremiumBlob_Delete_Flag]  DEFAULT ('N') FOR [Delete_Flag]
+GO
+
+----------------------------------
+/****** Object:  Table [dbo].[InsuranceDocBlobs]    Script Date: 5/16/2023 3:49:13 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[InsuranceDocBlobs](
+	[InsuranceDocBlobUID] [uniqueidentifier] NOT NULL,
+	[InsuranceDoc_UID] [uniqueidentifier] NULL,
+	[BlobData] [varbinary](max) NULL,
+	[DeleteFlag] [nvarchar](1) NULL,
+	[DocName] [nvarchar](max) NULL,
+	[DocPath] [nvarchar](max) NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+------------------------------
+
+
+
+/****** Object:  StoredProcedure [dbo].[usp_getInsurenceDocumentsBy_InsuranceUID]    Script Date: 4/19/2023 4:29:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+ALTER proc [dbo].[usp_getInsurenceDocumentsBy_InsuranceUID]
+@InsuranceUID uniqueidentifier
+as
+begin
+set nocount on;
+select A.*,B.InsuranceDocBlobUID from InsuranceDocuments A,InsuranceDocBlobs B where A.InsuranceDoc_UID = B.InsuranceDoc_UID and A.InsuranceUID=@InsuranceUID and A.Delete_Flag='N' order by Upload_Date
+end
+------------------------------------
+/****** Object:  StoredProcedure [dbo].[DownloadInsuranceDocBlob]    Script Date: 4/19/2023 4:50:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[DownloadInsuranceDocBlob] 
+@id nvarchar(max)
+AS
+BEGIN
+SET NOCOUNT ON;
+SELECT BlobData, DocPath from InsuranceDocBlobs where InsuranceDocBlobUID = @id;
+END
+----------------------------------
+/****** Object:  StoredProcedure [dbo].[usp_InsuranceDocuments_Delete]    Script Date: 4/19/2023 4:51:17 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER proc [dbo].[usp_InsuranceDocuments_Delete]
+@InsuranceDoc_UID uniqueidentifier,
+@UserUID uniqueidentifier
+as
+begin
+
+update InsuranceDocuments set Delete_Flag='Y' where InsuranceDoc_UID=@InsuranceDoc_UID;
+update InsuranceDocBlobs set DeleteFlag = 'Y' where InsuranceDoc_UID=@InsuranceDoc_UID;
+
+insert into ActivityDeleteLogs(DeleteLog_UID,Activity_UID,Activity_UserUID,Activity_For)
+	values(NEWID(),@InsuranceDoc_UID,@UserUID,'Insurance Documents');
+end
+--------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[usp_InsertorUpdateInsurancePremium]    Script Date: 4/26/2023 1:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[usp_InsertorUpdateInsurancePremium]
+@PremiumUID uniqueidentifier,
+@InsuranceUID uniqueidentifier,
+@Premium_Paid decimal(18,3),
+@Interest decimal(18,3),
+@Penalty decimal(18,3),
+@Premium_PaidDate datetime,
+@Premium_DueDate datetime,
+@Next_PremiumDate datetime,
+@Premium_Receipt varchar(300),
+@Remarks varchar(100),
+@BlobData varbinary(max)
+as
+begin
+if not exists(select PremiumUID from Insurance_Premiums where PremiumUID=@PremiumUID)
+begin
+	if @Premium_Receipt !=''
+	begin
+		insert into Insurance_Premiums(PremiumUID,InsuranceUID,Premium_Paid,Interest,Penalty,Premium_PaidDate,Premium_DueDate,Next_PremiumDate,Premium_Receipt,Remarks)
+		values(@PremiumUID,@InsuranceUID,@Premium_Paid,@Interest,@Penalty,@Premium_PaidDate,@Premium_DueDate,@Next_PremiumDate,@Premium_Receipt,@Remarks)
+	
+		--Insert into InsurancePremiumBlob table
+		insert into InsurancePremiumBlob(PremiumBlobUID,PremiumUID,Blob_Data)
+		values(NEWID(),@PremiumUID,@BlobData)
+	end
+	else
+	begin
+				insert into Insurance_Premiums(PremiumUID,InsuranceUID,Premium_Paid,Interest,Penalty,Premium_PaidDate,Premium_DueDate,Next_PremiumDate,Remarks)
+		values(@PremiumUID,@InsuranceUID,@Premium_Paid,@Interest,@Penalty,@Premium_PaidDate,@Premium_DueDate,@Next_PremiumDate,@Remarks)
+	end
+end
+else
+begin
+	if @Premium_Receipt !=''
+	begin
+		update Insurance_Premiums set Premium_Paid=@Premium_Paid,Interest=@Interest,Penalty=@Penalty,Premium_PaidDate=@Premium_PaidDate,Premium_DueDate=@Premium_DueDate,
+		Next_PremiumDate=@Next_PremiumDate,Premium_Receipt=@Premium_Receipt,Remarks=@Remarks where PremiumUID=@PremiumUID;
+	
+	    update InsurancePremiumBlob set Blob_Data=@BlobData where PremiumUID=@PremiumUID and Delete_Flag='N';
+	end
+	else
+	begin
+				update Insurance_Premiums set Premium_Paid=@Premium_Paid,Interest=@Interest,Penalty=@Penalty,Premium_PaidDate=@Premium_PaidDate,Premium_DueDate=@Premium_DueDate,
+		Next_PremiumDate=@Next_PremiumDate,Remarks=@Remarks where PremiumUID=@PremiumUID;
+	end
+	
+end
+end
+
+---------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[DownloadInsurancePremiumReceiptBlob]    Script Date: 4/26/2023 11:45:50 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[DownloadInsurancePremiumReceiptBlob] 
+@id nvarchar(max)
+AS
+BEGIN
+SET NOCOUNT ON;
+SELECT B.Blob_Data, A.Premium_Receipt as DocPath from Insurance_Premiums A, InsurancePremiumBlob B where A.PremiumUID = B.PremiumUID and A.PremiumUID = @id;
+END
+
+//
+/***** Object:  StoredProcedure [dbo].[InsertUploadedInsuranceDocumentBlob]    Script Date: 5/16/2023 6:04:23 PM *****/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[InsertUploadedInsuranceDocumentBlob] 
+@InsuranceBlobUID uniqueidentifier,
+@insurance_doc_uid nvarchar(max),
+@docBytes varbinary(max),
+@docName nvarchar(max),
+@docPath nvarchar(max)
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+	insert into InsuranceDocBlobs(InsuranceDocBlobUID,InsuranceDoc_UID,BlobData,DeleteFlag,DocName,DocPath)
+	values(@InsuranceBlobUID,@insurance_doc_uid,@docBytes,'N',@docName,@docPath);
+END

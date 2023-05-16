@@ -1,4 +1,5 @@
-﻿using ProjectManager.DAL;
+﻿using ProjectManagementTool.Models;
+using ProjectManager.DAL;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -1000,18 +1001,21 @@ namespace ProjectManagementTool._content_pages.issues
         protected void GrdIssues_RowCommand(object sender, GridViewCommandEventArgs e)
         {
             string IssueUID = e.CommandArgument.ToString();
-
-           
-
+ 
             if (e.CommandName == "delete")
             {
-
                 int cnt = getdt.Issue_Delete(new Guid(IssueUID), new Guid(Session["UserUID"].ToString()));
+
                 if (cnt > 0)
                 {
                     BindIssues(TreeView1.SelectedNode.Target, TreeView1.SelectedNode.Value, DDLUser.SelectedValue);
                     IssueCountLoad(TreeView1.SelectedNode.Target, TreeView1.SelectedNode.Value);
                 }
+
+            }
+            else if (e.CommandName == "download")
+            {
+                CreateAndDownloadZipFile(IssueUID);
             }
 
         }
@@ -1019,6 +1023,140 @@ namespace ProjectManagementTool._content_pages.issues
         protected void GrdIssues_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
 
+        }
+
+
+        protected void CreateAndDownloadZipFile(string issue_uid)
+        {
+            string zipFolder = Server.MapPath("/Documents/Issues/IssueDocs/");
+
+            if (!Directory.Exists(zipFolder))
+                Directory.CreateDirectory(zipFolder);
+            else
+            {
+                // Delete all files from the Directory  
+                foreach (string filename in Directory.GetFiles(zipFolder))
+                {
+                    File.Delete(filename);
+                }
+            }
+
+            List<DocFile> files = new List<DocFile>();
+
+            List<string> fileNames = new List<string>();
+
+            DataSet ds1 = getdt.GetUploadedIssueDocuments(issue_uid);
+
+            if (ds1.Tables[0].Rows.Count > 0)
+            {
+                byte[] bytes;
+                string filename = "";
+
+                foreach (DataRow r in ds1.Tables[0].Rows)
+                {
+               
+                    bytes = getdt.DownloadIssueDocument(Convert.ToInt32(r.ItemArray[0].ToString()), out filename);
+                  
+                    string filepath = Server.MapPath("~/_PreviewLoad/" + filename);
+
+                    BinaryWriter Writer = null;
+                    Writer = new BinaryWriter(File.OpenWrite(filepath));
+
+                    // Writer raw data                
+                    Writer.Write(bytes);
+                    Writer.Flush();
+                    Writer.Close();
+
+                    string outPath = zipFolder + "open_" + filename;
+
+                    string getExtension = System.IO.Path.GetExtension(filepath);
+
+                    outPath = outPath.Replace(getExtension, "") + getExtension;
+
+                    getdt.DecryptFile(filepath, outPath);
+
+                    if (files.Where(a => a.Name.Contains(outPath)).Count() == 0)
+                        files.Add(new DocFile { Name = outPath, Position = 0 });
+                }
+
+            }
+
+            DataSet ds2 = getdt.GetUploadedAllIssueStatusDocuments(issue_uid);
+
+            if (ds2.Tables[0].Rows.Count > 0)
+            {
+                byte[] bytes;
+                string filename = "";
+               
+
+                foreach (DataRow r in ds2.Tables[0].Rows)
+                {
+                    bytes = getdt.DownloadDocument(r.ItemArray[0].ToString(), out filename);
+                    string filepath = Server.MapPath("~/_PreviewLoad/" + Path.GetFileName(filename));
+                   
+                    BinaryWriter Writer = null;
+                    Writer = new BinaryWriter(File.OpenWrite(filepath));
+
+                    // Writer raw data                
+                    Writer.Write(bytes);
+                    Writer.Flush();
+                    Writer.Close();
+
+                    string outPath = zipFolder + r.ItemArray[3].ToString() + "_" + Path.GetFileName(filename);
+
+                    int p = 0;
+
+                    string getExtension = Path.GetExtension(filepath);
+
+                    outPath = outPath.Replace(getExtension, "") + getExtension;
+
+                    getdt.DecryptFile(filepath, outPath);
+
+                    if (r.ItemArray[3].ToString() == "In-Progress") p = 1;
+
+                    DocFile doc_file = new DocFile() { Name = outPath, Position = p };
+
+                    if (files.Where(a => a.Name.Contains(outPath)).Count() == 0)
+                        files.Add(doc_file);
+                }
+            }
+
+            // Save Zip file
+
+            string zipFilePath = Server.MapPath("/Documents/Issues/IssueDocsZip.zip");
+
+            foreach (DocFile item in files.OrderBy(a => a.Position))
+            {
+                fileNames.Add(item.Name);
+            }
+
+            using (Ionic.Zip.ZipFile zip = new Ionic.Zip.ZipFile())
+            {
+                zip.AddFiles(fileNames, "IssueDocs");//Zip file inside filename  
+                zip.Save(zipFilePath);//location and name for creating zip file  
+            }
+
+            FileInfo file = new FileInfo(zipFilePath);
+
+            if (file.Exists)
+            {
+                Response.Clear();
+
+                Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
+
+                Response.AddHeader("Content-Length", file.Length.ToString());
+
+                Response.ContentType = "application/octet-stream";
+
+                Response.WriteFile(file.FullName);
+
+                Response.End();
+
+            }
+            else
+            {
+                Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('File does not exist.');</script>");
+            }
         }
 
         //private void PopulateTreeView(IEnumerable<T> list, TreeNode parentNode)

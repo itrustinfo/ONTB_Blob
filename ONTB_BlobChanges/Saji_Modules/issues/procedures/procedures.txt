@@ -1,0 +1,79 @@
+/****** Object:  StoredProcedure [dbo].[GetUploadedIssueDocuments]    Script Date: 5/16/2023 5:20:32 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[GetUploadedIssueDocuments] 
+@issue_uid nvarchar(max)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SELECT doc_id,doc_name,doc_path from UploadedIssueDocs where issue_uid = @issue_uid and (DeleteFlag is null or DeleteFlag <> 'Y');
+END
+
+-----------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[DownloadIssueDoc]    Script Date: 5/16/2023 5:21:34 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[DownloadIssueDoc] 
+@id int
+AS
+BEGIN
+SET NOCOUNT ON;
+SELECT DocBlob, doc_name as docPath  from UploadedIssueDocs where doc_id = @id;
+END
+
+--------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[GetUploadedIssueStatusDocuments]    Script Date: 5/16/2023 5:22:39 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[GetUploadedIssueStatusDocuments] 
+@issue_uid nvarchar(max)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SELECT uploaded_doc_id,doc_name,doc_path,A.Issue_Status from IssueRemarks A, UploadedDocs B where A.IssueRemarksUID = B.issue_remarks_uid and A.Issue_Uid = @issue_uid and (B.DeleteFlag is null or B.DeleteFlag <> 'Y');
+END
+
+-----------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[DownloadIssueRemarksDoc]    Script Date: 5/16/2023 5:24:26 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[DownloadIssueRemarksDoc] 
+@id nvarchar(max)
+AS
+BEGIN
+SET NOCOUNT ON;
+SELECT DocBlob, (doc_path + doc_name) as DocPath, doc_name from UploadedDocs where uploaded_doc_id = @id;
+END
+
+------------------------------------------------------------

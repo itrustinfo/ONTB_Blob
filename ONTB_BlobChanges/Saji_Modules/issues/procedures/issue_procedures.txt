@@ -1,0 +1,84 @@
+Alter table [dbo].[UploadedIssueDocs] add DocBlob varbinary(max) null 
+
+/****** Object:  StoredProcedure [dbo].[InsertUploadedIssueDocument]    Script Date: 5/15/2023 2:35:59 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[InsertUploadedIssueDocument] 
+@name nvarchar(max),
+@path nvarchar(max),
+@issue_uid nvarchar(max),
+@docBlob varbinary(max)
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+	insert into UploadedIssueDocs(doc_name,doc_path,Issue_Uid,DocBlob)
+	values(@name,@path,@issue_uid,@docBlob);
+END
+
+------------------------------------------------------------------------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[DownloadIssueDoc]    Script Date: 5/15/2023 2:56:17 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[DownloadIssueDoc] 
+@id int
+AS
+BEGIN
+SET NOCOUNT ON;
+SELECT DocBlob, doc_name as docPath  from UploadedIssueDocs where doc_id = @id;
+END
+
+----------------------------------------------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[GetUploadedIssueImages]    Script Date: 5/15/2023 2:59:11 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[GetUploadedIssueImages] 
+@issue_uid nvarchar(max)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SELECT doc_id,  (doc_path + doc_name) as IssueImage from UploadedIssueDocs where Issue_Uid = @issue_uid and (DeleteFlag is null or DeleteFlag <> 'Y');
+END
+
+---------------------------------------------------------------
+/****** Object:  StoredProcedure [dbo].[deleteUploadedIssueDoc]    Script Date: 5/15/2023 3:04:36 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[deleteUploadedIssueDoc] 
+@docid int 	
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+    update UploadedIssueDocs set DeleteFlag = 'Y' where doc_id = @docid;
+	
+END
+
+-------------------------------------------------
+
+

@@ -60,6 +60,31 @@ namespace ProjectManagementTool._modal_pages
                     DocPath = "~/Documents/" + FileUpload1.FileName;
                     string Extn = Path.GetExtension(InputFile);
                     bool ret = getdata.InsertorUpdateBankDocuments(BankDoc_UID, new Guid(Request.QueryString["Bank_GuaranteeUID"]), txtdocumentName.Text, Extn, DocPath);
+                    
+
+                    if (ret)
+                    {
+                        byte[] filetobytes = null;
+
+                        string fileName = Path.GetFileName(FileUpload1.FileName);
+                        FileUpload1.SaveAs(Server.MapPath("~/Documents/") + fileName);
+
+                        string sFileName = Path.GetFileNameWithoutExtension(FileUpload1.FileName);
+                        Extn = Path.GetExtension(FileUpload1.FileName);
+
+                        string savedPath = "~/Documents/" + fileName;
+
+                        DocPath = "~/Documents/" + sFileName + "_DE" + Extn;
+
+                        getdata.EncryptFile(Server.MapPath(savedPath), Server.MapPath(DocPath));
+
+                        filetobytes = getdata.FileToByteArray(Server.MapPath(DocPath));
+
+                        Guid new_guid = Guid.NewGuid();
+                        getdata.InsertUploadedBankDocumentBlob(new_guid, BankDoc_UID.ToString(), filetobytes, fileName, savedPath);
+
+                    }
+
                     if (ret)
                     {
                         bool DbSyc = false;
@@ -121,43 +146,110 @@ namespace ProjectManagementTool._modal_pages
         }
         protected void grdBankDocuments_RowCommand(object sender, GridViewCommandEventArgs e)
         {
+
+
+            //if (e.CommandName == "download")
+            //{
+            //    file_in_bytes = getdata.DownloadBankDocument(UID,out fileName);
+
+            //    if (ds.Tables[0].Rows.Count > 0)
+            //    {
+            //        string path = Server.MapPath(ds.Tables[0].Rows[0]["Document_File"].ToString());
+
+            //        System.IO.FileInfo file = new System.IO.FileInfo(path);
+
+            //        if (file.Exists)
+            //        {
+
+            //            Response.Clear();
+
+            //            Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
+
+            //            Response.AddHeader("Content-Length", file.Length.ToString());
+
+            //            Response.ContentType = "application/octet-stream";
+
+            //            Response.WriteFile(file.FullName);
+
+            //            Response.End();
+
+            //        }
+
+            //        else
+            //        {
+            //            Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('File not found.');</script>");
+            //        }
+            //    }
+            //}
+
             string UID = e.CommandArgument.ToString();
+
             if (e.CommandName == "download")
             {
-                DataSet ds = getdata.GetBankDocuments_by_BankDoc_UID(new Guid(UID));
-                if (ds.Tables[0].Rows.Count > 0)
+                try
                 {
-                    string path = Server.MapPath(ds.Tables[0].Rows[0]["Document_File"].ToString());
+                    string fileName = "";
 
-                    System.IO.FileInfo file = new System.IO.FileInfo(path);
+                    byte[] file_in_bytes = null;
+
+                    file_in_bytes = getdata.DownloadBankDocument(UID, out fileName);
+
+                    string path = Server.MapPath(fileName);
+
+                    string filepath = Server.MapPath("~/_PreviewLoad/" + Path.GetFileName(path));
+
+                    BinaryWriter Writer = null;
+                    Writer = new BinaryWriter(File.OpenWrite(filepath));
+
+                    // Writer raw data                
+                    Writer.Write(file_in_bytes);
+                    Writer.Flush();
+                    Writer.Close();
+
+                    string getExtension = System.IO.Path.GetExtension(filepath);
+                    string outPath = filepath.Replace(getExtension, "") + "_download" + getExtension;
+                    getdata.DecryptFile(filepath, outPath);
+
+                    FileInfo file = new FileInfo(outPath);
 
                     if (file.Exists)
                     {
 
                         Response.Clear();
 
-                        Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
+                        Response.AddHeader("Content-Disposition", "attachment; filename=" + Path.GetFileName(path));
 
                         Response.AddHeader("Content-Length", file.Length.ToString());
 
                         Response.ContentType = "application/octet-stream";
 
                         Response.WriteFile(file.FullName);
-
-                        Response.End();
-
+                        Response.Flush();
+                        Response.SuppressContent = true;
+                        HttpContext.Current.ApplicationInstance.CompleteRequest();
+                        //Response.End();
                     }
-
                     else
                     {
                         Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('File not found.');</script>");
                     }
+
+                    if (File.Exists(outPath))
+                    {
+                        File.Delete(outPath);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('There is a problem downloading file. Please contact system admin. Description: " + ex.Message + "');</script>");
                 }
             }
+           
 
             if (e.CommandName == "delete")
             {
                 int cnt = getdata.BankDocuments_Delete(new Guid(UID), new Guid(Session["UserUID"].ToString()));
+                
                 if (cnt > 0)
                 {
                     if (WebConfigurationManager.AppSettings["Dbsync"] == "Yes")

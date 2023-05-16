@@ -59,6 +59,30 @@ namespace ProjectManagementTool._modal_pages
                     string Extn = Path.GetExtension(InputFile);
 
                     bool ret = getdata.InsertorUpdateInsuranceDocuments(InsuranceDoc_UID, new Guid(Request.QueryString["InsuranceUID"]), txtdocumentName.Text, Extn, DocPath);
+
+                    if (ret)
+                    {
+                        byte[] filetobytes = null;
+
+                        string fileName = Path.GetFileName(FileUpload1.FileName);
+                        FileUpload1.SaveAs(Server.MapPath("~/Documents/") + fileName);
+
+                        string sFileName = Path.GetFileNameWithoutExtension(FileUpload1.FileName);
+                        Extn = Path.GetExtension(FileUpload1.FileName);
+
+                        string savedPath = "~/Documents/" + fileName;
+
+                        DocPath = "~/Documents/" + sFileName + "_DE" + Extn;
+
+                        getdata.EncryptFile(Server.MapPath(savedPath), Server.MapPath(DocPath));
+
+                        filetobytes = getdata.FileToByteArray(Server.MapPath(DocPath));
+
+                        Guid new_guid = Guid.NewGuid();
+                        getdata.InsertUploadedInsuranceDocumentBlob(new_guid, InsuranceDoc_UID.ToString(), filetobytes, fileName, savedPath);
+
+                    }
+
                     if (ret)
                     {
                         //Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>parent.location.href=parent.location.href;</script>");
@@ -120,39 +144,103 @@ namespace ProjectManagementTool._modal_pages
 
         protected void grdInsuranceDocuments_RowCommand(object sender, GridViewCommandEventArgs e)
         {
+           
+            //if (e.CommandName == "download")
+            //{
+            //    DataSet ds = getdata.GetInsuranceDocuments_by_InsuranceDoc_UID(new Guid(UID));
+            //    if (ds.Tables[0].Rows.Count > 0)
+            //    {
+            //        string path = Server.MapPath(ds.Tables[0].Rows[0]["InsuranceDoc_FilePath"].ToString());
+
+            //        System.IO.FileInfo file = new System.IO.FileInfo(path);
+
+            //        if (file.Exists)
+            //        {
+
+            //            Response.Clear();
+
+            //            Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
+
+            //            Response.AddHeader("Content-Length", file.Length.ToString());
+
+            //            Response.ContentType = "application/octet-stream";
+
+            //            Response.WriteFile(file.FullName);
+
+            //            Response.End();
+
+            //        }
+
+            //        else
+            //        {
+            //            Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('File not found.');</script>");
+            //        }
+            //    }
+            //}
+
             string UID = e.CommandArgument.ToString();
+
             if (e.CommandName == "download")
             {
-                DataSet ds = getdata.GetInsuranceDocuments_by_InsuranceDoc_UID(new Guid(UID));
-                if (ds.Tables[0].Rows.Count > 0)
+                try
                 {
-                    string path = Server.MapPath(ds.Tables[0].Rows[0]["InsuranceDoc_FilePath"].ToString());
+                    string fileName = "";
 
-                    System.IO.FileInfo file = new System.IO.FileInfo(path);
+                    byte[] file_in_bytes = null;
+
+                    file_in_bytes = getdata.DownloadInsuranceDocument(UID, out fileName);
+
+                    string path = Server.MapPath(fileName);
+
+                    string filepath = Server.MapPath("~/_PreviewLoad/" + Path.GetFileName(path));
+
+                    BinaryWriter Writer = null;
+                    Writer = new BinaryWriter(File.OpenWrite(filepath));
+
+                    // Writer raw data                
+                    Writer.Write(file_in_bytes);
+                    Writer.Flush();
+                    Writer.Close();
+
+                    string getExtension = System.IO.Path.GetExtension(filepath);
+                    string outPath = filepath.Replace(getExtension, "") + "_download" + getExtension;
+                    getdata.DecryptFile(filepath, outPath);
+
+                    System.IO.FileInfo file = new System.IO.FileInfo(outPath);
 
                     if (file.Exists)
                     {
 
                         Response.Clear();
 
-                        Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
+                        Response.AddHeader("Content-Disposition", "attachment; filename=" + Path.GetFileName(path));
 
                         Response.AddHeader("Content-Length", file.Length.ToString());
 
                         Response.ContentType = "application/octet-stream";
 
                         Response.WriteFile(file.FullName);
-
-                        Response.End();
-
+                        Response.Flush();
+                        Response.SuppressContent = true;
+                        HttpContext.Current.ApplicationInstance.CompleteRequest();
+                        //Response.End();
                     }
-
                     else
                     {
                         Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('File not found.');</script>");
                     }
+
+                    if (File.Exists(outPath))
+                    {
+                        File.Delete(outPath);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('There is a problem downloading file. Please contact system admin. Description: " + ex.Message + "');</script>");
                 }
             }
+
             if (e.CommandName == "delete")
             {
                 int cnt = getdata.InsuranceDocuments_Delete(new Guid(UID), new Guid(Session["UserUID"].ToString()));
