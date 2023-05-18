@@ -1,0 +1,84 @@
+/***** Object:  Table [dbo].[PhotographBlobs]    Script Date: 5/18/2023 5:19:58 PM *****/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[PhotographBlobs](
+	[PhotographBlobUID] [uniqueidentifier] NOT NULL,
+	[SitePhotograph_UID] [uniqueidentifier] NULL,
+	[BlobData] [varbinary](max) NULL,
+	[DeleteFlag] [nvarchar](1) NULL,
+	[PhotoName] [nvarchar](max) NULL,
+	[PhotoPath] [nvarchar](max) NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+
+
+/****** Object:  StoredProcedure [dbo].[InsertUploadedPhotographBlob]    Script Date: 4/19/2023 5:18:17 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[InsertUploadedPhotographBlob] 
+@PhotographBlobUID uniqueidentifier,
+@site_photograph_uid nvarchar(max),
+@photoBytes varbinary(max),
+@photoName nvarchar(max),
+@photoPath nvarchar(max)
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+	insert into PhotographBlobs(PhotographBlobUID,SitePhotograph_UID,BlobData,DeleteFlag,PhotoName,PhotoPath)
+	values(@PhotographBlobUID,@site_photograph_uid,@photoBytes,'N',@photoName,@photoPath);
+END
+
+-----------------------------------------------------
+/****** Object:  StoredProcedure [dbo].[usp_GetSitePhotograph_by_WorkpackageUID]    Script Date: 4/19/2023 5:27:06 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[usp_GetSitePhotograph_by_WorkpackageUID]
+@WorkpackageUID uniqueidentifier
+as
+begin
+set nocount on;
+select A.*,B.PhotographBlobUID from SitePhotographs A, PhotographBlobs B where A.SitePhotoGraph_UID = B.SitePhotograph_UID and A.WorkpackageUID=@WorkpackageUID and A.Delete_Flag='N';
+end
+---------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[usp_GetSitePhotograph_by_WorkpackageUID_BetweenDate]    Script Date: 4/19/2023 5:28:42 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[usp_GetSitePhotograph_by_WorkpackageUID_BetweenDate]
+@WorkpackageUID uniqueidentifier,
+@FromDate date,
+@ToDate date,
+@Description varchar(100)
+as
+begin
+set nocount on;
+select A.*,B.PhotographBlobUID from SitePhotographs A, PhotographBlobs B where a.SitePhotoGraph_UID =b.SitePhotograph_UID and  a.WorkpackageUID=@WorkpackageUID and a.Uploaded_Date between @FromDate and @ToDate
+and Description like @Description and Delete_Flag='N';
+end
+
+-----------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[GetSitePhotograph_by_UID]    Script Date: 5/17/2023 5:10:41 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[GetSitePhotograph_by_UID]
+@PhotographBlobUID uniqueidentifier
+as
+begin
+select BlobData,PhotoPath from PhotographBlobs where PhotographBlobUID=@PhotographBlobUID
+end
+-----------------------------------

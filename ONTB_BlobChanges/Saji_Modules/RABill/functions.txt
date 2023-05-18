@@ -1,0 +1,68 @@
+internal int RABill_Document_InsertUpdate(Guid Document_UID, Guid RABillUid, Guid WorkpackageUID, string DocumentPath, string Description, Guid UploadedBy,byte[] docBlob)
+        {
+            int cnt = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("usp_RABill_Document_InsertorUpdate"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        cmd.Parameters.AddWithValue("@Document_UID", Document_UID);
+                        cmd.Parameters.AddWithValue("@RABillUid", RABillUid);
+                        cmd.Parameters.AddWithValue("@WorkpackageUID", WorkpackageUID);
+                        cmd.Parameters.AddWithValue("@Document_Path", DocumentPath);
+                        cmd.Parameters.AddWithValue("@DocBlob", docBlob);
+                        cmd.Parameters.AddWithValue("@Description", Description);
+                        cmd.Parameters.AddWithValue("@Uploaded_Date", DateTime.Now);
+                        cmd.Parameters.AddWithValue("@UserID", UploadedBy);
+                        con.Open();
+                        cnt = Convert.ToInt32(cmd.ExecuteNonQuery());
+                        con.Close();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //  return sresult = false;
+            }
+            return cnt;
+        }
+
+---------------------------
+ public byte[] DownloadBill(string bill_uid, out string file_name)
+        {
+
+            try
+            {
+                SqlConnection con = new SqlConnection(db.GetConnectionString());
+
+                SqlDataReader sdr = null;
+
+                byte[] file_in_bytes = null;
+
+                using (SqlCommand cmd = new SqlCommand("DownloadBillDocBlob"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Id", bill_uid);
+                    cmd.Connection = con;
+                    con.Open();
+                    sdr = cmd.ExecuteReader();
+                    sdr.Read();
+                    file_in_bytes = (byte[])sdr["DocBlob"];
+                    file_name = sdr["FilePath"].ToString();
+
+                    con.Close();
+                }
+
+                return file_in_bytes;
+            }
+            catch (Exception ex)
+            {
+                file_name = "";
+                return null;
+            }
+        }

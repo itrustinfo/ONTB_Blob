@@ -1,0 +1,49 @@
+Alter table RABills_Documents add DocBlob varbinary(max) null
+
+/****** Object:  StoredProcedure [dbo].[usp_RABill_Document_InsertorUpdate]    Script Date: 4/24/2023 10:27:53 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[usp_RABill_Document_InsertorUpdate]
+@Document_UID uniqueidentifier,
+@RABillUid uniqueidentifier,
+@WorkpackageUID uniqueidentifier,
+@Document_Path varchar(200),
+@DocBlob varbinary(max),
+@Description varchar(500),
+@Uploaded_Date datetime,
+@UserID uniqueidentifier
+as
+begin
+if not exists(select DocumentUID from RABills_Documents where DocumentUID=@Document_UID)
+begin
+	insert into RABills_Documents(DocumentUID,RABillUid,WorkpackageUID,UserID,FilePath,Description,created_date,DocBlob)
+	values(@Document_UID,@RABillUid,@WorkpackageUID,@UserID,@Document_Path,@Description,@Uploaded_Date,@DocBlob)
+end
+else
+begin
+	update RABills_Documents set FilePath=@Document_Path,Description=@Description,DocBlob = @DocBlob where DocumentUID=@Document_UID;
+end
+end
+--------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[DownloadBillDocBlob]    Script Date: 5/17/2023 12:19:01 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[DownloadBillDocBlob] 
+@id nvarchar(max)
+AS
+BEGIN
+SET NOCOUNT ON;
+SELECT DocBlob, FilePath from RABills_Documents where DocumentUID = @id;
+END
+
+--------------------------------

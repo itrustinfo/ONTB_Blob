@@ -140,6 +140,8 @@ namespace ProjectManagementTool._modal_pages
                             Directory.CreateDirectory(Server.MapPath(sFileDirectory));
                         }
 
+                        byte[] filetobytes = null;
+
                         foreach (HttpPostedFile uploadedFile in ImageUpload.PostedFiles)
                         {
                             if (uploadedFile.ContentLength > 0 && !String.IsNullOrEmpty(uploadedFile.FileName))
@@ -151,8 +153,24 @@ namespace ProjectManagementTool._modal_pages
                                 string DecryptPagePath = sFileDirectory + "/" + sFileName + "_DE" + Extn;
                                 dbObj.EncryptFile(Server.MapPath(savedPath), Server.MapPath(DecryptPagePath));
 
+                                // creating blob
 
-                                int Cnt = dbObj.RABill_Document_InsertUpdate(Guid.NewGuid(), new Guid(rabillUid), new Guid(Request.QueryString["WorkpackageUID"]), savedPath, txtInvoiceNumber.Text, new Guid(Session["UserUID"].ToString()));
+                                //string fileName = Path.GetFileName(uploadedFile.FileName);
+                                //uploadedFile.SaveAs(Server.MapPath("~/Documents/") + fileName);
+
+                                //string sFileName1 = Path.GetFileNameWithoutExtension(uploadedFile.FileName);
+                                //Extn = Path.GetExtension(uploadedFile.FileName);
+
+                                //string savedPath1 = "~/Documents/" + fileName;
+
+                                //string DocPath = "~/Documents/" + sFileName1 + "_DE" + Extn;
+
+                                //dbObj.EncryptFile(Server.MapPath(savedPath1), Server.MapPath(DocPath));
+
+                                filetobytes = dbObj.FileToByteArray(Server.MapPath(DecryptPagePath));
+
+
+                                int Cnt = dbObj.RABill_Document_InsertUpdate(Guid.NewGuid(), new Guid(rabillUid), new Guid(Request.QueryString["WorkpackageUID"]), savedPath, txtInvoiceNumber.Text, new Guid(Session["UserUID"].ToString()), filetobytes);
 
                             }
                         }

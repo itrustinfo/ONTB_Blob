@@ -64,22 +64,22 @@ namespace ProjectManagementTool._modal_pages
                     {
                         byte[] filetobytes = null;
 
-                        string fileName = Path.GetFileName(FileUpload1.FileName);
-                        FileUpload1.SaveAs(Server.MapPath("~/Documents/") + fileName);
+                        //string fileName = Path.GetFileName(FileUpload1.FileName);
+                        //FileUpload1.SaveAs(Server.MapPath("~/Documents/") + fileName);
 
-                        string sFileName = Path.GetFileNameWithoutExtension(FileUpload1.FileName);
-                        Extn = Path.GetExtension(FileUpload1.FileName);
+                        //string sFileName = Path.GetFileNameWithoutExtension(FileUpload1.FileName);
+                        //Extn = Path.GetExtension(FileUpload1.FileName);
 
-                        string savedPath = "~/Documents/" + fileName;
+                        string savedPath = DocPath;
 
-                        DocPath = "~/Documents/" + sFileName + "_DE" + Extn;
+                        //DocPath = "~/Documents/" + sFileName + "_DE" + Extn;
 
-                        getdata.EncryptFile(Server.MapPath(savedPath), Server.MapPath(DocPath));
+                        //getdata.EncryptFile(Server.MapPath(savedPath), Server.MapPath(DocPath));
 
                         filetobytes = getdata.FileToByteArray(Server.MapPath(DocPath));
 
                         Guid new_guid = Guid.NewGuid();
-                        getdata.InsertUploadedInsuranceDocumentBlob(new_guid, InsuranceDoc_UID.ToString(), filetobytes, fileName, savedPath);
+                        getdata.InsertUploadedInsuranceDocumentBlob(new_guid, InsuranceDoc_UID.ToString(), filetobytes, FileUpload1.FileName, savedPath);
 
                     }
 
@@ -202,11 +202,11 @@ namespace ProjectManagementTool._modal_pages
                     Writer.Flush();
                     Writer.Close();
 
-                    string getExtension = System.IO.Path.GetExtension(filepath);
-                    string outPath = filepath.Replace(getExtension, "") + "_download" + getExtension;
-                    getdata.DecryptFile(filepath, outPath);
+                   // string getExtension = System.IO.Path.GetExtension(filepath);
+                   // string outPath = filepath.Replace(getExtension, "") + "_download" + getExtension;
+                   // getdata.DecryptFile(filepath, outPath);
 
-                    System.IO.FileInfo file = new System.IO.FileInfo(outPath);
+                    System.IO.FileInfo file = new System.IO.FileInfo(filepath);
 
                     if (file.Exists)
                     {
@@ -230,9 +230,9 @@ namespace ProjectManagementTool._modal_pages
                         Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('File not found.');</script>");
                     }
 
-                    if (File.Exists(outPath))
+                    if (File.Exists(filepath))
                     {
-                        File.Delete(outPath);
+                        File.Delete(filepath);
                     }
                 }
                 catch (Exception ex)

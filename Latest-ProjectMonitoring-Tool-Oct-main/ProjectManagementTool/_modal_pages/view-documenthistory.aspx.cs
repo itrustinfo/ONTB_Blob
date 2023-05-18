@@ -1446,6 +1446,7 @@ namespace ProjectManagementTool._modal_pages
                     string filepath = Server.MapPath("~/_PreviewLoad/" + Path.GetFileName(path));
                     string Connectionstring = getdata.getProjectConnectionString(new Guid(Request.QueryString["ProjectUID"]));
                     DataSet docBlob = getdata.GetAttachmentBlob_by_attachmentUID(new Guid(UID), Connectionstring);
+                   
                     if (docBlob.Tables[0].Rows.Count > 0)
                     {
                         bytes = (byte[])docBlob.Tables[0].Rows[0]["BlobData"];

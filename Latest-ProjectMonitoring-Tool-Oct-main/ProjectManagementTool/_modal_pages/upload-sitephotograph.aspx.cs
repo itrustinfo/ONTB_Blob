@@ -67,11 +67,35 @@ namespace ProjectManagementTool._modal_pages
                 }
             }
 
-            GrdSitePhotograph.DataSource = ds;
-            GrdSitePhotograph.DataBind();
+           GrdSitePhotograph.DataSource = ds;
+           GrdSitePhotograph.DataBind();
 
             ViewState["sitephoto"] = ds;
         }
+
+        protected void Item_Bound(Object sender, DataListItemEventArgs e)
+        {
+
+            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+            {
+
+                Label l = (Label)e.Item.FindControl("Label1");
+                string img_uid = l.Text;
+                string file_name = "";
+
+                byte[] img_blob = getdata.DownloadSitePhotographByUID(img_uid,out file_name);
+                Image  photo = (Image)e.Item.FindControl("imgEmp");
+              
+                String st = Server.MapPath(file_name); 
+                FileStream fs = new FileStream(st, FileMode.Create, FileAccess.Write);
+                fs.Write(img_blob, 0, img_blob.Length);
+                fs.Close();
+                photo.ImageUrl = file_name;
+
+            }
+
+        }
+
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
             try
@@ -81,7 +105,6 @@ namespace ProjectManagementTool._modal_pages
                 if (!Directory.Exists(Server.MapPath(sFileDirectory)))
                 {
                     Directory.CreateDirectory(Server.MapPath(sFileDirectory));
-
                 }
 
                 int NotSupportedImageCount = 0;
@@ -105,12 +128,37 @@ namespace ProjectManagementTool._modal_pages
                                 Image = (sFileDirectory + "/" + sFileName),
                                 Description = string.Empty
                             });
+
+                            Guid new_id = Guid.NewGuid();
+
+                            int Cnt = getdata.SitePhotograph_InsertorUpdate(new_id, new Guid(Request.QueryString["PrjUID"]), new Guid(Request.QueryString["WorkPackage"]), (sFileDirectory + "/" + sFileName), "", DateTime.Now, Session["UserUID"].ToString());
                             
-                            //int Cnt = getdata.SitePhotograph_InsertorUpdate(Guid.NewGuid(), new Guid(Request.QueryString["PrjUID"]), new Guid(Request.QueryString["WorkPackage"]), (sFileDirectory + "/" + sFileName), "", DateTime.Now);
-                            //if (Cnt <= 0)
-                            //{
-                            //    Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('Error Code ADDSP-01 there is a problem with this feature. Please contact system admin.');</script>");
-                            //}
+                            if (Cnt>0)
+                            {
+                                    byte[] filetobytes = null;
+
+                                    //string fileName = Path.GetFileName(uploadedFile.FileName);
+                                    //uploadedFile.SaveAs(Server.MapPath("~/Documents/") + fileName);
+
+                                    //sFileName = Path.GetFileNameWithoutExtension(uploadedFile.FileName);
+                                    //string Extn = Path.GetExtension(uploadedFile.FileName);
+
+                                    string savedPath = sFileDirectory + "/" + sFileName;
+
+                                   // string DocPath = "~/Documents/" + sFileName + "_DE" + Extn;
+
+                                  //  getdata.EncryptFile(Server.MapPath(savedPath), Server.MapPath(DocPath));
+
+                                    filetobytes = getdata.FileToByteArray(Server.MapPath(savedPath));
+
+                                    Guid new_guid = Guid.NewGuid();
+                                    getdata.InsertUploadedSitePhotographBlob(new_guid, new_id.ToString(), filetobytes, sFileName, savedPath);
+                            }
+
+                            if (Cnt <= 0)
+                            {
+                                Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('Error Code ADDSP-01 there is a problem with this feature. Please contact system admin.');</script>");
+                            }
                         }
                         else
                         {
@@ -118,7 +166,10 @@ namespace ProjectManagementTool._modal_pages
                         }
                     }
                 }
-                BindSitePhotographs(lstUploadNewPhoto);
+
+                ViewState["sitephoto"] = null;
+                BindSitePhotographs(null);
+
                 if (NotSupportedImageCount > 0)
                 {
                     Page.ClientScript.RegisterStartupScript(Page.GetType(), "CLOSE", "<script language='javascript'>alert('Some of the uploded image formats are not supported. Please contact system admin.');</script>");

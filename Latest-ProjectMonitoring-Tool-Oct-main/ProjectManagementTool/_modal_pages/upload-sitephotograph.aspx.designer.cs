@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ProjectManagementTool._modal_pages {
-    
-    
-    public partial class upload_sitephotograph {
-        
+namespace ProjectManagementTool._modal_pages
+{
+
+
+    public partial class upload_sitephotograph
+    {
+
         /// <summary>
         /// frmUploadSitePhotograph control.
         /// </summary>
@@ -20,7 +22,7 @@ namespace ProjectManagementTool._modal_pages {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlForm frmUploadSitePhotograph;
-        
+
         /// <summary>
         /// ImageUpload control.
         /// </summary>
@@ -29,7 +31,7 @@ namespace ProjectManagementTool._modal_pages {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload ImageUpload;
-        
+
         /// <summary>
         /// btnUpload control.
         /// </summary>
@@ -38,7 +40,7 @@ namespace ProjectManagementTool._modal_pages {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnUpload;
-        
+
         /// <summary>
         /// GrdSitePhotograph control.
         /// </summary>
@@ -47,7 +49,7 @@ namespace ProjectManagementTool._modal_pages {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DataList GrdSitePhotograph;
-        
+
         /// <summary>
         /// btnAdd control.
         /// </summary>

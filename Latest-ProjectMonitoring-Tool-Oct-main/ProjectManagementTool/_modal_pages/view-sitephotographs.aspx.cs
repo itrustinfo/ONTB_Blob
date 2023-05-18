@@ -61,21 +61,11 @@ namespace ProjectManagementTool._modal_pages
             if (ds.Tables[0].Rows.Count > 0)
             {
                 LblMessage.Visible = false;
-                //
-                if (Session["TypeOfUser"].ToString() == "NJSD")
-                {
-                    for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
-                    {
-                        LinkButton ldr = GrdSitePhotograph.Items[i].FindControl("lnkdelete") as LinkButton;
-                        ldr.Visible = false;
-                    }
-                }
             }
             else
             {
                 LblMessage.Visible = true;
             }
-           
         }
 
         protected void GrdSitePhotograph_DeleteCommand(object source, DataListCommandEventArgs e)
