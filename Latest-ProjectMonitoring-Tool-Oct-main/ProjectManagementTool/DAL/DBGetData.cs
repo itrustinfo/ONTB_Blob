@@ -25097,6 +25097,25 @@ namespace ProjectManager.DAL
             return ds;
         }
 
+        //added on 14/08/2022
+        public DataSet blob_GetDocumentStatusPending()
+        {
+            DataSet ds = new DataSet();
+            SqlConnection con = new SqlConnection(db.GetConnectionString());
+            try
+            {
+                SqlDataAdapter cmd = new SqlDataAdapter("blob_GetDocumentStatusPending", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.Fill(ds);
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+
+            }
+            return ds;
+        }
+
         //added on 12/08/2022 for Arun blob chnages
         public DataSet GetAllGeneralDocuments()
         {

@@ -100,7 +100,7 @@ namespace ProjectManagementTool._content_pages.Convert_to_blob
                                                 string coverLetterPath = dsstatus.Tables[0].Rows[j]["CoverLetterFile"].ToString();
                                                 string RevieFilePath = "~/_modal_pages/" + dsstatus.Tables[0].Rows[j]["LinkToReviewFile"].ToString();
 
-                                                if (!string.IsNullOrEmpty(dsstatus.Tables[0].Rows[j]["LinkToReviewFile"].ToString()))
+                                                if (!string.IsNullOrEmpty(dsstatus.Tables[0].Rows[j]["LinkToReviewFile"].ToString()) && dsstatus.Tables[0].Rows[j]["LinkToReviewFile"] != DBNull.Value)
                                                 {
                                                     Reviewfiletobytes = getdt.FileToByteArray(Server.MapPath(RevieFilePath));
                                                 }
@@ -283,60 +283,60 @@ namespace ProjectManagementTool._content_pages.Convert_to_blob
                 LblProgress.Visible = false;
                 LblMessage.Visible = true;
             }
-            //else if (RBList.SelectedValue == "Document Status")
-            //{
-            //    //added by zuber
-            //    //Insert into DocumentStatus Blob Table
-            //    DataSet dsstatus = getdt.blob_GetDocumentStatusPending();
-            //    TotalDocuments = dsstatus.Tables[0].Rows.Count;
-            //    string coverLetterPath = string.Empty;
-            //    string RevieFilePath = string.Empty;
-            //    if (dsstatus.Tables[0].Rows.Count > 0)
-            //    {
-            //        for (int j = 0; j < dsstatus.Tables[0].Rows.Count; j++)
-            //        {
-            //            coverLetterPath = string.Empty;
-            //            RevieFilePath = string.Empty;
+            else if (RBList.SelectedValue == "Document Status")
+            {
+                //added by zuber
+                //Insert into DocumentStatus Blob Table
+                DataSet dsstatus = getdt.blob_GetDocumentStatusPending();
+                TotalDocuments = dsstatus.Tables[0].Rows.Count;
+                string coverLetterPath = string.Empty;
+                string RevieFilePath = string.Empty;
+                if (dsstatus.Tables[0].Rows.Count > 0)
+                {
+                    for (int j = 0; j < dsstatus.Tables[0].Rows.Count; j++)
+                    {
+                        coverLetterPath = string.Empty;
+                        RevieFilePath = string.Empty;
 
-            //            try
-            //            {
-            //                byte[] Reviewfiletobytes = null;
-            //                byte[] Coverfilebytes = null;
-            //                coverLetterPath = dsstatus.Tables[0].Rows[j]["CoverLetterFile"].ToString();
-            //                RevieFilePath = "~/_modal_pages/" + dsstatus.Tables[0].Rows[j]["LinkToReviewFile"].ToString();
+                        try
+                        {
+                            byte[] Reviewfiletobytes = null;
+                            byte[] Coverfilebytes = null;
+                            coverLetterPath = dsstatus.Tables[0].Rows[j]["CoverLetterFile"].ToString();
+                            RevieFilePath = "~/_modal_pages/" + dsstatus.Tables[0].Rows[j]["LinkToReviewFile"].ToString();
 
-            //                if (!string.IsNullOrEmpty(dsstatus.Tables[0].Rows[j]["LinkToReviewFile"].ToString()) && dsstatus.Tables[0].Rows[j]["LinkToReviewFile"] != DBNull.Value)
-            //                {
-            //                    Reviewfiletobytes = DBGetData.FileToByteArray(Server.MapPath(RevieFilePath));
-            //                }
-            //                if (!string.IsNullOrEmpty(dsstatus.Tables[0].Rows[j]["CoverLetterFile"].ToString()))
-            //                {
-            //                    Coverfilebytes = DBGetData.FileToByteArray(Server.MapPath(coverLetterPath));
-            //                }
-            //                int statuccount = getdt.DocumentStatusBlob_InsertorUpdate(Guid.NewGuid(), new Guid(dsstatus.Tables[0].Rows[j]["StatusUID"].ToString()), new Guid(dsstatus.Tables[0].Rows[j]["DocumentUID"].ToString()), Coverfilebytes, Reviewfiletobytes);
-            //                if (statuccount > 0)
-            //                {
-            //                    StatusInsert += 1;
-            //                    int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(dsstatus.Tables[0].Rows[j]["StatusUID"].ToString()), "DocumentStatus", "Success", coverLetterPath);
-            //                }
-            //                else
-            //                {
-            //                    StatusError += 1;
-            //                    int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(dsstatus.Tables[0].Rows[j]["StatusUID"].ToString()), "DocumentStatus", "Error", coverLetterPath);
-            //                }
-            //            }
-            //            catch (Exception ex)
-            //            {
-            //                StatusError += 1;
-            //                int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(dsstatus.Tables[0].Rows[j]["StatusUID"].ToString()), "DocumentStatus", "Error" + ex.Message, coverLetterPath + " link path" + RevieFilePath);
-            //            }
+                            if (!string.IsNullOrEmpty(dsstatus.Tables[0].Rows[j]["LinkToReviewFile"].ToString()) && dsstatus.Tables[0].Rows[j]["LinkToReviewFile"] != DBNull.Value)
+                            {
+                                Reviewfiletobytes = getdt.FileToByteArray(Server.MapPath(RevieFilePath));
+                            }
+                            if (!string.IsNullOrEmpty(dsstatus.Tables[0].Rows[j]["CoverLetterFile"].ToString()))
+                            {
+                                Coverfilebytes = getdt.FileToByteArray(Server.MapPath(coverLetterPath));
+                            }
+                            int statuccount = getdt.DocumentStatusBlob_InsertorUpdate(Guid.NewGuid(), new Guid(dsstatus.Tables[0].Rows[j]["StatusUID"].ToString()), new Guid(dsstatus.Tables[0].Rows[j]["DocumentUID"].ToString()), Coverfilebytes, Reviewfiletobytes, Connectionstring);
+                            if (statuccount > 0)
+                            {
+                                StatusInsert += 1;
+                                int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(dsstatus.Tables[0].Rows[j]["StatusUID"].ToString()), "DocumentStatus", "Success", coverLetterPath);
+                            }
+                            else
+                            {
+                                StatusError += 1;
+                                int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(dsstatus.Tables[0].Rows[j]["StatusUID"].ToString()), "DocumentStatus", "Error", coverLetterPath);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            StatusError += 1;
+                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(dsstatus.Tables[0].Rows[j]["StatusUID"].ToString()), "DocumentStatus", "Error" + ex.Message, coverLetterPath + " link path" + RevieFilePath);
+                        }
 
-            //        }
-            //    }
-            //    LblProgress.Visible = false;
-            //    LblMessage.Visible = true;
-            //    LblMessage.Text = "Total Documents : " + TotalDocuments + ", FileNotFound : " + FileNotFound + " Converted Documents : " + StatusInsert + ", Errored Documents : " + StatusError;
-            //    }
+                    }
+                }
+                LblProgress.Visible = false;
+                LblMessage.Visible = true;
+                LblMessage.Text = "Total Documents : " + TotalDocuments + ", FileNotFound : " + FileNotFound + " Converted Documents : " + StatusInsert + ", Errored Documents : " + StatusError;
+            }
             //    else
             //    {
             //        DataSet ds = getdt.GetIssues_by_ProjectUID(new Guid(DDlProject.SelectedValue));

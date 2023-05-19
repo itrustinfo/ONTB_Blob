@@ -230,3 +230,27 @@ begin
  update GeneralDocumentsBlob set GeneralDocumentBlob=@GeneralDocumentBlob where GeneralDocumentUID=@GeneralDocumentUID
 end
 end
+
+//added on 19/05/2023
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create proc [dbo].[blob_GetDocumentStatusPending]
+@ProjectUID uniqueidentifier
+as
+begin
+
+declare @dbname as varchar(50);
+Declare @PrjUID as nvarchar(max);
+DECLARE @sql NVARCHAR(MAX) ;
+set @dbname = (select DbName From MasterDbforBlob Where ProjectUID=@ProjectUID)
+set @PrjUID=@ProjectUID
+
+
+set @sql = N'SELECT * FROM DocumentStatus INNER JOIN
+                  ActualDocuments ON DocumentStatus.DocumentUID = ActualDocuments.ActualDocumentUID
+				  Where ActualDocuments.ProjectUID=''' + @PrjUID  + ''' and DocumentStatus.Delete_Flag=''N'' and DocumentStatus.StatusUID not in (select StatusUID from ' + @dbname + '.dbo.DocumentStatus_Blob) and DocumentStatus.CoverLetterFile is not null'
+print @sql
+EXEC(@sql)
+end
