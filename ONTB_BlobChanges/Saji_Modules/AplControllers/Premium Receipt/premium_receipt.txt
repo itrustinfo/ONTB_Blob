@@ -1,0 +1,136 @@
+ 	[Authorize]
+        [HttpPost]
+        [Route("api/ExtoActivity/AddInsurancePremiumReceipt")]
+        public IHttpActionResult AddInsurancePremiumReceipt()
+        {
+            var httpRequest = HttpContext.Current.Request;
+            // var PremiumUID = Guid.NewGuid().ToString();
+
+
+            var RelativePath = "//Documents//";
+            int cnt = 1;
+            bool sError = false;
+            string ErrorText = "";
+            try
+            {
+                //Insert
+                var BaseURL = HttpContext.Current.Request.Url.ToString();
+                var InsurancePremiumUID = httpRequest.Params["InsurancePremiumUID"];
+                string postData = "InsurancePremiumUID=" + httpRequest.Params["InsurancePremiumUID"];
+                db.WebAPITransctionInsert(Guid.NewGuid(), BaseURL, postData, "");
+
+                var identity = (ClaimsIdentity)User.Identity;
+                if (db.CheckGetWebApiSettings(identity.Name, GetIp()) > 0)
+                {
+                    if (httpRequest.Params["InsurancePremiumUID"] == null)
+                    {
+                        sError = true;
+                        ErrorText = "PremiumUid is mandatory";
+                    }
+                    else if (httpRequest.Files.Count == 0)
+                    {
+                        sError = true;
+                        ErrorText = "Receipt doc is mandatory";
+
+                    }
+                    if (!sError)
+                    {
+                        DataSet ds = db.GetInsurancePremiumSelect_by_PremiumUID(new Guid(InsurancePremiumUID));
+                        if (ds.Tables[0].Rows.Count > 0)
+                        {
+                            if (ds.Tables[0].Rows[0]["Premium_Receipt"].ToString() == "")
+                            {
+                                string Fullpath = string.Empty;
+                                for (int i = 0; i < httpRequest.Files.Count; i++)
+                                {
+                                    try
+                                    {
+                                        HttpPostedFile httpPostedFile = httpRequest.Files[i];
+
+                                        string sDocumentPath = string.Empty;
+                                        sDocumentPath = ConfigurationManager.AppSettings["DocumentsPath"] + RelativePath;
+
+                                        if (!Directory.Exists(sDocumentPath))
+                                        {
+                                            Directory.CreateDirectory(sDocumentPath);
+                                        }
+                                        Fullpath = sDocumentPath + Path.GetFileName(httpPostedFile.FileName);
+                                        string Extn = System.IO.Path.GetExtension(httpPostedFile.FileName);
+                                        string filePath = RelativePath + Path.GetFileNameWithoutExtension(httpPostedFile.FileName) + Extn;
+                                        
+                                        while (File.Exists(Fullpath))
+                                        {
+                                            Fullpath = sDocumentPath + Path.GetFileNameWithoutExtension(httpPostedFile.FileName) + "_" + cnt + Extn;
+                                            filePath = RelativePath + Path.GetFileNameWithoutExtension(httpPostedFile.FileName) + "_" + cnt + Extn;
+                                            cnt += 1;
+                                        }
+                                        httpPostedFile.SaveAs(Fullpath);
+                                        byte[] filetobytes = db.FileToByteArray(Fullpath);
+
+                                        bool result = db.UpdatePremiumReceipt(InsurancePremiumUID, filePath,filetobytes);
+                                        //db.DbSync_InsertorUpdateInsurancePremium(new Guid(PremiumUID), new Guid(InsuranceUID), pPaidAmount, Inte, float.Parse(Penalty), CDate1, CDate2, CDate3, (FileSaved ? RelativePath + Path.GetFileName(Fullpath) : ""), Remarks, "Y");
+                                        if (result)
+                                        {
+                                            sError = false;
+                                        }
+                                        else
+                                        {
+                                            sError = true;
+                                            ErrorText = "Insurance Premium not Updated. Please contact system admin.";
+
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        sError = true;
+                                        ErrorText = ex.Message;
+                                    }
+
+                                }
+                            }
+                            else
+                            {
+                                sError = true;
+                                ErrorText = "Premium Receipt already updated";
+
+                            }
+                        }
+                        else
+                        {
+                            sError = true;
+                            ErrorText = "Insurance Premium not Available. Please contact system admin.";
+
+                        }
+                    }
+
+
+                }
+
+                else
+                {
+                    sError = true;
+                    ErrorText = "Not Authorized IP address.";
+                }
+            }
+            catch (Exception ex)
+            {
+                sError = true;
+                ErrorText = "Error:" + ex.Message;
+            }
+            if (sError)
+            {
+                return Json(new
+                {
+                    Status = "Failure",
+                    Message = "Error:" + ErrorText
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    Status = "Success",
+                    Message = "Successfully added premium receipt file"
+                });
+            }
+        }

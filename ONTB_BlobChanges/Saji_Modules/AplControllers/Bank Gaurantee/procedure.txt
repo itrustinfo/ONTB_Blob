@@ -1,0 +1,21 @@
+/****** Object:  StoredProcedure [dbo].[InsertUploadedBankDocumentBlob]    Script Date: 5/19/2023 5:05:16 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[InsertUploadedBankDocumentBlob] 
+@BankBlobUID uniqueidentifier,
+@bank_doc_uid nvarchar(max),
+@docBytes varbinary(max),
+@docName nvarchar(max),
+@docPath nvarchar(max)
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+	if not exists(select BankDocBlobUID from BankDocBlobs where BankDoc_UID = @bank_doc_uid)
+		insert into BankDocBlobs(BankDocBlobUID,BankDoc_UID,BlobData,DeleteFlag,DocName,DocPath)
+		values(@BankBlobUID,@bank_doc_uid,@docBytes,'N',@docName,@docPath);
+	else
+	    update BankDocBlobs set BlobData = @docBytes where BankDoc_UID = @bank_doc_uid
+END

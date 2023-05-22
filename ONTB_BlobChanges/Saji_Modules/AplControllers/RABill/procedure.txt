@@ -1,0 +1,26 @@
+/****** Object:  StoredProcedure [dbo].[usp_RABill_Document_InsertorUpdate]    Script Date: 5/19/2023 5:01:41 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[usp_RABill_Document_InsertorUpdate]
+@Document_UID uniqueidentifier,
+@RABillUid uniqueidentifier,
+@WorkpackageUID uniqueidentifier,
+@Document_Path varchar(200),
+@DocBlob varbinary(max),
+@Description varchar(500),
+@Uploaded_Date datetime,
+@UserID uniqueidentifier
+as
+begin
+if not exists(select DocumentUID from RABills_Documents where DocumentUID=@Document_UID)
+begin
+	insert into RABills_Documents(DocumentUID,RABillUid,WorkpackageUID,UserID,FilePath,Description,created_date,DocBlob)
+	values(@Document_UID,@RABillUid,@WorkpackageUID,@UserID,@Document_Path,@Description,@Uploaded_Date,@DocBlob)
+end
+else
+begin
+	update RABills_Documents set FilePath=@Document_Path,Description=@Description,DocBlob = @DocBlob where DocumentUID=@Document_UID;
+end
+end

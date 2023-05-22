@@ -1,0 +1,127 @@
+ 	[Authorize]
+        [HttpPost]
+        [Route("api/ExtoActivity/AddBankGuaranteeDocuments")]
+        public IHttpActionResult AddBankGuaranteeDocuments()
+        {
+            var httpRequest = HttpContext.Current.Request;
+            var BankDoc_UID = Guid.NewGuid().ToString();
+            var Bank_GuaranteeUID = httpRequest.Params["Bank_GuaranteeUID"];
+            var Document_Name = httpRequest.Params["Document_Name"];
+            //var Document_Type = httpRequest.Params["Document_Type"];
+            var Document_File = httpRequest.Params["Document_File"];
+            // var RelativePath = httpRequest.Params["RelativePath"] ?? "//Documents//";
+            var RelativePath = "//Documents//";
+            bool sError = false;
+            string ErrorText = "";
+            int cnt = 1;
+            try
+            {
+                //Insert
+                var BaseURL = HttpContext.Current.Request.Url.ToString();
+                string postData = "BankDoc_UID=" + BankDoc_UID + "&Bank_GuaranteeUID=" + Bank_GuaranteeUID + "&Document_Name=" + Document_Name + "&Document_File=" + Document_File + "&RelativePath=" + RelativePath;
+                db.WebAPITransctionInsert(Guid.NewGuid(), BaseURL, postData, "");
+
+                var identity = (ClaimsIdentity)User.Identity;
+                if (db.CheckGetWebApiSettings(identity.Name, GetIp()) > 0)
+                {
+                    if (Guid.TryParse(Bank_GuaranteeUID, out Guid uid))
+                    {
+                        if (httpRequest.Files.Count > 0)
+                        {
+                            for (int i = 0; i < httpRequest.Files.Count; i++)
+                            {
+                                HttpPostedFile httpPostedFile = httpRequest.Files[i];
+                                string sDocumentPath = string.Empty;
+                                sDocumentPath = ConfigurationManager.AppSettings["DocumentsPath"] + RelativePath;
+
+                                if (!Directory.Exists(sDocumentPath))
+                                {
+                                    Directory.CreateDirectory(sDocumentPath);
+                                }
+                                string Extn = Path.GetExtension(httpPostedFile.FileName);
+                                string Fullpath = sDocumentPath + Path.GetFileName(httpPostedFile.FileName);
+                                RelativePath = "~/Documents/" + Path.GetFileNameWithoutExtension(httpPostedFile.FileName) + Extn;
+                                // added on 04/05/2022 for venkats change
+                                while (File.Exists(Fullpath))
+                                {
+                                    Fullpath = sDocumentPath + Path.GetFileNameWithoutExtension(httpPostedFile.FileName) + "_" + cnt + Extn;
+                                    RelativePath = "~/Documents/" + Path.GetFileNameWithoutExtension(httpPostedFile.FileName) + "_" + cnt + Extn;
+                                    cnt += 1;
+                                }
+                              
+                                //if (File.Exists(Fullpath))
+                                //{
+                                //    Fullpath = sDocumentPath + Path.GetFileNameWithoutExtension(httpPostedFile.FileName) + "_1" + Extn;
+                                //    RelativePath = "~/Documents/" + Path.GetFileNameWithoutExtension(httpPostedFile.FileName) + "_1" + Extn;
+                                //}
+                                //else
+                                //{
+                                //    // put the relative path correctly
+                                //    RelativePath = "~/Documents/" + Path.GetFileNameWithoutExtension(httpPostedFile.FileName) + Extn;
+                                //}
+                                //string sFileName = Path.GetFileNameWithoutExtension(httpPostedFile.FileName);
+
+                                httpPostedFile.SaveAs(Fullpath);
+
+                                bool count = db.InsertorUpdateBankDocuments(new Guid(BankDoc_UID), new Guid(Bank_GuaranteeUID), Document_Name, Extn, RelativePath, "Y");
+                                if (count)
+                                {
+                                    sError = false;
+
+				    // Blob
+
+                                    byte[] filetobytes = db.FileToByteArray(Fullpath);
+
+                                    Guid new_guid = Guid.NewGuid();
+                                    db.InsertUploadedBankDocumentBlob(new_guid, BankDoc_UID.ToString(), filetobytes, Document_Name, RelativePath);
+                                }
+                                else
+                                {
+                                    sError = true;
+                                    ErrorText = "Bank Guarantee Document not Updated";
+                                }
+                            }
+                        }
+                        else
+                        {
+                            sError = true;
+                            ErrorText = "Please upload Bank Guarantee document.";
+                        }
+                        
+                    }
+                    else
+                    {
+                        sError = true;
+                        ErrorText = "Invalid Bank Guarantee UID.";
+                    }
+
+            }
+                else
+                {
+                sError = true;
+                ErrorText = "Not Authorized IP address";
+            }
+        }
+            catch (Exception ex)
+            {
+                sError = true;
+                ErrorText = "Error:" + ex.Message;
+            }
+            if (sError)
+            {
+                return Json(new
+                {
+                    Status = "Failure",
+                    Message = "Error:" + ErrorText
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    Status = "Success",
+                    BankDocumentUID = BankDoc_UID,
+                    Message = "Successfully Added Bank Guarantee Document."
+                });
+            }
+        }

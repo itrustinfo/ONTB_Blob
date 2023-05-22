@@ -1,0 +1,34 @@
+internal int RABill_Document_InsertUpdate(Guid Document_UID, Guid RABillUid, Guid WorkpackageUID, string DocumentPath, string Description, Guid UploadedBy,byte[] billBlob)
+        {
+            int cnt = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("usp_RABill_Document_InsertorUpdate"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        cmd.Parameters.AddWithValue("@Document_UID", Document_UID);
+                        cmd.Parameters.AddWithValue("@RABillUid", RABillUid);
+                        cmd.Parameters.AddWithValue("@WorkpackageUID", WorkpackageUID);
+                        cmd.Parameters.AddWithValue("@Document_Path", DocumentPath);
+                        cmd.Parameters.AddWithValue("@DocBlob", billBlob);
+                        cmd.Parameters.AddWithValue("@Description", Description);
+                        cmd.Parameters.AddWithValue("@Uploaded_Date", DateTime.Now);
+                        cmd.Parameters.AddWithValue("@UserID", UploadedBy);
+                        
+                        con.Open();
+                        cnt = Convert.ToInt32(cmd.ExecuteNonQuery());
+                        con.Close();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //  return sresult = false;
+            }
+            return cnt;
+        }

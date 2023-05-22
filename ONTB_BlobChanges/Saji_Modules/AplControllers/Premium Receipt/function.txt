@@ -1,0 +1,28 @@
+internal bool UpdatePremiumReceipt(string insurancePremiumUID, string receiptPath,byte[] RBlob)
+        {
+            Boolean sresult = false;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("usp_UpdatePremiumReceipt"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@insurancePremiumUID", insurancePremiumUID);
+                        cmd.Parameters.AddWithValue("@receiptPath", receiptPath);
+                        cmd.Parameters.AddWithValue("@docBlob", RBlob);
+                        cmd.ExecuteNonQuery();
+                        con.Close();
+                        sresult = true;
+                    }
+                }
+                return sresult;
+            }
+            catch (Exception ex)
+            {
+                return sresult = false;
+            }
+        }

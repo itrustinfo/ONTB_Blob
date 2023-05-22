@@ -1,0 +1,309 @@
+ 	[Authorize]
+        [HttpPost]
+        [Route("api/Financial/AddEditRabillsWithAmount")]
+        public IHttpActionResult AddEditRABillsWithAmount()
+        {
+            bool sError = false;
+            string ErrorText = "";
+            string rabillUid = "";
+            Guid transactionUid = Guid.NewGuid();
+            try
+            {
+                var httpRequest = HttpContext.Current.Request;
+                //Insert into WebAPITransctions table
+                var BaseURL = HttpContext.Current.Request.Url.ToString();
+                string postData = "ProjectName=" + httpRequest.Params["ProjectName"] + "&RAbillno=" + httpRequest.Params["RAbillno"] + "&Date=" + httpRequest.Params["Date"] + "&numberofJIRs=" + httpRequest.Params["NoOfJIR"] + "&JIR=" + httpRequest.Params["JIR"] + "&enteredamount=" + httpRequest.Params["enteredamount"];
+                db.WebAPITransctionInsert(transactionUid, BaseURL, postData, "");
+
+                if (String.IsNullOrEmpty(httpRequest.Params["ProjectName"]) || String.IsNullOrEmpty(httpRequest.Params["RAbillno"]) || String.IsNullOrEmpty(httpRequest.Params["Date"]) ||
+                      string.IsNullOrEmpty(httpRequest.Params["enteredamount"]) ||
+                     String.IsNullOrEmpty(httpRequest.Params["UserId"]))
+                {
+
+                    return Json(new
+                    {
+                        Status = "Failure",
+                        Message = "Error:Mandatory fields are missing"
+                    });
+                }
+
+                if (httpRequest.Files.Count == 0)
+                {
+                    return Json(new
+                    {
+                        Status = "Failure",
+                        Message = "Error:File  missing"
+                    });
+
+                }
+
+                var identity = (ClaimsIdentity)User.Identity;
+                if (db.CheckGetWebApiSettings(identity.Name, GetIp()) > 0)
+                {
+
+                    DataSet dsWorkPackages = new DataSet();
+                    var projectName = httpRequest.Params["ProjectName"];
+                    var RAbillno = httpRequest.Params["RAbillno"];
+                    var enteredAmount = httpRequest.Params["enteredamount"];
+                    var userId = httpRequest.Params["UserId"].ToString();
+                    int cnt = 0;
+                    DateTime sDate = DateTime.Now;
+                    if (!string.IsNullOrEmpty(httpRequest.Params["Date"]))
+                    {
+                        string cdate = db.ConvertDateFormat(httpRequest.Params["Date"]);
+
+                        sDate = Convert.ToDateTime(cdate);
+                    }
+
+                    var NoOfJIR = httpRequest.Params["NoOfJIR"];
+                    var InspectionUID = httpRequest.Params["JIR"];//InspectionUID
+                    string[] InspectionUIDList = new string[0];
+                    if (InspectionUID != null)
+                    {
+                        InspectionUIDList = InspectionUID.Split('$');
+                    }
+                    DataTable dtjoininspection;
+
+                    // added by zuber on 17/02/2022
+
+                    if (InspectionUIDList.Length > 0)
+                    {
+                        for (int i = 0; i < InspectionUIDList.Length; i++)
+                        {
+                            dtjoininspection = new DataTable();
+                            dtjoininspection = db.getJointInspection_by_inspectionUid(InspectionUIDList[i]);
+                            if (dtjoininspection.Rows.Count == 0)
+                            {
+
+                                return Json(new
+                                {
+                                    Status = "Failure",
+                                    Message = "Error:InspectionUid does not exists"
+                                });
+                            }
+                        }
+                    }
+                    else if (InspectionUID != null)
+                    {
+                        dtjoininspection = new DataTable();
+                        dtjoininspection = db.getJointInspection_by_inspectionUid(InspectionUID);
+                        if (dtjoininspection.Rows.Count == 0)
+                        {
+
+                            return Json(new
+                            {
+                                Status = "Failure",
+                                Message = "Error:InspectionUid is not exists"
+                            });
+                        }
+                    }
+                    if (!decimal.TryParse(enteredAmount, out decimal RABillAmount))
+                    {
+                        return Json(new
+                        {
+                            Status = "Failure",
+                            Message = "Error:Invalid enteredamount"
+                        });
+                    }
+                    DataSet dsUserDetails = db.getUserDetails_by_EmailID(httpRequest.Params["UserId"].ToString());
+                    if (dsUserDetails.Tables[0].Rows.Count == 0)
+                    {
+                        sError = true;
+                        ErrorText = "User is not available";
+                    }
+
+                    //-----------------------------------------------------------
+
+                    DataTable dtWorkPackages = db.GetWorkPackages_ProjectName(projectName);
+                    if (dtWorkPackages.Rows.Count > 0)
+                    {
+                        DataSet dtUsersProject = db.GetUsers_under_ProjectUID(new Guid(dtWorkPackages.Rows[0]["ProjectUId"].ToString()));
+                        if (dtUsersProject.Tables[0].Rows.Count == 0)
+                        {
+                            return Json(new
+                            {
+                                Status = "Failure",
+                                Message = "Error:Invalid Project users"
+                            });
+                        }
+                        string userAssigned = string.Empty;
+                        for (int i = 0; i < dtUsersProject.Tables[0].Rows.Count; i++)
+                        {
+                            if (dtUsersProject.Tables[0].Rows[i]["EmailID"].ToString() == userId)
+                            {
+                                userAssigned = dtUsersProject.Tables[0].Rows[i]["UserUID"].ToString();
+                                break;
+                            }
+                        }
+                        if (userAssigned == string.Empty)
+                        {
+                            return Json(new
+                            {
+                                Status = "Failure",
+                                Message = "Error:UserId is not assigned to Project"
+                            });
+                        }
+                        rabillUid = db.AddRABillNumber(RAbillno, new Guid(dtWorkPackages.Rows[0]["WorkpackageUID"].ToString()), sDate, RABillAmount.ToString());
+
+                        if (rabillUid == "Exists")
+                        {
+                            sError = true;
+                            ErrorText = "RA Bill Number already exists.";
+                        }
+                        else if (rabillUid == "Error1")
+                        {
+                            sError = true;
+                            ErrorText = "There is a problem with this feature. Please contact system admin.";
+                        }
+                        else
+                        {
+                            string sDocumentPath = ConfigurationManager.AppSettings["DocumentsPath"] + "/Documents/RABills/" + rabillUid;
+                            //   string FileDirectory = "~/Documents/Issues/";
+
+                            if (!Directory.Exists(sDocumentPath))
+                            {
+                                Directory.CreateDirectory(sDocumentPath);
+                            }
+                            for (int i = 0; i < httpRequest.Files.Count; i++)
+                            {
+                                HttpPostedFile httpPostedFile = httpRequest.Files[i];
+
+                                if (httpPostedFile != null)
+                                {
+                                    string sFileName = Path.GetFileNameWithoutExtension(httpPostedFile.FileName);
+                                    string Extn = Path.GetExtension(httpPostedFile.FileName);
+                                    httpPostedFile.SaveAs((sDocumentPath + "/" + sFileName + Extn));
+                                    string savedPath = sDocumentPath + "/" + sFileName + Extn;
+                                    string DecryptPagePath = sDocumentPath + "/" + sFileName + "_DE" + Extn;
+                                    db.EncryptFile(savedPath, DecryptPagePath);
+                                    
+                                    // blob
+                                    byte[] filetobytes = db.FileToByteArray(DecryptPagePath);
+                                    int Cnt = db.RABill_Document_InsertUpdate(Guid.NewGuid(), new Guid(rabillUid), new Guid(dtWorkPackages.Rows[0]["WorkpackageUID"].ToString()), "/Documents/RABills/" + rabillUid+"/"+ sFileName + Extn, "Fill-enteredamount", new Guid(userAssigned),filetobytes);
+                                }
+                            }
+                            int ErrorCount = 0;
+                            int ItemCount = 0;
+                            double totamount = 0;
+                            DataSet ds = db.GetBOQDetails_by_projectuid(new Guid(dtWorkPackages.Rows[0]["ProjectUID"].ToString()));
+                            if (ds.Tables[0].Rows.Count > 0)
+                            {
+
+                                for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                                {
+                                    string sDate2 = "";
+                                    DateTime CDate2 = DateTime.Now;
+
+                                    sDate2 = DateTime.Now.ToString("dd/MM/yyyy");
+                                    sDate2 = db.ConvertDateFormat(sDate2);
+                                    CDate2 = Convert.ToDateTime(sDate);
+
+                                    cnt = db.InsertRABillsItems(rabillUid, ds.Tables[0].Rows[i]["Item_Number"].ToString(), ds.Tables[0].Rows[i]["Description"].ToString(), CDate2.ToString(), "0", new Guid(dtWorkPackages.Rows[0]["ProjectUID"].ToString()), new Guid(dtWorkPackages.Rows[0]["WorkpackageUID"].ToString()), new Guid(ds.Tables[0].Rows[i]["BOQDetailsUID"].ToString()));
+                                    if (cnt <= 0)
+                                    {
+                                        ErrorCount += 1;
+                                    }
+                                    else
+                                    {
+                                        ItemCount += 1;
+                                        totamount += ds.Tables[0].Rows[i]["INR-Amount"].ToString() == "" ? 0 : Convert.ToDouble(ds.Tables[0].Rows[i]["INR-Amount"].ToString());
+                                    }
+                                }
+                            }
+
+                            if (ErrorCount > 0)
+                            {
+                                sError = true;
+                                ErrorText = "There is a problem linking BOQ details to this RABill. Please contact system admin";
+
+                            }
+                            else
+                            {
+                                Guid AssignJointInspectionUID = Guid.NewGuid();
+
+                                // added by zuber on 17/02/2022
+                                if (InspectionUIDList.Length > 0)
+                                {
+                                    for (int i = 0; i < InspectionUIDList.Length; i++)
+                                    {
+                                        AssignJointInspectionUID = Guid.NewGuid();
+                                        string boqDetailsUid = db.gbGetBoqDetailsUId_InspectionUId(new Guid(InspectionUIDList[i]));
+                                        if (boqDetailsUid == "")
+                                        {
+                                            sError = true;
+                                            ErrorText += "BOQDetails Uid not available for inspectionuid : " + InspectionUIDList[i];
+                                        }
+                                        else
+                                        {
+                                            cnt = db.InsertJointInspectiontoRAbill(AssignJointInspectionUID, new Guid(rabillUid), new Guid(boqDetailsUid), new Guid(InspectionUIDList[i]));
+                                            if (cnt == 0)
+                                            {
+                                                sError = true;
+                                                ErrorText += "Join Inspection to RABill is not inserted for inspectionuid :" + InspectionUIDList[i];
+                                            }
+                                        }
+
+                                    }
+                                }
+                                else if (InspectionUID != null)
+                                {
+                                    string boqDetailsUid = db.gbGetBoqDetailsUId_InspectionUId(new Guid(InspectionUID));
+                                    if (boqDetailsUid == "")
+                                    {
+                                        sError = true;
+                                        ErrorText = "BOQDetails Uid not available for selcted inspectionuid";
+                                    }
+                                    else
+                                    {
+                                        cnt = db.InsertJointInspectiontoRAbill(AssignJointInspectionUID, new Guid(rabillUid), new Guid(boqDetailsUid), new Guid(InspectionUID));
+                                        if (cnt == 0)
+                                        {
+                                            sError = true;
+                                            ErrorText = "Join Inspection to RABill is not inserted";
+                                        }
+                                    }
+                                }
+                                //--------------------------------------------------
+                            }
+
+                        }
+
+                    }
+
+                    else
+                    {
+                        sError = true;
+                        ErrorText = "No Workpackage available for select project";
+                    }
+
+                }
+                else
+                {
+                    sError = true;
+                    ErrorText = "Not Authorized IP address";
+                }
+            }
+            catch (Exception ex)
+            {
+                sError = true;
+                ErrorText = ex.Message;
+            }
+
+            if (sError)
+            {
+                return Json(new
+                {
+                    Status = "Failure",
+                    Message = "Error:" + ErrorText
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    Status = "Success",
+                    RABillUId = rabillUid,
+                    Message = "Successfully Updated Inspection to RAbill"
+                });
+            }
+        }
