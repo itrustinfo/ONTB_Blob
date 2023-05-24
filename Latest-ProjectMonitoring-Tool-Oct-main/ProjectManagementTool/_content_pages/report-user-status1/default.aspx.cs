@@ -722,7 +722,8 @@ namespace ProjectManagementTool._content_pages.report_user_status1
                     {
                         for (int counter = 0; counter < dt.Columns.Count; counter++)
                         {
-                            s = s.Replace("<a class=\"showModalDocumentView\" href=\"/_content_pages/report-mis-details?ProjectName=" + projName + "&FlowName=" + flowName + "&type=" + dt.Columns[counter].ColumnName + "\">", "");
+                            // s = s.Replace("<a class=\"showModalDocumentView\" href=\"/_content_pages/report-mis-details?ProjectName=" + projName + "&FlowName=" + flowName + "&type=" + dt.Columns[counter].ColumnName + "\">", "");
+                            s = s.Replace("href=", "#");
                         }
                     }
                 }
