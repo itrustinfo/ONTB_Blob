@@ -99,7 +99,7 @@ namespace ProjectManagementTool._modal_pages
             {
                 if (FileUploadDoc.HasFiles)
                 {
-                    string FileDirectory = "~/Documents/IssueRemarks/";
+                    string FileDirectory = "/Documents/IssueRemarks/";
 
                     byte[] filetobytes = null;
 
