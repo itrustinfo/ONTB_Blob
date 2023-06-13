@@ -25904,6 +25904,345 @@ namespace ProjectManager.DAL
             }
         }
 
+        //added on 02/06/2023 for saji
+        public DataSet GetAllIssueDocs_by_ProjectUID(Guid ProjectUID)
+        {
+            DataSet ds = new DataSet();
+            SqlConnection con = new SqlConnection(db.GetConnectionString());
+            try
+            {
+                SqlDataAdapter cmd = new SqlDataAdapter("GetAllIssueDocs_by_ProjectUID", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.Parameters.AddWithValue("@ProjectUID", ProjectUID);
+                cmd.Fill(ds);
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+
+            }
+            return ds;
+        }
+
+        //-----------------------------------------------
+
+        public int IssueDocBlobUpdate(int doc_id, byte[] Blob_Data)
+        {
+            int sresult = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("IssueDocBlobUpdate"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@doc_id", doc_id);
+                        cmd.Parameters.AddWithValue("@Blob_Data", Blob_Data);
+                        sresult = cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                sresult = 0;
+            }
+            return sresult;
+        }
+
+        //-----------------------------------------------------
+
+        public DataSet GetAllBankDocuments_by_ProjectUID(Guid project_uid)
+        {
+            DataSet ds = new DataSet();
+            SqlConnection con = new SqlConnection(db.GetConnectionString());
+            try
+            {
+                SqlDataAdapter cmd = new SqlDataAdapter("GetAllBankDocumentsByProjectUID", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.Parameters.AddWithValue("@ProjectUID", project_uid);
+                cmd.Fill(ds);
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+            }
+
+            return ds;
+        }
+
+        //----------------------------------------------------
+
+        public int BankDocBlobInsertorUpdate(Guid BankDoc_UID, byte[] Blob_Data, string docName)
+        {
+            int sresult = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("BankDocBlobInsertorUpdate"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@BankDocUID", BankDoc_UID);
+                        cmd.Parameters.AddWithValue("@DocName", docName);
+                        cmd.Parameters.AddWithValue("@BlobData", Blob_Data);
+                        sresult = cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                sresult = 0;
+            }
+            return sresult;
+        }
+
+        //--------------------------------------------------------
+
+        public DataSet GetAllInsuranceDocuments_by_ProjectUID(Guid project_uid)
+        {
+            DataSet ds = new DataSet();
+            SqlConnection con = new SqlConnection(db.GetConnectionString());
+            try
+            {
+                SqlDataAdapter cmd = new SqlDataAdapter("GetAllInsuranceDocumentsByProjectUID", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.Parameters.AddWithValue("@ProjectUID", project_uid);
+                cmd.Fill(ds);
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+            }
+
+            return ds;
+        }
+
+        //--------------------------------------------------------------
+
+        public int InsuranceDocBlobInsertorUpdate(Guid InsuranceDoc_UID, byte[] Blob_Data, string docName)
+        {
+            int sresult = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("InsuranceDocBlobInsertorUpdate"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@InsuranceDocUID", InsuranceDoc_UID);
+                        cmd.Parameters.AddWithValue("@DocName", docName);
+                        cmd.Parameters.AddWithValue("@BlobData", Blob_Data);
+                        sresult = cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                sresult = 0;
+            }
+            return sresult;
+        }
+
+        //-------------------------------------------------------
+
+        public DataSet GetAllInsurancePremiums_by_ProjectUID(Guid project_uid)
+        {
+            DataSet ds = new DataSet();
+            SqlConnection con = new SqlConnection(db.GetConnectionString());
+            try
+            {
+                SqlDataAdapter cmd = new SqlDataAdapter("GetAllInsurancePremiumsByProjectUID", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.Parameters.AddWithValue("@ProjectUID", project_uid);
+                cmd.Fill(ds);
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+            }
+
+            return ds;
+        }
+
+        //------------------------------------------------------
+
+        public int InsurancePremiumBlobInsertorUpdate(Guid PremiumUID, byte[] Blob_Data)
+        {
+            int sresult = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("InsurancePremiumBlobInsertorUpdate"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@PremiumUID", PremiumUID);
+                        cmd.Parameters.AddWithValue("@BlobData", Blob_Data);
+                        sresult = cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                sresult = 0;
+            }
+            return sresult;
+        }
+
+        //-------------------------------------------------------------
+
+        public DataSet GetAllRABillDocuments_by_ProjectUID(Guid project_uid)
+        {
+            DataSet ds = new DataSet();
+            SqlConnection con = new SqlConnection(db.GetConnectionString());
+            try
+            {
+                SqlDataAdapter cmd = new SqlDataAdapter("GetAllRABillDocumentsByProjectUID", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.Parameters.AddWithValue("@ProjectUID", project_uid);
+                cmd.Fill(ds);
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+            }
+
+            return ds;
+        }
+
+        //--------------------------------------------------------
+
+        public int RABillBlobUpdate(Guid RABillUID, byte[] Blob_Data)
+        {
+            int sresult = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("RABillBlobUpdate"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@RABillUID", RABillUID);
+                        cmd.Parameters.AddWithValue("@DocBlob", Blob_Data);
+                        sresult = cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                sresult = 0;
+            }
+            return sresult;
+        }
+
+        //----------------------------------------------------------
+
+       
+
+        //---------------------------------------------------------
+
+        public int InsertOrUpdateSitePhotographBlob(string site_photo_uid, byte[] docBytes, string flName, string flPath)
+        {
+            int sresult = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("InsertOrUpdatePhotographBlob"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@photoName", flName);
+                        cmd.Parameters.AddWithValue("@photoPath", flPath);
+                        cmd.Parameters.AddWithValue("@site_photograph_uid", site_photo_uid);
+                        cmd.Parameters.AddWithValue("@photoBytes", docBytes);
+                        sresult = (int)cmd.ExecuteNonQuery();
+                        con.Close();
+
+                    }
+                }
+                return sresult;
+            }
+            catch (Exception ex)
+            {
+                return sresult;
+            }
+        }
+
+        //----------------------------------------------------------------
+        public DataSet GetAllIssueStatusDocs_by_IssueUID(Guid IssueUID)
+        {
+            DataSet ds = new DataSet();
+            SqlConnection con = new SqlConnection(db.GetConnectionString());
+            try
+            {
+                SqlDataAdapter cmd = new SqlDataAdapter("GetAllIssueStatusDocs_by_IssueUID", con);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.Parameters.AddWithValue("@IssueUID", IssueUID);
+                cmd.Fill(ds);
+            }
+            catch (Exception ex)
+            {
+                ds = null;
+
+            }
+            return ds;
+        }
+
+
+        public int IssueStatusDocBlobUpdate(int doc_id, byte[] Blob_Data)
+        {
+            int sresult = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("IssueStatusDocBlobUpdate"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@doc_id", doc_id);
+                        cmd.Parameters.AddWithValue("@Blob_Data", Blob_Data);
+                        sresult = cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                sresult = 0;
+            }
+            return sresult;
+        }
+
+
+
+
+
 
 
 

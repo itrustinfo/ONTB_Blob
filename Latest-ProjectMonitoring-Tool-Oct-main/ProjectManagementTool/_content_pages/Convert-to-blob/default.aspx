@@ -29,6 +29,11 @@
                         <asp:ListItem Value="Issues">Issues</asp:ListItem>
                         <asp:ListItem Value="Document Status">Document Status Pending</asp:ListItem>
                         <asp:ListItem Value="Document Attachments">Document Attachments</asp:ListItem>
+                         <asp:ListItem Value="Bank">Bank</asp:ListItem>
+                        <asp:ListItem Value="Insurance">Insurance</asp:ListItem>
+                        <asp:ListItem Value="Insurance Premium">Insurance Premium</asp:ListItem>
+                        <asp:ListItem Value="RABill">RABill</asp:ListItem>
+                        <asp:ListItem Value="Photograph">Photograph</asp:ListItem>
                     </asp:RadioButtonList>
                     <br />
                     <asp:Button ID="btnSubmit" runat="server" Text="Submit" CssClass="btn btn-primary" OnClick="btnSubmit_Click" />

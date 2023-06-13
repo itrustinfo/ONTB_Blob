@@ -337,89 +337,361 @@ namespace ProjectManagementTool._content_pages.Convert_to_blob
                 LblMessage.Visible = true;
                 LblMessage.Text = "Total Documents : " + TotalDocuments + ", FileNotFound : " + FileNotFound + " Converted Documents : " + StatusInsert + ", Errored Documents : " + StatusError;
             }
-            //    else
-            //    {
-            //        DataSet ds = getdt.GetIssues_by_ProjectUID(new Guid(DDlProject.SelectedValue));
-            //        if (ds.Tables[0].Rows.Count > 0)
-            //        {
-            //            TotalDocuments = ds.Tables[0].Rows.Count;
-            //            for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
-            //            {
-            //                Guid Issue_Uid = new Guid(ds.Tables[0].Rows[i]["Issue_Uid"].ToString());
+            else if (RBList.SelectedValue == "Issues")
+            {
+                DataSet ds = getdt.GetAllIssueDocs_by_ProjectUID(new Guid(DDlProject.SelectedValue));
 
-            //                try
-            //                {
-            //                    string path = Server.MapPath(ds.Tables[0].Rows[i]["Issue_Document"].ToString());
-            //                    if (File.Exists(path))
-            //                    {
-            //                        byte[] filetobytes = DBGetData.FileToByteArray(path);
-            //                        int gDoc = getdt.IssuesBlobInsertorUpdate(Guid.NewGuid(), Issue_Uid, filetobytes);
-            //                        if (gDoc > 0)
-            //                        {
-            //                            SuccessFullyConverted += 1;
-            //                            int alog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), Issue_Uid, "Issues", "Success", path);
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    TotalDocuments = ds.Tables[0].Rows.Count;
 
-            //                            DataSet iRemarks = getdt.GetIssueStatus_by_Issue_Uid(Issue_Uid);
-            //                            if (iRemarks.Tables[0].Rows.Count > 0)
-            //                            {
-            //                                for (int j = 0; j < iRemarks.Tables[0].Rows.Count; j++)
-            //                                {
-            //                                    try
-            //                                    {
-            //                                        byte[] Remarkfilebytes = null;
-            //                                        string remarkspath = Server.MapPath(ds.Tables[0].Rows[i]["Issue_Document"].ToString());
-            //                                        string RemarkFilePath = iRemarks.Tables[0].Rows[j]["Issue_Document"].ToString();
-            //                                        if (!string.IsNullOrEmpty(iRemarks.Tables[0].Rows[j]["Issue_Document"].ToString()) && File.Exists(remarkspath))
-            //                                        {
-            //                                            Remarkfilebytes = DBGetData.FileToByteArray(Server.MapPath(RemarkFilePath));
+                    for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                    {
+                        Guid Issue_Uid = new Guid(ds.Tables[0].Rows[i]["Issue_Uid"].ToString());
 
-            //                                            int cnt = getdt.IssuesRemarksBlobInsertorUpdate(Guid.NewGuid(), new Guid(iRemarks.Tables[0].Rows[j]["IssueRemarksUID"].ToString()), Remarkfilebytes);
-            //                                            if (cnt > 0)
-            //                                            {
-            //                                                StatusInsert += 1;
-            //                                                int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(iRemarks.Tables[0].Rows[j]["IssueRemarksUID"].ToString()), "IssueRemarks", "Success", RemarkFilePath);
-            //                                            }
-            //                                            else
-            //                                            {
-            //                                                StatusError += 1;
-            //                                                int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(iRemarks.Tables[0].Rows[j]["IssueRemarksUID"].ToString()), "IssueRemarks", "Error", RemarkFilePath);
-            //                                            }
-            //                                        }
+                        try
+                        {
+                            string path = Server.MapPath(ds.Tables[0].Rows[i]["doc_path"].ToString() + "/" + ds.Tables[0].Rows[i]["doc_name"].ToString());
 
-            //                                    }
-            //                                    catch (Exception ex)
-            //                                    {
-            //                                        StatusError += 1;
-            //                                    }
-            //                                }
-            //                            }
+                            if (File.Exists(path))
+                            {
+                                byte[] filetobytes = getdt.FileToByteArray(path);
 
-            //                        }
-            //                        else
-            //                        {
-            //                            Errored += 1;
-            //                            int elog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), Issue_Uid, "Issues", "Failure", path);
-            //                        }
-            //                    }
-            //                    else
-            //                    {
-            //                        FileNotFound += 1;
-            //                    }
+                                int gDoc = getdt.IssueDocBlobUpdate(Convert.ToInt32(ds.Tables[0].Rows[i]["doc_id"].ToString()), filetobytes);
 
-            //                }
-            //                catch (Exception ex)
-            //                {
-            //                    Errored += 1;
+                                if (gDoc > 0)
+                                {
+                                    SuccessFullyConverted += 1;
+                                    int alog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), Issue_Uid, "Issues", "Success", path);
 
-            //                    int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), Issue_Uid, "Issues", "Failure", "");
-            //                }
-            //            }
-            //        }
+                                    DataSet iRemarks = getdt.GetAllIssueStatusDocs_by_IssueUID(Issue_Uid);
 
-            //        LblMessage.Text = "Total Documents : " + TotalDocuments + ", FileNotFound : " + FileNotFound + " Converted Documents : " + SuccessFullyConverted + ", Errored Documents : " + Errored;
-            //        LblProgress.Visible = false;
-            //        LblMessage.Visible = true;
-            //    }
+                                    if (iRemarks.Tables[0].Rows.Count > 0)
+                                    {
+                                        for (int j = 0; j < iRemarks.Tables[0].Rows.Count; j++)
+                                        {
+                                            try
+                                            {
+                                                byte[] Remarkfilebytes = null;
+                                                string remarkspath = Server.MapPath(ds.Tables[0].Rows[i]["doc_path"].ToString() + "/" + ds.Tables[0].Rows[i]["doc_name"].ToString());
+                                                string RemarkFilePath = ds.Tables[0].Rows[i]["doc_path"].ToString() + "/" + ds.Tables[0].Rows[i]["doc_name"].ToString();
+
+                                                if (File.Exists(remarkspath))
+                                                {
+                                                    Remarkfilebytes = getdt.FileToByteArray(remarkspath);
+
+                                                    int cnt = getdt.IssueStatusDocBlobUpdate(Convert.ToInt32(iRemarks.Tables[0].Rows[j]["uploaded_doc_id"].ToString()), Remarkfilebytes);
+
+                                                    if (cnt > 0)
+                                                    {
+                                                        StatusInsert += 1;
+                                                        int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(iRemarks.Tables[0].Rows[j]["IssueRemarksUID"].ToString()), "IssueRemarks", "Success", RemarkFilePath);
+                                                    }
+                                                    else
+                                                    {
+                                                        StatusError += 1;
+                                                        int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(iRemarks.Tables[0].Rows[j]["IssueRemarksUID"].ToString()), "IssueRemarks", "Error", RemarkFilePath);
+                                                    }
+                                                }
+
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                StatusError += 1;
+                                            }
+                                        }
+                                    }
+
+                                }
+                                else
+                                {
+                                    Errored += 1;
+                                    int elog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), Issue_Uid, "Issues", "Failure", path);
+                                }
+                            }
+                            else
+                            {
+                                FileNotFound += 1;
+                            }
+
+                        }
+                        catch (Exception ex)
+                        {
+                            Errored += 1;
+
+                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), Issue_Uid, "Issues", "Failure", "");
+                        }
+                    }
+                }
+
+                LblMessage.Text = "Total Documents : " + TotalDocuments + ", FileNotFound : " + FileNotFound + " Converted Documents : " + SuccessFullyConverted + ", Errored Documents : " + Errored;
+                LblProgress.Visible = false;
+                LblMessage.Visible = true;
+            }
+            else if (RBList.SelectedValue == "Bank")
+            {
+
+                DataSet ds = getdt.GetAllBankDocuments_by_ProjectUID(new Guid(DDlProject.SelectedValue));
+
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    TotalDocuments = ds.Tables[0].Rows.Count;
+
+                    for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                    {
+                        try
+                        {
+                            string path = Server.MapPath(ds.Tables[0].Rows[i]["Document_File"].ToString());
+                            string fileName = Path.GetFileName(ds.Tables[0].Rows[i]["Document_File"].ToString());
+
+                            if (File.Exists(path))
+                            {
+                                byte[] filetobytes = getdt.FileToByteArray(path);
+
+                                int gDoc = getdt.BankDocBlobInsertorUpdate(new Guid(ds.Tables[0].Rows[i]["BankDoc_UID"].ToString()), filetobytes, fileName);
+
+                                if (gDoc > 0)
+                                {
+                                    SuccessFullyConverted += 1;
+                                    int alog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["BankDoc_UID"].ToString()), "BankDocuments", "Success", path);
+                                }
+                                else
+                                {
+                                    Errored += 1;
+                                    int elog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["BankDoc_UID"].ToString()), "BankDocuments", "Failure", path);
+                                }
+
+                            }
+                            else
+                            {
+                                FileNotFound += 1;
+                            }
+                        }
+                        catch
+                        {
+                            Errored += 1;
+
+                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["BankDoc_UID"].ToString()), "BankDocuments", "Failure", "");
+                        }
+                    }
+                }
+
+                LblMessage.Text = "Total Documents : " + TotalDocuments + ", FileNotFound : " + FileNotFound + " Converted Documents : " + SuccessFullyConverted + ", Errored Documents : " + Errored;
+                LblProgress.Visible = false;
+                LblMessage.Visible = true;
+            }
+            else if (RBList.SelectedValue == "Insurance")
+            {
+                DataSet ds = getdt.GetAllInsuranceDocuments_by_ProjectUID(new Guid(DDlProject.SelectedValue));
+
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    TotalDocuments = ds.Tables[0].Rows.Count;
+
+                    for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                    {
+                        try
+                        {
+
+                            string path = Server.MapPath(ds.Tables[0].Rows[i]["InsuranceDoc_FilePath"].ToString());
+                            string fileName = Path.GetFileName(ds.Tables[0].Rows[i]["InsuranceDoc_FilePath"].ToString());
+
+                            if (File.Exists(path))
+                            {
+                                byte[] filetobytes = getdt.FileToByteArray(path);
+
+                                int gDoc = getdt.InsuranceDocBlobInsertorUpdate(new Guid(ds.Tables[0].Rows[i]["InsuranceDoc_UID"].ToString()), filetobytes, fileName);
+
+                                if (gDoc > 0)
+                                {
+                                    SuccessFullyConverted += 1;
+                                    int alog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["InsuranceDoc_UID"].ToString()), "InsuranceDocuments", "Success", path);
+                                }
+                                else
+                                {
+                                    Errored += 1;
+                                    int elog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["InsuranceDoc_UID"].ToString()), "InsuranceDocuments", "Failure", path);
+                                }
+
+                            }
+                            else
+                            {
+                                FileNotFound += 1;
+                            }
+                        }
+                        catch
+                        {
+                            Errored += 1;
+
+                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["InsuranceDoc_UID"].ToString()), "InsuranceDocuments", "Failure", "");
+                        }
+                    }
+                }
+
+                LblMessage.Text = "Total Documents : " + TotalDocuments + ", FileNotFound : " + FileNotFound + " Converted Documents : " + SuccessFullyConverted + ", Errored Documents : " + Errored;
+                LblProgress.Visible = false;
+                LblMessage.Visible = true;
+            }
+            else if (RBList.SelectedValue == "Insurance Premium")
+            {
+                DataSet ds = getdt.GetAllInsurancePremiums_by_ProjectUID(new Guid(DDlProject.SelectedValue));
+
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    TotalDocuments = ds.Tables[0].Rows.Count;
+
+                    for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                    {
+                        try
+                        {
+                            string path = Server.MapPath(ds.Tables[0].Rows[i]["Premium_Receipt"].ToString());
+                            string fileName = Path.GetFileName(ds.Tables[0].Rows[i]["Premium_Receipt"].ToString());
+
+                            if (File.Exists(path))
+                            {
+                                byte[] filetobytes = getdt.FileToByteArray(path);
+
+                                int gDoc = getdt.InsurancePremiumBlobInsertorUpdate(new Guid(ds.Tables[0].Rows[i]["PremiumUID"].ToString()), filetobytes);
+
+                                if (gDoc > 0)
+                                {
+                                    SuccessFullyConverted += 1;
+                                    int alog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["PremiumUID"].ToString()), "InsurancePremiumBlob", "Success", path);
+                                }
+                                else
+                                {
+                                    Errored += 1;
+                                    int elog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["PremiumUID"].ToString()), "InsurancePremiumBlob", "Failure", path);
+                                }
+
+                            }
+                            else
+                            {
+                                FileNotFound += 1;
+                            }
+                        }
+                        catch
+                        {
+                            Errored += 1;
+
+                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["PremiumUID"].ToString()), "InsurancePremiumBlob", "Failure", "");
+                        }
+                    }
+                }
+
+                LblMessage.Text = "Total Documents : " + TotalDocuments + ", FileNotFound : " + FileNotFound + " Converted Documents : " + SuccessFullyConverted + ", Errored Documents : " + Errored;
+                LblProgress.Visible = false;
+                LblMessage.Visible = true;
+            }
+            else if (RBList.SelectedValue == "RABill")
+            {
+                DataSet ds = getdt.GetAllRABillDocuments_by_ProjectUID(new Guid(DDlProject.SelectedValue));
+
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    TotalDocuments = ds.Tables[0].Rows.Count;
+
+                    for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                    {
+                        try
+                        {
+                            string path = Server.MapPath(ds.Tables[0].Rows[i]["FilePath"].ToString());
+                            string fileName = Path.GetFileName(ds.Tables[0].Rows[i]["FilePath"].ToString());
+
+                            string getExtension = Path.GetExtension(path);
+                            string outPath = path.Replace(getExtension, "") + "_DE" + getExtension;
+
+                            if (File.Exists(outPath))
+                            {
+
+                                byte[] filetobytes = getdt.FileToByteArray(outPath);
+
+
+                                int gDoc = getdt.RABillBlobUpdate(new Guid(ds.Tables[0].Rows[i]["RABillUid"].ToString()), filetobytes);
+
+                                if (gDoc > 0)
+                                {
+                                    SuccessFullyConverted += 1;
+                                    int alog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["RABillUid"].ToString()), "RABillDocuments", "Success", path);
+                                }
+                                else
+                                {
+                                    Errored += 1;
+                                    int elog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["RABillUid"].ToString()), "RABillDocuments", "Failure", path);
+                                }
+
+                            }
+                            else
+                            {
+                                FileNotFound += 1;
+                            }
+                        }
+                        catch
+                        {
+                            Errored += 1;
+
+                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["RABillUid"].ToString()), "RABillDocuments", "Failure", "");
+                        }
+                    }
+
+                }
+
+                LblMessage.Text = "Total Documents : " + TotalDocuments + ", FileNotFound : " + FileNotFound + " Converted Documents : " + SuccessFullyConverted + ", Errored Documents : " + Errored;
+                LblProgress.Visible = false;
+                LblMessage.Visible = true;
+            }
+            else if (RBList.SelectedValue == "Photograph")
+            {
+
+                DataSet ds = getdt.GetSiteLatestPhotograph_by_ProjectUID(new Guid(DDlProject.SelectedValue));
+
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    TotalDocuments = ds.Tables[0].Rows.Count;
+
+                    for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                    {
+                        try
+                        {
+                            string path = Server.MapPath(ds.Tables[0].Rows[i]["Site_Image"].ToString());
+                            string fileName = Path.GetFileName(ds.Tables[0].Rows[i]["Site_Image"].ToString());
+
+                            if (File.Exists(path))
+                            {
+                                byte[] filetobytes = getdt.FileToByteArray(path);
+
+                                int gDoc = getdt.InsertOrUpdateSitePhotographBlob(ds.Tables[0].Rows[i]["SitePhotograph_UID"].ToString(), filetobytes, fileName, ds.Tables[0].Rows[i]["Site_Image"].ToString());
+
+                                if (gDoc == -1)
+                                {
+                                    SuccessFullyConverted += 1;
+                                    int alog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["SitePhotograph_UID"].ToString()), "SitePhotographs", "Success", path);
+                                }
+                                else
+                                {
+                                    Errored += 1;
+                                    int elog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["SitePhotograph_UID"].ToString()), "SitePhotographs", "Failure", path);
+                                }
+
+                            }
+                            else
+                            {
+                                FileNotFound += 1;
+                            }
+                        }
+                        catch
+                        {
+                            Errored += 1;
+
+                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["SitePhotograph_UID"].ToString()), "SitePhotographs", "Failure", "");
+                        }
+                    }
+                }
+
+                LblMessage.Text = "Total Documents : " + TotalDocuments + ", FileNotFound : " + FileNotFound + " Converted Documents : " + SuccessFullyConverted + ", Errored Documents : " + Errored;
+                LblProgress.Visible = false;
+                LblMessage.Visible = true;
+            }
 
         }
 

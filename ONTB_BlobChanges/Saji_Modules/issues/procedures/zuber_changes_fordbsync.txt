@@ -1,0 +1,130 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+alter PROCEDURE [dbo].[UpdateUploadedIssueDocument_Blob] 
+@doc_id int,
+@docBlob varbinary(max)
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+	Update UploadedIssueDocs set DocBlob=@docBlob Where doc_id=doc_id
+END
+
+
+//added on 25/05/2023
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create PROCEDURE [dbo].[UpdateUploadedIssueReamrksDocument_Blob] 
+@doc_id int,
+@docBlob varbinary(max)
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+	Update UploadedDocs set DocBlob=@docBlob Where uploaded_doc_id=@doc_id
+END
+
+
+//
+/****** Object:  StoredProcedure [dbo].[UpdateUploadedIssueReamrksDocument_Blob]    Script Date: 5/26/2023 11:16:55 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create PROCEDURE [dbo].[UpdateUploadedRABillDocument_Blob] 
+@doc_id uniqueidentifier,
+@docBlob varbinary(max)
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+	Update RABills_Documents set DocBlob=@docBlob Where DocumentUID=@doc_id
+END
+
+//
+USE [ONTB_Server_Blob]
+GO
+/****** Object:  StoredProcedure [dbo].[dbsync_InsertorUpdate_DocumentStatus]    Script Date: 5/26/2023 2:54:42 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+create PROCEDURE [dbo].[dbsync_InsertorUpdate_DocumentsAttachment] 
+	-- Add the parameters for the stored procedure here
+@AttachmentUID uniqueidentifier,
+@ActualDocumentUID uniqueidentifier,
+@StatusUID uniqueidentifier,
+@AttachmentFileName varchar(200),
+@AttachmentFile varchar(max),
+@CreatedUserUID uniqueidentifier,
+@CreatedDate datetime,
+@DeletedFlag varchar(1)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	if not exists (select * from DocumentsAttachments where AttachmentUID=@AttachmentUID)
+begin
+	INSERT INTO [dbo].[DocumentsAttachments]
+           ([AttachmentUID]
+           ,[ActualDocumentUID]
+           ,[StatusUID]
+           ,[AttachmentFileName]
+           ,[AttachmentFile]
+           ,[CreatedUserUID]
+           ,[CreatedDate]
+           ,[DeletedFlag]
+           ,[ServerCopiedAdd]
+           )
+     VALUES
+           (@AttachmentUID
+           ,@ActualDocumentUID
+           ,@StatusUID
+           ,@AttachmentFileName
+           ,@AttachmentFile
+           ,@CreatedUserUID
+           ,@CreatedDate
+           ,@DeletedFlag
+           ,'Y'
+          )
+
+
+		
+
+		   END
+	ELSE
+	Begin
+	
+	UPDATE [dbo].[DocumentsAttachments]
+   SET [AttachmentUID] = @AttachmentUID
+      ,[ActualDocumentUID] = @ActualDocumentUID
+      ,[StatusUID] = @StatusUID
+      ,[AttachmentFileName] = @AttachmentFileName
+      ,[AttachmentFile] = @AttachmentFile
+      ,[CreatedUserUID] = @CreatedUserUID
+      ,[CreatedDate] = @CreatedDate
+      ,[DeletedFlag] = @DeletedFlag
+      
+ WHERE AttachmentUID=@AttachmentUID
+
+
+    UPDATE [dbo].[DocumentsAttachments]
+   SET ServerCopiedUpdate='Y'
+      
+ Where AttachmentUID=@AttachmentUID
+
+	END
+END
+

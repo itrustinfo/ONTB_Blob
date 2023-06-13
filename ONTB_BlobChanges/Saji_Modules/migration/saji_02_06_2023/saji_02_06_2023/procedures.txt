@@ -1,0 +1,240 @@
+/****** Object:  StoredProcedure [dbo].[GetAllIssueDocs_by_ProjectUID]    Script Date: 6/2/2023 12:41:21 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[GetAllIssueDocs_by_ProjectUID]
+@ProjectUID uniqueidentifier
+as
+begin
+set nocount on;
+select A.Issue_Uid,B.doc_id,B.doc_name,B.doc_path from Issues A,UploadedIssueDocs B where A.Issue_Uid = B.Issue_Uid and A.ProjectUID=@ProjectUID and A.Delete_Flag='N'
+end
+
+-----------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[IssueDocBlobUpdate]    Script Date: 6/2/2023 12:42:16 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[IssueDocBlobUpdate]
+@doc_id int,
+@Blob_Data varbinary(max)
+as
+begin
+ update UploadedIssueDocs set DocBlob=@Blob_Data where doc_id=@doc_id
+end
+
+-----------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[GetAllBankDocumentsByProjectUID]    Script Date: 6/2/2023 12:43:15 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[GetAllBankDocumentsByProjectUID]
+@ProjectUID uniqueidentifier
+as
+begin
+select * from BankGuarantee A, BankDocuments B where A.Bank_GuaranteeUID = B.Bank_GuaranteeUID and A.ProjectUID = @ProjectUID;
+end
+
+-------------------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[BankDocBlobInsertorUpdate]    Script Date: 6/2/2023 12:44:44 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[BankDocBlobInsertorUpdate]
+@BankDocUID uniqueidentifier,
+@DocName nvarchar(max),
+@BlobData varbinary(max)
+as
+begin
+if not exists(select BankDocBlobUID from BankDocBlobs where BankDoc_UID = @BankDocUID and DeleteFlag='N')
+begin
+	 insert into BankDocBlobs(BankDocBlobUID, BankDoc_UID,BlobData,DeleteFlag,DocName)
+	 values(NEWID(),@BankDocUID,@BlobData,'N',@DocName)
+end
+else
+begin
+ update BankDocBlobs set BlobData=@BlobData where BankDoc_UID=@BankDocUID;
+end
+end
+
+----------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[GetAllInsuranceDocumentsByProjectUID]    Script Date: 6/2/2023 12:45:33 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[GetAllInsuranceDocumentsByProjectUID]
+@ProjectUID uniqueidentifier
+as
+begin
+select * from Insurance A, InsuranceDocuments B where A.InsuranceUID = B.InsuranceUID and A.ProjectUID = @ProjectUID;
+end
+
+---------------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[InsuranceDocBlobInsertorUpdate]    Script Date: 6/2/2023 12:46:19 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[InsuranceDocBlobInsertorUpdate]
+@InsuranceDocUID uniqueidentifier,
+@DocName nvarchar(max),
+@BlobData varbinary(max)
+as
+begin
+if not exists(select InsuranceDocBlobUID from InsuranceDocBlobs where InsuranceDoc_UID = @InsuranceDocUID and DeleteFlag='N')
+begin
+	 insert into InsuranceDocBlobs(InsuranceDocBlobUID, InsuranceDoc_UID,BlobData,DeleteFlag,DocName)
+	 values(NEWID(),@InsuranceDocUID,@BlobData,'N',@DocName)
+end
+else
+begin
+ update InsuranceDocBlobs set BlobData=@BlobData where InsuranceDoc_UID=@InsuranceDocUID;
+end
+end
+-------------------------------
+/****** Object:  StoredProcedure [dbo].[GetAllInsurancePremiumsByProjectUID]    Script Date: 6/2/2023 12:47:25 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[GetAllInsurancePremiumsByProjectUID]
+@ProjectUID uniqueidentifier
+as
+begin
+select * from Insurance A, Insurance_Premiums B  where A.InsuranceUID = B.InsuranceUID and  A.ProjectUID = @ProjectUID;
+end
+
+-----------------------------------------------
+/****** Object:  StoredProcedure [dbo].[InsurancePremiumBlobInsertorUpdate]    Script Date: 6/2/2023 12:48:15 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[InsurancePremiumBlobInsertorUpdate]
+@PremiumUID uniqueidentifier,
+@DocName nvarchar(max),
+@BlobData varbinary(max)
+as
+begin
+if not exists(select PremiumBlobUID from InsurancePremiumBlob where PremiumUID = @PremiumUID and Delete_Flag='N')
+begin
+	 insert into InsurancePremiumBlob(PremiumBlobUID, PremiumUID,Blob_Data,Delete_Flag)
+	 values(NEWID(),@PremiumUID,@BlobData,'N')
+end
+else
+begin
+ update InsurancePremiumBlob set Blob_Data=@BlobData where PremiumUID=@PremiumUID;
+end
+end
+
+-----------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[GetAllRABillDocumentsByProjectUID]    Script Date: 6/2/2023 12:49:08 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[GetAllRABillDocumentsByProjectUID]
+@ProjectUID uniqueidentifier
+as
+begin
+select A.RABillUid,B.FilePath from RABills A,  RABills_Documents B where A.RABillUid = B.RABillUid and A.ProjectUID = @ProjectUID and B.DeleteFlag = 'N' 
+end
+
+--------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[RABillBlobUpdate]    Script Date: 6/2/2023 12:49:54 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[RABillBlobUpdate]
+@RABillUid uniqueidentifier,
+@DocBlob varbinary(max)
+as
+begin
+	update RABills_Documents set DocBlob = @DocBlob where RABillUid=@RABillUid;
+end
+
+----------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[usp_GetSiteLatestPhotograph_by_ProjectUID]    Script Date: 6/2/2023 12:50:49 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[usp_GetSiteLatestPhotograph_by_ProjectUID]
+@ProjectUID uniqueidentifier
+as
+begin
+set nocount on;
+select * from SitePhotographs where ProjectUID=@ProjectUID order by Description
+end
+
+-------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[InsertOrUpdatePhotographBlob]    Script Date: 6/2/2023 12:51:38 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[InsertOrUpdatePhotographBlob] 
+@site_photograph_uid nvarchar(max),
+@photoBytes varbinary(max),
+@photoName nvarchar(max),
+@photoPath nvarchar(max)
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+
+	If Not Exists(Select SitePhotograph_UID From PhotographBlobs Where SitePhotograph_UID=@site_photograph_uid)
+	begin
+		insert into PhotographBlobs(PhotographBlobUID,SitePhotograph_UID,BlobData,DeleteFlag,PhotoName,PhotoPath)
+		values(NEWID(),@site_photograph_uid,@photoBytes,'N',@photoName,@photoPath);
+	end
+	else
+	begin
+	    update PhotographBlobs set BlobData = @photoBytes,PhotoName = @photoName, PhotoPath = @photoPath where SitePhotograph_UID = @site_photograph_uid 
+	end
+END
+
+-------------------------------------
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[GetAllIssueStatusDocs_by_IssueUID]
+@IssueUID uniqueidentifier
+as
+begin
+set nocount on;
+select A.Issue_Uid,B.issue_remarks_uid,B.uploaded_doc_id, B.doc_name,B.doc_path from IssueRemarks A,UploadedDocs B where A.IssueRemarksUID = B.issue_remarks_uid and A.Issue_Uid=@IssueUID and A.Delete_Flag='N'
+end
+
+
+//
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[GetAllRABillDocumentsByProjectUID]
+@ProjectUID uniqueidentifier
+as
+begin
+select B.RABillUid,B.FilePath from RABill_Abstract A, RABills_Documents B, WorkPackages C where A.RABillUid = B.RABillUid and B.WorkpackageUID = C.WorkPackageUID and C.ProjectUID = @ProjectUID and B.DeleteFlag = 'N' 
+end
+
+
+
+
