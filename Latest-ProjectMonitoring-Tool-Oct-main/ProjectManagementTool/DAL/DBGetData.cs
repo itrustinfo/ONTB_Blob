@@ -25098,7 +25098,7 @@ namespace ProjectManager.DAL
         }
 
         //added on 14/08/2022
-        public DataSet blob_GetDocumentStatusPending()
+        public DataSet blob_GetDocumentStatusPending(Guid ProjectUID)
         {
             DataSet ds = new DataSet();
             SqlConnection con = new SqlConnection(db.GetConnectionString());
@@ -25106,6 +25106,7 @@ namespace ProjectManager.DAL
             {
                 SqlDataAdapter cmd = new SqlDataAdapter("blob_GetDocumentStatusPending", con);
                 cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.Parameters.AddWithValue("@ProjectUID", ProjectUID);
                 cmd.Fill(ds);
             }
             catch (Exception ex)
@@ -25125,6 +25126,7 @@ namespace ProjectManager.DAL
             {
                 SqlDataAdapter cmd = new SqlDataAdapter("usp_GetAll_GeneralDocuments", con);
                 cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+              
                 cmd.Fill(ds);
             }
             catch (Exception ex)
@@ -26240,7 +26242,66 @@ namespace ProjectManager.DAL
         }
 
 
+        //
+        public int BankDocBlobInsertorUpdate(Guid BankDoc_UID, byte[] Blob_Data, string docName, string docPath)
+        {
+            int sresult = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("BankDocBlobInsertorUpdate"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@BankDocUID", BankDoc_UID);
+                        cmd.Parameters.AddWithValue("@DocName", docName);
+                        cmd.Parameters.AddWithValue("@DocPath", docPath);
+                        cmd.Parameters.AddWithValue("@BlobData", Blob_Data);
+                        sresult = cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
 
+            }
+            catch (Exception ex)
+            {
+                sresult = 0;
+            }
+            return sresult;
+        }
+
+
+
+       public int InsuranceDocBlobInsertorUpdate(Guid InsuranceDoc_UID, byte[] Blob_Data, string docName, string docPath)
+        {
+            int sresult = 0;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(db.GetConnectionString()))
+                {
+                    using (SqlCommand cmd = new SqlCommand("InsuranceDocBlobInsertorUpdate"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@InsuranceDocUID", InsuranceDoc_UID);
+                        cmd.Parameters.AddWithValue("@DocName", docName);
+                        cmd.Parameters.AddWithValue("@DocPath", docPath);
+                        cmd.Parameters.AddWithValue("@BlobData", Blob_Data);
+                        sresult = cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                sresult = 0;
+            }
+            return sresult;
+        }
 
 
 

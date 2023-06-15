@@ -287,7 +287,7 @@ namespace ProjectManagementTool._content_pages.Convert_to_blob
             {
                 //added by zuber
                 //Insert into DocumentStatus Blob Table
-                DataSet dsstatus = getdt.blob_GetDocumentStatusPending();
+                DataSet dsstatus = getdt.blob_GetDocumentStatusPending(new Guid(DDlProject.SelectedValue));
                 TotalDocuments = dsstatus.Tables[0].Rows.Count;
                 string coverLetterPath = string.Empty;
                 string RevieFilePath = string.Empty;
@@ -441,14 +441,18 @@ namespace ProjectManagementTool._content_pages.Convert_to_blob
                     {
                         try
                         {
+
+                            string filePath = ds.Tables[0].Rows[i]["Document_File"].ToString();
+
                             string path = Server.MapPath(ds.Tables[0].Rows[i]["Document_File"].ToString());
                             string fileName = Path.GetFileName(ds.Tables[0].Rows[i]["Document_File"].ToString());
+
 
                             if (File.Exists(path))
                             {
                                 byte[] filetobytes = getdt.FileToByteArray(path);
 
-                                int gDoc = getdt.BankDocBlobInsertorUpdate(new Guid(ds.Tables[0].Rows[i]["BankDoc_UID"].ToString()), filetobytes, fileName);
+                                int gDoc = getdt.BankDocBlobInsertorUpdate(new Guid(ds.Tables[0].Rows[i]["BankDoc_UID"].ToString()), filetobytes, fileName, filePath);
 
                                 if (gDoc > 0)
                                 {
@@ -492,7 +496,7 @@ namespace ProjectManagementTool._content_pages.Convert_to_blob
                     {
                         try
                         {
-
+                            string filePath = ds.Tables[0].Rows[i]["InsuranceDoc_FilePath"].ToString();
                             string path = Server.MapPath(ds.Tables[0].Rows[i]["InsuranceDoc_FilePath"].ToString());
                             string fileName = Path.GetFileName(ds.Tables[0].Rows[i]["InsuranceDoc_FilePath"].ToString());
 
@@ -500,7 +504,7 @@ namespace ProjectManagementTool._content_pages.Convert_to_blob
                             {
                                 byte[] filetobytes = getdt.FileToByteArray(path);
 
-                                int gDoc = getdt.InsuranceDocBlobInsertorUpdate(new Guid(ds.Tables[0].Rows[i]["InsuranceDoc_UID"].ToString()), filetobytes, fileName);
+                                int gDoc = getdt.InsuranceDocBlobInsertorUpdate(new Guid(ds.Tables[0].Rows[i]["InsuranceDoc_UID"].ToString()), filetobytes, fileName, filePath);
 
                                 if (gDoc > 0)
                                 {
@@ -699,7 +703,7 @@ namespace ProjectManagementTool._content_pages.Convert_to_blob
         {
             if (RBList.SelectedValue == "General Documents" || RBList.SelectedValue == "Document Status")
             {
-                DDlProject.Enabled = false;
+                DDlProject.Enabled = true;
             }
             else
             {
