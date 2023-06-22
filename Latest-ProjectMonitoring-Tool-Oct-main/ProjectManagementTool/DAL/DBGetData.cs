@@ -25067,6 +25067,7 @@ namespace ProjectManager.DAL
             {
                 SqlDataAdapter cmd = new SqlDataAdapter("usp_GetAllDocumentsAttachmentsby_ProjectUID", con);
                 cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.CommandTimeout = 900;
                 cmd.SelectCommand.Parameters.AddWithValue("@ProjectUID", ProjectUID);
                 cmd.Fill(ds);
             }
@@ -25086,6 +25087,7 @@ namespace ProjectManager.DAL
             {
                 SqlDataAdapter cmd = new SqlDataAdapter("usp_GeneralDocumentBlob_by_UID", con);
                 cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.CommandTimeout = 900;
                 cmd.SelectCommand.Parameters.AddWithValue("@GeneralDocumentUID", GeneralDocumentUID);
                 cmd.Fill(ds);
             }
@@ -25106,6 +25108,7 @@ namespace ProjectManager.DAL
             {
                 SqlDataAdapter cmd = new SqlDataAdapter("blob_GetDocumentStatusPending", con);
                 cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
+                cmd.SelectCommand.CommandTimeout = 900;
                 cmd.SelectCommand.Parameters.AddWithValue("@ProjectUID", ProjectUID);
                 cmd.Fill(ds);
             }

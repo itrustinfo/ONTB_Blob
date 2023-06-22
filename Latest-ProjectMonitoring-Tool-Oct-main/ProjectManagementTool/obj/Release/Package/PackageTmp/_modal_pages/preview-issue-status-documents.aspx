@@ -90,12 +90,13 @@
 
                   <form runat="server">
                       
-                     <asp:GridView ID="GrdIssueStatusImages" runat="server"  AutoGenerateColumns="False" EmptyDataText="No Data Found" Width="100%" Height="650px" CssClass="table table-bordered" OnRowDataBound="GrdIssueStatusImages_RowDataBound"  AllowPaging="true" OnPageIndexChanging="OnPageIndexChanging" PageSize="1"  >
-                         <PagerSettings Mode="NextPrevious" FirstPageText="First" PreviousPageText="&lt;&lt;"
-            NextPageText="&gt;&gt;" LastPageText="Last" Position="Top" />
-                         <Columns>
-                         </Columns>
-                     </asp:GridView>
+                   
+                      <div>
+                            <asp:Button runat="server" ID="btnNext" Text =">>" OnClick="btnNext_Click" />
+                            <asp:Button runat="server" ID="btnPrv" Text ="<<" OnClick="btnPrevious_Click" />
+                       </div>
+
+                      <img src="" runat="server" id="image" style="width:100%" />
                    
                   </form>
             </div>

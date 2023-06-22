@@ -63,7 +63,7 @@
                 </div>
                 <div class="form-group d-flex justify-content-between">
                   <div class="form-check form-check-flat mt-0">
-                    
+                    <asp:Label ID="Label1" runat="server" ForeColor="blue" Text="Blob Version"></asp:Label>
                       <asp:Label ID="lblMsg" runat="server" ForeColor="Red" Visible="False"></asp:Label>
                     
                   </div>

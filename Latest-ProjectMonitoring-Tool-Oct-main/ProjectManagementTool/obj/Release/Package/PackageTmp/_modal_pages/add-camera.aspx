@@ -27,6 +27,11 @@
                         <asp:TextBox ID="txtrtspaddress" CssClass="form-control" runat="server" autocomplete="off" ClientIDMode="Static"></asp:TextBox>
                         
                     </div>
+                     <div class="form-group">
+                        <asp:CheckBox ID="chkdisplay" runat="server" CssClass="form-control" Text="&nbsp;Dasboard Display" />
+                       
+                        
+                    </div>
 
                     <div class="form-group">
                         <label class="lblCss" for="txtdesc">Description</label>

@@ -221,7 +221,7 @@ document.getElementById('DivFooterRowNew').scrollLeft = Scrollablediv.scrollLeft
                                     </asp:UpdateProgress>--%>
                             <div style="overflow: hidden;" id="DivHeaderRowNew"></div>
                                    <div style="overflow:scroll; " onscroll="OnScrollDivNew(this)" id="DivMainContentNew">
-                            <asp:GridView ID="GrdCommunicationDocs" runat="server" DataKeyNames="ActualDocumentUID" AllowPaging="false" AutoGenerateColumns="False" CssClass="table table-bordered" PageSize="10" EmptyDataText="No Data"
+                            <asp:GridView ID="GrdCommunicationDocs" runat="server" DataKeyNames="ActualDocumentUID" AllowPaging="True" AutoGenerateColumns="False" CssClass="table table-bordered" PageSize="10" EmptyDataText="No Data"
                                 HeaderStyle-BackColor="#666666" HeaderStyle-ForeColor="White" AlternatingRowStyle-BackColor="#F5F5F5"  Width="100%" OnPageIndexChanging="GrdCommunicationDocs_PageIndexChanging" OnRowCommand="GrdCommunicationDocs_RowCommand" OnRowDataBound="GrdCommunicationDocs_RowDataBound">
                         <Columns>
                             <asp:TemplateField>

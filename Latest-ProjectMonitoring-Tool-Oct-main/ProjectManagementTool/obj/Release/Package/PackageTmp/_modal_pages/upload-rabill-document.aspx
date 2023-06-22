@@ -77,11 +77,9 @@
 
                                 <asp:TemplateField>
                                     <ItemTemplate>
-                                        <a id="FileDownload" CommandArgument="MyVal1" href=<%#Eval("FilePath")%> onserverclick="Download_Click" runat="server">
+                                        <a id="FileDownload" CommandArgument="MyVal1" href=<%#Eval("DocumentUID")%> onserverclick="Download_Click" runat="server">
                                             <span title="Download" class="fas fa-download "></a>&nbsp;&nbsp;&nbsp;
                                         <asp:LinkButton ID="lnkdelete" runat="server" OnClientClick="return DeleteItem()" CausesValidation="false" CommandName="delete"><span title="Delete" class="fas fa-trash text-danger"></span></asp:LinkButton>
-                                                        
-
                                     </ItemTemplate>
                                 </asp:TemplateField>
 

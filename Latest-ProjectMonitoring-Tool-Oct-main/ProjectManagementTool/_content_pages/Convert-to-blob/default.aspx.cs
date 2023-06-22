@@ -160,7 +160,7 @@ namespace ProjectManagementTool._content_pages.Convert_to_blob
                                                 catch (Exception ex)
                                                 {
                                                     VersionError += 1;
-                                                    int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(dsversion.Tables[0].Rows[k]["DocVersion_UID"].ToString()), "DocumentVesrion", "Error", dsversion.Tables[0].Rows[k]["Doc_FileName"].ToString());
+                                                    int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(dsversion.Tables[0].Rows[k]["DocVersion_UID"].ToString()), "DocumentVesrion", "Error :" + ex.Message, dsversion.Tables[0].Rows[k]["Doc_FileName"].ToString());
                                                 }
                                             }
                                         }
@@ -183,7 +183,7 @@ namespace ProjectManagementTool._content_pages.Convert_to_blob
                         {
                             Errored += 1;
 
-                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), ActualDocumentUID, "ActualDocuments", "Failure", path);
+                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), ActualDocumentUID, "ActualDocuments", "Failure :" + ex.Message, path);
                         }
                     }
 
@@ -230,6 +230,8 @@ namespace ProjectManagementTool._content_pages.Convert_to_blob
                         catch (Exception ex)
                         {
                             Errored += 1;
+                            int elog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), AttachmentUID, "DocumentsAttachments", "Failure :" + ex.Message, "");
+
                         }
                     }
                 }
@@ -275,6 +277,8 @@ namespace ProjectManagementTool._content_pages.Convert_to_blob
                         catch (Exception ex)
                         {
                             Errored += 1;
+                            int elog = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), GeneralDocumentUID, "GeneralDocuments", "Failure :" + ex.Message, "");
+
                         }
                     }
                 }
@@ -419,7 +423,7 @@ namespace ProjectManagementTool._content_pages.Convert_to_blob
                         {
                             Errored += 1;
 
-                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), Issue_Uid, "Issues", "Failure", "");
+                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), Issue_Uid, "Issues", "Failure:" +ex.Message, "");
                         }
                     }
                 }
@@ -471,11 +475,11 @@ namespace ProjectManagementTool._content_pages.Convert_to_blob
                                 FileNotFound += 1;
                             }
                         }
-                        catch
+                        catch(Exception ex)
                         {
                             Errored += 1;
 
-                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["BankDoc_UID"].ToString()), "BankDocuments", "Failure", "");
+                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["BankDoc_UID"].ToString()), "BankDocuments", "Failure :" + ex.Message, "");
                         }
                     }
                 }
@@ -523,11 +527,11 @@ namespace ProjectManagementTool._content_pages.Convert_to_blob
                                 FileNotFound += 1;
                             }
                         }
-                        catch
+                        catch(Exception ex)
                         {
                             Errored += 1;
 
-                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["InsuranceDoc_UID"].ToString()), "InsuranceDocuments", "Failure", "");
+                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["InsuranceDoc_UID"].ToString()), "InsuranceDocuments", "Failure :" + ex.Message, "");
                         }
                     }
                 }
@@ -574,11 +578,11 @@ namespace ProjectManagementTool._content_pages.Convert_to_blob
                                 FileNotFound += 1;
                             }
                         }
-                        catch
+                        catch(Exception ex)
                         {
                             Errored += 1;
 
-                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["PremiumUID"].ToString()), "InsurancePremiumBlob", "Failure", "");
+                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["PremiumUID"].ToString()), "InsurancePremiumBlob", "Failure : " + ex.Message, "");
                         }
                     }
                 }
@@ -630,11 +634,11 @@ namespace ProjectManagementTool._content_pages.Convert_to_blob
                                 FileNotFound += 1;
                             }
                         }
-                        catch
+                        catch(Exception ex)
                         {
                             Errored += 1;
 
-                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["RABillUid"].ToString()), "RABillDocuments", "Failure", "");
+                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["RABillUid"].ToString()), "RABillDocuments", "Failure :" + ex.Message, "");
                         }
                     }
 
@@ -683,11 +687,11 @@ namespace ProjectManagementTool._content_pages.Convert_to_blob
                                 FileNotFound += 1;
                             }
                         }
-                        catch
+                        catch(Exception ex)
                         {
                             Errored += 1;
 
-                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["SitePhotograph_UID"].ToString()), "SitePhotographs", "Failure", "");
+                            int log = getdt.DocumenttoBlobLog_Insert(Guid.NewGuid(), new Guid(ds.Tables[0].Rows[i]["SitePhotograph_UID"].ToString()), "SitePhotographs", "Failure :" + ex.Message, "");
                         }
                     }
                 }

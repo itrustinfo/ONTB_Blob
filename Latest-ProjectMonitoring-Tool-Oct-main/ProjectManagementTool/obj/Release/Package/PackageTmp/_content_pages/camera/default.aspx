@@ -94,6 +94,11 @@
                                               <%#Eval("Camera_Description")%>
                                       </ItemTemplate>
                                     </asp:TemplateField>  
+                                   <asp:TemplateField HeaderText="Dashboard Display ">
+                                      <ItemTemplate>
+                                              <%#Eval("DashboardDisplay ")%>
+                                      </ItemTemplate>
+                                    </asp:TemplateField>  
                                    <asp:TemplateField>
                                       <ItemTemplate>
                                               <a href='/_modal_pages/add-camera.aspx?Camera_UID=<%#Eval("Camera_UID")%>&WorkUID=<%#Eval("WorkpackageUID")%>&PrjUID=<%#Eval("ProjectUID")%>' class="showEditCamera"><span title="Edit" class="fas fa-edit"></span></a>

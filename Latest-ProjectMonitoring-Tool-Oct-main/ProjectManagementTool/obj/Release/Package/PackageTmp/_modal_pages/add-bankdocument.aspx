@@ -45,7 +45,7 @@
                     </asp:BoundField>
                     <asp:TemplateField>
                     <ItemTemplate>
-                         <asp:LinkButton ID="lnkdownload" runat="server" CommandName="download" CommandArgument='<%#Eval("BankDoc_UID")%>'>Download</asp:LinkButton>
+                         <asp:LinkButton ID="lnkdownload" runat="server" CommandName="download" CommandArgument='<%#Eval("BankDocBlobUID")%>'>Download</asp:LinkButton>
                     </ItemTemplate>
                 </asp:TemplateField>
                     <asp:TemplateField>

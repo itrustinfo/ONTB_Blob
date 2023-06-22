@@ -15,6 +15,7 @@
                 <div class="col-sm-4">
                     <div class="form-group">
                         <label class="lblCss" for="UploadPhotographs">Choose File/s</label> &nbsp;<span style="color:red; font-size:1.2rem;">*</span>
+                        
                         <div class="custom-file">
                             <asp:FileUpload ID="ImageUpload" runat="server" AllowMultiple="true" CssClass="custom-file-input" />
 
@@ -33,20 +34,24 @@
              <div class="row">
                 <div class="col-sm-12">
                     <div class="table-responsive">
-                         <asp:DataList ID="GrdSitePhotograph" runat="server" RepeatColumns="3" HorizontalAlign="Center" CellPadding="10" RepeatDirection="Horizontal">
+                         <asp:DataList ID="GrdSitePhotograph" runat="server" RepeatColumns="3" HorizontalAlign="Center" CellPadding="10" RepeatDirection="Horizontal" OnItemDataBound="Item_Bound">
                                 <ItemTemplate>
                                     <div style="width:200px; float:left; border:1px solid Gray; text-align:center; background-color:#f2f2f2;">
                                         <div style="padding:10px;">
-                                            <asp:Image ID="imgEmp" runat="server" Width="150px" ImageUrl='<%# Bind("Site_Image", "{0}") %>' /><br />
+                                            
+                                            <asp:Image ID="imgEmp" runat="server" Width="150px" Height="200px" ImageUrl='<%# Bind("Site_Image", "{0}") %>'  /><br />
                                                 <asp:TextBox ID="txtdesc" runat="server" CssClass="form-control" placeholder="Description" autocomplete="off" Text='<%#Eval("Description")%>'></asp:TextBox>
                                             <asp:Label ID="LblSitePhotoGraph_UID" runat="server" CssClass="HideItem" Text='<%#Eval("SitePhotoGraph_UID")%>'></asp:Label>
+                                            <asp:Label ID="Label1" runat="server" CssClass="HideItem" Text='<%#Eval("PhotographBlobUID")%>'></asp:Label>
                                         </div>
                                     </div>
                                     </ItemTemplate>
                             </asp:DataList>
-                            </div>
+                          
+                        </div>
                     </div>
                 </div>
+              
             </div>
 
          <div class="modal-footer">

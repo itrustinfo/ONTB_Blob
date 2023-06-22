@@ -6,7 +6,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
-    <_PublishTargetUrl>D:\NJS Projects\publish\WebApp_ONTB</_PublishTargetUrl>
+    <_PublishTargetUrl>D:\NJS Projects\publish\WebApp_ONTB_Blob</_PublishTargetUrl>
   </PropertyGroup>
   <ItemGroup>
     <File Include="bin/AjaxControlToolkit.dll">
@@ -34,10 +34,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/20/2021 23:12:32</publishTime>
     </File>
     <File Include="bin/ProjectManagementTool.dll">
-      <publishTime>04/04/2023 17:27:24</publishTime>
+      <publishTime>06/20/2023 17:17:40</publishTime>
     </File>
     <File Include="bin/ProjectManagementTool.pdb">
-      <publishTime>04/04/2023 17:27:24</publishTime>
+      <publishTime>06/20/2023 17:17:40</publishTime>
     </File>
     <File Include="bin/roslyn/csc.exe">
       <publishTime>10/20/2021 23:12:32</publishTime>
@@ -148,7 +148,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/20/2021 23:12:32</publishTime>
     </File>
     <File Include="Login.aspx">
-      <publishTime>07/14/2022 18:30:01</publishTime>
+      <publishTime>06/20/2023 17:17:30</publishTime>
     </File>
     <File Include="PDFPrint.aspx">
       <publishTime>10/20/2021 23:12:32</publishTime>
@@ -163,7 +163,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>08/10/2020 09:46:28</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>04/04/2023 17:27:27</publishTime>
+      <publishTime>06/20/2023 17:14:57</publishTime>
     </File>
     <File Include="WebForm1.aspx">
       <publishTime>10/20/2021 23:12:32</publishTime>
@@ -820,7 +820,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/20/2021 23:12:32</publishTime>
     </File>
     <File Include="_content_pages/camera/default.aspx">
-      <publishTime>02/17/2023 17:11:49</publishTime>
+      <publishTime>04/06/2023 15:30:54</publishTime>
     </File>
     <File Include="_content_pages/categorywise-documents/default.aspx">
       <publishTime>10/20/2021 23:12:32</publishTime>
@@ -832,7 +832,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/20/2021 23:12:32</publishTime>
     </File>
     <File Include="_content_pages/communication-tracking/default.aspx">
-      <publishTime>12/24/2021 04:26:10</publishTime>
+      <publishTime>04/26/2023 17:51:34</publishTime>
     </File>
     <File Include="_content_pages/complaints-mom/default.aspx">
       <publishTime>10/20/2021 23:12:32</publishTime>
@@ -845,6 +845,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="_content_pages/contractors-master/default.aspx">
       <publishTime>06/06/2022 16:09:29</publishTime>
+    </File>
+    <File Include="_content_pages/Convert-to-blob/default.aspx">
+      <publishTime>06/02/2023 14:24:30</publishTime>
     </File>
     <File Include="_content_pages/daily-progress-reportmaster-test/default.aspx">
       <publishTime>07/28/2022 21:24:43</publishTime>
@@ -976,7 +979,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/29/2022 12:42:52</publishTime>
     </File>
     <File Include="_content_pages/issues/default.aspx">
-      <publishTime>02/01/2023 17:49:11</publishTime>
+      <publishTime>05/16/2023 14:50:28</publishTime>
     </File>
     <File Include="_content_pages/joint-inspection/default.aspx">
       <publishTime>10/20/2021 23:12:32</publishTime>
@@ -1074,6 +1077,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="_content_pages/report-mis-status-summary/default.aspx">
       <publishTime>10/18/2022 14:28:12</publishTime>
     </File>
+    <File Include="_content_pages/report-mis-user-details/default.aspx">
+      <publishTime>05/11/2023 11:23:07</publishTime>
+    </File>
     <File Include="_content_pages/report-MonthlyPhysical-Progress/default.aspx">
       <publishTime>10/20/2021 23:12:32</publishTime>
     </File>
@@ -1103,6 +1109,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="_content_pages/report-summary-design-and-drawing-works-dwg-issue/default.aspx">
       <publishTime>08/17/2022 11:43:34</publishTime>
+    </File>
+    <File Include="_content_pages/report-user-status1/default.aspx">
+      <publishTime>05/12/2023 12:05:44</publishTime>
     </File>
     <File Include="_content_pages/report-wkpg-master-data/default.aspx">
       <publishTime>01/31/2022 12:17:35</publishTime>
@@ -1180,7 +1189,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/20/2021 23:12:32</publishTime>
     </File>
     <File Include="_master_pages/default.Master">
-      <publishTime>04/03/2023 17:36:40</publishTime>
+      <publishTime>05/12/2023 12:41:20</publishTime>
     </File>
     <File Include="_master_pages/modal.Master">
       <publishTime>10/20/2021 23:12:32</publishTime>
@@ -1189,7 +1198,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/20/2021 23:12:32</publishTime>
     </File>
     <File Include="_modal_pages/add-bankdocument.aspx">
-      <publishTime>10/20/2021 23:12:32</publishTime>
+      <publishTime>03/23/2023 17:21:46</publishTime>
     </File>
     <File Include="_modal_pages/add-bankguarantee.aspx">
       <publishTime>11/12/2021 10:34:52</publishTime>
@@ -1210,7 +1219,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/20/2021 23:12:32</publishTime>
     </File>
     <File Include="_modal_pages/add-camera.aspx">
-      <publishTime>02/17/2023 17:07:46</publishTime>
+      <publishTime>04/06/2023 13:23:25</publishTime>
     </File>
     <File Include="_modal_pages/add-clientmaster.aspx">
       <publishTime>01/17/2022 13:32:07</publishTime>
@@ -1294,7 +1303,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/20/2021 23:12:32</publishTime>
     </File>
     <File Include="_modal_pages/add-insurancedocuments.aspx">
-      <publishTime>10/20/2021 23:12:32</publishTime>
+      <publishTime>03/24/2023 12:47:14</publishTime>
     </File>
     <File Include="_modal_pages/add-insurancepremium.aspx">
       <publishTime>10/20/2021 23:12:32</publishTime>
@@ -1312,7 +1321,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/04/2022 15:00:40</publishTime>
     </File>
     <File Include="_modal_pages/add-issues.aspx">
-      <publishTime>02/01/2023 17:35:57</publishTime>
+      <publishTime>02/01/2023 17:35:58</publishTime>
     </File>
     <File Include="_modal_pages/add-issuestatus.aspx">
       <publishTime>06/15/2022 15:24:52</publishTime>
@@ -1366,7 +1375,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/20/2021 23:12:32</publishTime>
     </File>
     <File Include="_modal_pages/add-rabill-rabillitem-invoice.aspx">
-      <publishTime>12/27/2022 13:14:49</publishTime>
+      <publishTime>12/27/2022 13:14:50</publishTime>
     </File>
     <File Include="_modal_pages/add-RAbillabstract.aspx">
       <publishTime>10/20/2021 23:12:32</publishTime>
@@ -1423,7 +1432,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>01/03/2023 19:50:38</publishTime>
     </File>
     <File Include="_modal_pages/add-user.aspx">
-      <publishTime>03/24/2022 17:58:18</publishTime>
+      <publishTime>05/11/2023 17:44:03</publishTime>
     </File>
     <File Include="_modal_pages/add-userfunctionalityassignment.aspx">
       <publishTime>10/20/2021 23:12:32</publishTime>
@@ -1492,10 +1501,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>11/12/2021 21:48:38</publishTime>
     </File>
     <File Include="_modal_pages/preview-issue-documents.aspx">
-      <publishTime>08/11/2022 14:54:08</publishTime>
+      <publishTime>04/14/2023 10:56:36</publishTime>
     </File>
     <File Include="_modal_pages/preview-issue-status-documents.aspx">
-      <publishTime>08/18/2022 14:02:34</publishTime>
+      <publishTime>03/28/2023 11:07:52</publishTime>
     </File>
     <File Include="_modal_pages/reset-password.aspx">
       <publishTime>02/03/2022 17:44:11</publishTime>
@@ -1519,10 +1528,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>12/11/2021 21:55:16</publishTime>
     </File>
     <File Include="_modal_pages/upload-rabill-document.aspx">
-      <publishTime>03/08/2022 20:17:58</publishTime>
+      <publishTime>03/30/2023 10:44:32</publishTime>
     </File>
     <File Include="_modal_pages/upload-sitephotograph.aspx">
-      <publishTime>03/07/2022 17:30:06</publishTime>
+      <publishTime>03/28/2023 15:59:52</publishTime>
     </File>
     <File Include="_modal_pages/user-documenthistory.aspx">
       <publishTime>10/20/2021 23:12:32</publishTime>
@@ -1570,7 +1579,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/20/2021 23:12:32</publishTime>
     </File>
     <File Include="_modal_pages/View_UpdateIssueStatus.aspx">
-      <publishTime>01/17/2023 12:12:31</publishTime>
+      <publishTime>01/17/2023 12:12:32</publishTime>
     </File>
   </ItemGroup>
 </Project>
