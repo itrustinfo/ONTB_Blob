@@ -2959,7 +2959,7 @@ namespace ProjectManager._content_pages.documents
 
                         Response.Clear();
 
-                        Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
+                        Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name.Replace(',', '_'));
 
                         Response.AddHeader("Content-Length", file.Length.ToString());
 
@@ -3134,7 +3134,7 @@ namespace ProjectManager._content_pages.documents
 
                     Response.Clear();
 
-                    Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
+                    Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name.Replace(',', '_'));
 
                     Response.AddHeader("Content-Length", file.Length.ToString());
 
@@ -3872,7 +3872,7 @@ namespace ProjectManager._content_pages.documents
                         Response.Clear();
 
                         // Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
-                        Response.AddHeader("Content-Disposition", "attachment; filename=" + filename);
+                        Response.AddHeader("Content-Disposition", "attachment; filename=" + filename.Replace(',', '_'));
                         Response.AddHeader("Content-Length", file.Length.ToString());
 
                         Response.ContentType = "application/octet-stream";
@@ -4904,7 +4904,7 @@ namespace ProjectManager._content_pages.documents
                     }
                     Response.Clear();
 
-                    Response.AddHeader("Content-Disposition", "attachment; filename=" + filename);
+                    Response.AddHeader("Content-Disposition", "attachment; filename=" + filename.Replace(',', '_'));
 
                     Response.AddHeader("Content-Length", file.Length.ToString());
 

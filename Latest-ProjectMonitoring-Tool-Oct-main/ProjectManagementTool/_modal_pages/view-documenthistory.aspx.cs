@@ -1148,7 +1148,7 @@ namespace ProjectManagementTool._modal_pages
 
                         Response.Clear();
 
-                        Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
+                        Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name.Replace(',', '_'));
 
                         Response.AddHeader("Content-Length", file.Length.ToString());
 
@@ -1221,7 +1221,7 @@ namespace ProjectManagementTool._modal_pages
 
                         Response.Clear();
 
-                        Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
+                        Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name.Replace(',', '_'));
 
                         Response.AddHeader("Content-Length", file.Length.ToString());
 
@@ -1298,7 +1298,7 @@ namespace ProjectManagementTool._modal_pages
 
                         Response.Clear();
 
-                        Response.AddHeader("Content-Disposition", "attachment; filename=" + Path.GetFileName(filepath));
+                        Response.AddHeader("Content-Disposition", "attachment; filename=" + Path.GetFileName(filepath).Replace(',', '_'));
 
                         Response.AddHeader("Content-Length", file.Length.ToString());
 
@@ -1362,7 +1362,7 @@ namespace ProjectManagementTool._modal_pages
 
                         Response.Clear();
 
-                        Response.AddHeader("Content-Disposition", "attachment; filename=" + Path.GetFileName(filepath));
+                        Response.AddHeader("Content-Disposition", "attachment; filename=" + Path.GetFileName(filepath).Replace(',', '_'));
 
                         Response.AddHeader("Content-Length", file.Length.ToString());
 
@@ -1475,7 +1475,7 @@ namespace ProjectManagementTool._modal_pages
 
                         Response.Clear();
 
-                        Response.AddHeader("Content-Disposition", "attachment; filename=" + Path.GetFileName(filepath));
+                        Response.AddHeader("Content-Disposition", "attachment; filename=" + Path.GetFileName(filepath).Replace(',', '_'));
 
                         Response.AddHeader("Content-Length", file.Length.ToString());
 

@@ -339,7 +339,7 @@ namespace ProjectManagementTool._content_pages.report_mis_user_details
                         Response.Clear();
 
                         // Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
-                        Response.AddHeader("Content-Disposition", "attachment; filename=" + filename);
+                        Response.AddHeader("Content-Disposition", "attachment; filename=" + filename.Replace(',', '_'));
                         Response.AddHeader("Content-Length", file.Length.ToString());
 
                         Response.ContentType = "application/octet-stream";

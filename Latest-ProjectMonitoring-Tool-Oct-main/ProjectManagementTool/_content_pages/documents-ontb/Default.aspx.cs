@@ -5839,7 +5839,7 @@ namespace ProjectManager._content_pages.documents_ontb
                         }
                         Response.Clear();
 
-                        Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
+                        Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name.Replace(',', '_'));
 
                         Response.AddHeader("Content-Length", file.Length.ToString());
 

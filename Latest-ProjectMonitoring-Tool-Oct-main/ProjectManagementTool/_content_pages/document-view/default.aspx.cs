@@ -838,7 +838,7 @@ namespace ProjectManagementTool._content_pages.document_view
 
                         Response.Clear();
 
-                        Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
+                        Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name.Replace(',', '_'));
 
                         Response.AddHeader("Content-Length", file.Length.ToString());
 
@@ -1513,7 +1513,7 @@ namespace ProjectManagementTool._content_pages.document_view
                         Response.Clear();
 
                         // Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
-                        Response.AddHeader("Content-Disposition", "attachment; filename=" + filename);
+                        Response.AddHeader("Content-Disposition", "attachment; filename=" + filename.Replace(',', '_'));
                         Response.AddHeader("Content-Length", file.Length.ToString());
 
                         Response.ContentType = "application/octet-stream";
@@ -2005,7 +2005,7 @@ namespace ProjectManagementTool._content_pages.document_view
                         }
                         Response.Clear();
 
-                        Response.AddHeader("Content-Disposition", "attachment; filename=" + filename);
+                        Response.AddHeader("Content-Disposition", "attachment; filename=" + filename.Replace(',', '_'));
 
                         Response.AddHeader("Content-Length", file.Length.ToString());
 

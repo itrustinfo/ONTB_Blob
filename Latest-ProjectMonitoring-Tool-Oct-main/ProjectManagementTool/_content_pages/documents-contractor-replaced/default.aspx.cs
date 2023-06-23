@@ -342,7 +342,7 @@ namespace ProjectManagementTool._content_pages.documents_contractor_replaced
                         Response.Clear();
 
                         // Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
-                        Response.AddHeader("Content-Disposition", "attachment; filename=" + filename);
+                        Response.AddHeader("Content-Disposition", "attachment; filename=" + filename.Replace(',', '_'));
                         Response.AddHeader("Content-Length", file.Length.ToString());
 
                         Response.ContentType = "application/octet-stream";

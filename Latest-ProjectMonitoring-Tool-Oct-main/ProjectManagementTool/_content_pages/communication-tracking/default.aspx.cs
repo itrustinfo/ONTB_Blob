@@ -275,7 +275,7 @@ namespace ProjectManagementTool._content_pages.communication_tracking
 
                         Response.Clear();
 
-                        Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
+                        Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name.Replace(',', '_'));
 
                         Response.AddHeader("Content-Length", file.Length.ToString());
 
