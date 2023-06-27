@@ -61,110 +61,10 @@ print @sql
 EXEC(@sql)
 end
 
-//
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-create proc [dbo].[usp_InsertorUpdateActualDocumentBlob]
-@Blob_UID uniqueidentifier,
-@ActualDocumentUID uniqueidentifier,
-@Blob_Data varbinary(max)
-as
-begin
-if not exists(select Blob_UID from ActualDocumentBlob where ActualDocumentUID=@ActualDocumentUID and Delete_Flag='N')
-begin
-	insert into ActualDocumentBlob(Blob_UID,ActualDocumentUID,Blob_Data)
-	values(@Blob_UID,@ActualDocumentUID,@Blob_Data)
-end
-else
-begin
-	update ActualDocumentBlob set Blob_Data=@Blob_Data where ActualDocumentUID=@ActualDocumentUID
-end
-end
-
-//
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-create proc [dbo].[usp_DocumentStatusBlob_InsertorUpdate]
-@StatusBlob_UID uniqueidentifier,
-@StatusUID uniqueidentifier,
-@DocumentUID uniqueidentifier,
-@CoverFileBlob_Data varbinary(max),
-@ReviewFileBlob_Data varbinary(max)
-as
-begin
-if not exists(select StatusBlob_UID from DocumentStatus_Blob where StatusUID=@StatusUID and Delete_Flag='N')
-begin
-if @ReviewFileBlob_Data= -1
-begin
-	insert into DocumentStatus_Blob(StatusBlob_UID,StatusUID,DocumentUID,CoverFileBlob_Data)
-	values(@StatusBlob_UID,@StatusUID,@DocumentUID,@CoverFileBlob_Data)
-end
-else
-begin
-	insert into DocumentStatus_Blob(StatusBlob_UID,StatusUID,DocumentUID,CoverFileBlob_Data,ReviewFileBlob_Data)
-	values(@StatusBlob_UID,@StatusUID,@DocumentUID,@CoverFileBlob_Data,@ReviewFileBlob_Data)
-end
-end
-else
-begin
-	if @ReviewFileBlob_Data= -1
-	begin
-		update DocumentStatus_Blob set CoverFileBlob_Data=@CoverFileBlob_Data
-		where StatusUID=@StatusUID and Delete_Flag='N';
-	end
-	else
-	begin
-		update DocumentStatus_Blob set CoverFileBlob_Data=@CoverFileBlob_Data,ReviewFileBlob_Data=@ReviewFileBlob_Data
-		where StatusUID=@StatusUID and Delete_Flag='N';
-	end
-end
-end
 
 
-//
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-create proc [dbo].[usp_DocumentVersionBlob_insertorUpdate]
-@DocumentVersionBlob uniqueidentifier,
-@DocVersion_UID uniqueidentifier,
-@DocumentUID uniqueidentifier,
-@CoverLetter_Blob varbinary(max),
-@ResubmitFile_Blob varbinary(max)
-as
-begin
-if not exists(select DocumentVersionBlob from DocumentVersionBlob where DocVersion_UID=@DocVersion_UID and Delete_Flag='N')
-begin
-if @CoverLetter_Blob= -1
-begin
-	insert into DocumentVersionBlob(DocumentVersionBlob,DocVersion_UID,DocumentUID,ResubmitFile_Blob)
-	values(@DocumentVersionBlob,@DocVersion_UID,@DocumentUID,@ResubmitFile_Blob)
-end
-else
-begin
-	insert into DocumentVersionBlob(DocumentVersionBlob,DocVersion_UID,DocumentUID,CoverLetter_Blob,ResubmitFile_Blob)
-	values(@DocumentVersionBlob,@DocVersion_UID,@DocumentUID,@CoverLetter_Blob,@ResubmitFile_Blob)
-end
-end
-else
-begin
-	if @CoverLetter_Blob= -1
-	begin
-		update DocumentVersionBlob set ResubmitFile_Blob=@ResubmitFile_Blob
-		where DocVersion_UID=@DocVersion_UID and Delete_Flag='N';
-	end
-	else
-	begin
-		update DocumentVersionBlob set CoverLetter_Blob=@CoverLetter_Blob,ResubmitFile_Blob=@ResubmitFile_Blob
-		where DocVersion_UID=@DocVersion_UID and Delete_Flag='N';
-	end
-end
-end
+
+
 
 //
 USE [ONTB_Server_Blob]
@@ -232,11 +132,14 @@ end
 end
 
 //added on 19/05/2023
+USE [ONTB_Server_Blob]
+GO
+/****** Object:  StoredProcedure [dbo].[blob_GetDocumentStatusPending]    Script Date: 6/15/2023 12:15:33 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create proc [dbo].[blob_GetDocumentStatusPending]
+ALTER proc [dbo].[blob_GetDocumentStatusPending]
 @ProjectUID uniqueidentifier
 as
 begin
@@ -250,7 +153,7 @@ set @PrjUID=@ProjectUID
 
 set @sql = N'SELECT * FROM DocumentStatus INNER JOIN
                   ActualDocuments ON DocumentStatus.DocumentUID = ActualDocuments.ActualDocumentUID
-				  Where ActualDocuments.ProjectUID=''' + @PrjUID  + ''' and DocumentStatus.Delete_Flag=''N'' and DocumentStatus.StatusUID not in (select StatusUID from ' + @dbname + '.dbo.DocumentStatus_Blob) and DocumentStatus.CoverLetterFile is not null'
+				  Where ActualDocuments.ProjectUID=''' + @PrjUID  + ''' and DocumentStatus.Delete_Flag=''N'' and DocumentStatus.StatusUID not in (select StatusUID from ' + @dbname + '.dbo.DocumentStatus_Blob) and (DocumentStatus.CoverLetterFile is not null and DocumentStatus.CoverLetterFile <>'''')'
 print @sql
 EXEC(@sql)
 end

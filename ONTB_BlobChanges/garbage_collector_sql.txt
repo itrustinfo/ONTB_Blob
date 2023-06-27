@@ -1,0 +1,45 @@
+Alter Table [dbo].[ActualDocuments] add garbagecollectorflag varchar(1) null
+
+Alter Table [dbo].[DocumentStatus] add garbagecollectorflag varchar(1) null
+
+Alter Table [dbo].[DocumentVesrion] add garbagecollectorflag varchar(1) null
+
+Alter Table [dbo].[DocumentsAttachments] add garbagecollectorflag varchar(1) null
+
+//added on 27/06/2023
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+alter proc [dbo].[garbage_GetAllDocumentsby_ProjectUID]
+@ProjectUID uniqueidentifier
+as
+begin
+
+declare @dbname as varchar(50);
+Declare @PrjUID as nvarchar(max);
+DECLARE @sql NVARCHAR(MAX) ;
+set @dbname = (select DbName From MasterDbforBlob Where ProjectUID=@ProjectUID)
+set @PrjUID=@ProjectUID
+
+set @sql = N'select * from ActualDocuments where ProjectUID=''' + @PrjUID  + ''' and (garbagecollectorflag = ''N'' or garbagecollectorflag is NULL) and ActualDocumentUID in (select ActualDocumentUID from ' + @dbname + '.dbo.ActualDocumentBlob)'
+print @sql
+EXEC(@sql)
+end
+
+//
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create proc [dbo].[garbage_GetWorkPackges]
+as
+begin
+set nocount on;
+SELECT WorkPackages.ProjectUID, WorkPackages.WorkPackageUID, ProjectDetails.ProjectName
+FROM     WorkPackages INNER JOIN
+                  ProjectDetails ON WorkPackages.ProjectUID = ProjectDetails.ProjectUID where WorkPackages.Delete_Flag='N' 
+				  order by ProjectDetails.ProjectName Asc
+
+end
+

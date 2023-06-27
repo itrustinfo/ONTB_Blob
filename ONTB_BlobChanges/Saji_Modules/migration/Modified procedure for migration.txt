@@ -1,0 +1,120 @@
+/****** Object:  StoredProcedure [dbo].[GetAllIssueDocs_by_ProjectUID]    Script Date: 6/14/2023 5:14:32 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[GetAllIssueDocs_by_ProjectUID]
+@ProjectUID uniqueidentifier
+as
+begin
+set nocount on;
+select A.Issue_Uid,B.doc_id,B.doc_name,B.doc_path from Issues A,UploadedIssueDocs B where A.Issue_Uid = B.Issue_Uid and A.ProjectUID=@ProjectUID and A.Delete_Flag='N' and B.DocBlob is null
+end
+
+---------------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[GetAllBankDocumentsByProjectUID]    Script Date: 6/14/2023 2:47:29 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[GetAllBankDocumentsByProjectUID]
+@ProjectUID uniqueidentifier
+as
+begin
+select * from BankGuarantee A, BankDocuments B where A.Bank_GuaranteeUID = B.Bank_GuaranteeUID and A.ProjectUID = @ProjectUID and B.BankDoc_UID not IN(select BankDoc_UID from BankDocBlobs);
+end
+
+-----------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[GetAllInsuranceDocumentsByProjectUID]    Script Date: 6/14/2023 4:37:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[GetAllInsuranceDocumentsByProjectUID]
+@ProjectUID uniqueidentifier
+as
+begin
+select * from Insurance A, InsuranceDocuments B where A.InsuranceUID = B.InsuranceUID and A.ProjectUID = @ProjectUID and B.InsuranceDoc_UID not IN(select InsuranceDoc_UID from InsuranceDocBlobs);
+end
+
+-------------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[GetAllInsurancePremiumsByProjectUID]    Script Date: 6/14/2023 4:28:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[GetAllInsurancePremiumsByProjectUID]
+@ProjectUID uniqueidentifier
+as
+begin
+select * from Insurance A, Insurance_Premiums B  where A.InsuranceUID = B.InsuranceUID and  A.ProjectUID = @ProjectUID and b.PremiumUID not IN(select PremiumUID  from InsurancePremiumBlob);
+end
+
+----------------------------------------------------
+
+/****** Object:  StoredProcedure [dbo].[GetAllRABillDocumentsByProjectUID]    Script Date: 6/14/2023 5:20:56 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[GetAllRABillDocumentsByProjectUID]
+@ProjectUID uniqueidentifier
+as
+begin
+select B.RABillUid,B.FilePath from RABill_Abstract A, RABills_Documents B, WorkPackages C where A.RABillUid = B.RABillUid and B.WorkpackageUID = C.WorkPackageUID and C.ProjectUID = @ProjectUID and B.DeleteFlag = 'N' and b.DocBlob is null
+end
+
+--------------------------------------------------------
+
+
+//
+/****** Object:  StoredProcedure [dbo].[BankDocBlobInsertorUpdate]    Script Date: 6/15/2023 12:04:25 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[BankDocBlobInsertorUpdate]
+@BankDocUID uniqueidentifier,
+@DocName nvarchar(max),
+@DocPath nvarchar(max),
+@BlobData varbinary(max)
+as
+begin
+if not exists(select BankDocBlobUID from BankDocBlobs where BankDoc_UID = @BankDocUID and DeleteFlag='N')
+begin
+	 insert into BankDocBlobs(BankDocBlobUID, BankDoc_UID,BlobData,DeleteFlag,DocName,DocPath)
+	 values(NEWID(),@BankDocUID,@BlobData,'N',@DocName,@DocPath)
+end
+else
+begin
+ update BankDocBlobs set BlobData=@BlobData where BankDoc_UID=@BankDocUID;
+end
+end
+
+----------------------------------
+
+/****** Object:  StoredProcedure [dbo].[InsuranceDocBlobInsertorUpdate]    Script Date: 6/15/2023 12:06:06 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER proc [dbo].[InsuranceDocBlobInsertorUpdate]
+@InsuranceDocUID uniqueidentifier,
+@DocName nvarchar(max),
+@DocPath nvarchar(max),
+@BlobData varbinary(max)
+as
+begin
+if not exists(select InsuranceDocBlobUID from InsuranceDocBlobs where InsuranceDoc_UID = @InsuranceDocUID and DeleteFlag='N')
+begin
+	 insert into InsuranceDocBlobs(InsuranceDocBlobUID, InsuranceDoc_UID,BlobData,DeleteFlag,DocName,DocPath)
+	 values(NEWID(),@InsuranceDocUID,@BlobData,'N',@DocName,@DocPath)
+end
+else
+begin
+ update InsuranceDocBlobs set BlobData=@BlobData where InsuranceDoc_UID=@InsuranceDocUID;
+end
+end

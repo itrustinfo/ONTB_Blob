@@ -1,56 +1,5 @@
 	vaibhav.parulekar@njsei.com
-//
-CREATE TABLE [dbo].[ActualDocumentBlob](
-	[Blob_UID] [uniqueidentifier] NOT NULL,
-	[ActualDocumentUID] [uniqueidentifier] NULL,
-	[Blob_Data] [varbinary](max) NULL,
-	[Delete_Flag] [varchar](1) NULL,
- CONSTRAINT [PK_ActualDocumentBlob] PRIMARY KEY CLUSTERED 
-(
-	[Blob_UID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
 
-ALTER TABLE [dbo].[ActualDocumentBlob] ADD  CONSTRAINT [DF_ActualDocumentBlob_Delete_Flag]  DEFAULT ('N') FOR [Delete_Flag]
-GO
-
-//
-CREATE TABLE [dbo].[DocumentStatus_Blob](
-	[StatusBlob_UID] [uniqueidentifier] NOT NULL,
-	[StatusUID] [uniqueidentifier] NULL,
-	[DocumentUID] [uniqueidentifier] NULL,
-	[CoverFileBlob_Data] [varbinary](max) NULL,
-	[ReviewFileBlob_Data] [varbinary](max) NULL,
-	[Delete_Flag] [varchar](1) NULL,
- CONSTRAINT [PK_DocumentStatus_Blob] PRIMARY KEY CLUSTERED 
-(
-	[StatusBlob_UID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-
-ALTER TABLE [dbo].[DocumentStatus_Blob] ADD  CONSTRAINT [DF_DocumentStatus_Blob_Delete_Flag]  DEFAULT ('N') FOR [Delete_Flag]
-GO
-
-
-//
-CREATE TABLE [dbo].[DocumentVersionBlob](
-	[DocumentVersionBlob] [uniqueidentifier] NOT NULL,
-	[DocVersion_UID] [uniqueidentifier] NULL,
-	[DocumentUID] [uniqueidentifier] NULL,
-	[CoverLetter_Blob] [varbinary](max) NULL,
-	[ResubmitFile_Blob] [varbinary](max) NULL,
-	[Delete_Flag] [varchar](1) NULL,
- CONSTRAINT [PK_DocumentVersionBlob] PRIMARY KEY CLUSTERED 
-(
-	[DocumentVersionBlob] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-
-ALTER TABLE [dbo].[DocumentVersionBlob] ADD  CONSTRAINT [DF_DocumentVersionBlob_Delete_Flag]  DEFAULT ('N') FOR [Delete_Flag]
-GO
 
 
 //
@@ -100,131 +49,11 @@ END
 GO
 
 
-//
--- ================================================
--- Template generated from Template Explorer using:
--- Create Procedure (New Menu).SQL
---
--- Use the Specify Values for Template Parameters 
--- command (Ctrl-Shift-M) to fill in the parameter 
--- values below.
---
--- This block of comments will not be included in
--- the definition of the procedure.
--- ================================================
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
--- =============================================
--- Author:		<Author,,Name>
--- Create date: <Create Date,,>
--- Description:	<Description,,>
--- =============================================
-CREATE PROCEDURE [usp_InsertActualDocumentsBlob] 
-	-- Add the parameters for the stored procedure here
-@ActualDocumentUID as uniqueidentifier,
-@Blob_Data varbinary(max)
-AS
-BEGIN
-	-- SET NOCOUNT ON added to prevent extra result sets from
-	-- interfering with SELECT statements.
-	SET NOCOUNT ON;
-
-    -- Insert statements for procedure here
-	-- Insert into ActualDocumentBlob Table
-	insert into ActualDocumentBlob(Blob_UID,ActualDocumentUID,Blob_Data)
-	values(NEWID(),@ActualDocumentUID,@Blob_Data)
-
-END
-GO
-
-//added on 10/04/2023
--- ================================================
--- Template generated from Template Explorer using:
--- Create Procedure (New Menu).SQL
---
--- Use the Specify Values for Template Parameters 
--- command (Ctrl-Shift-M) to fill in the parameter 
--- values below.
---
--- This block of comments will not be included in
--- the definition of the procedure.
--- ================================================
-SET ANSI_NULLS ON
-GO
-USE [CP02_Blob]
-GO
-/****** Object:  StoredProcedure [dbo].[usp_InsertDocumentStatusBlob]    Script Date: 4/11/2023 2:43:20 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
--- =============================================
--- Author:		<Author,,Name>
--- Create date: <Create Date,,>
--- Description:	<Description,,>
--- =============================================
-create PROCEDURE [dbo].[usp_InsertDocumentStatusBlob] 
-	-- Add the parameters for the stored procedure here
-@StatusUID as uniqueidentifier,
-@ActualDocumentUID as uniqueidentifier,
-@CoverLetterBlob as varbinary(max),
-@ReviewFileBlob_Data varbinary(max)=null
-AS
-BEGIN
-	-- SET NOCOUNT ON added to prevent extra result sets from
-	-- interfering with SELECT statements.
-	SET NOCOUNT ON;
-
-	
-			insert into DocumentStatus_Blob(StatusBlob_UID,StatusUID,DocumentUID,CoverFileBlob_Data,ReviewFileBlob_Data)
-			values(NEWID(),@StatusUID,@ActualDocumentUID,@CoverLetterBlob,@ReviewFileBlob_Data);
-		
-		
-
-	  
-END
 
 
 
-//added on 10/04/2023
--- ================================================
--- Template generated from Template Explorer using:
--- Create Procedure (New Menu).SQL
---
--- Use the Specify Values for Template Parameters 
--- command (Ctrl-Shift-M) to fill in the parameter 
--- values below.
---
--- This block of comments will not be included in
--- the definition of the procedure.
--- ================================================
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
--- =============================================
--- Author:		<Author,,Name>
--- Create date: <Create Date,,>
--- Description:	<Description,,>
--- =============================================
-CREATE PROCEDURE [usp_InsertDocumentVersionBlob]
-	-- Add the parameters for the stored procedure here
-@DocVersionUID as uniqueidentifier,
-@DocumentUID as uniqueidentifier,
-@Blob_Data as varbinary(max)
-AS
-BEGIN
-	-- SET NOCOUNT ON added to prevent extra result sets from
-	-- interfering with SELECT statements.
-	SET NOCOUNT ON;
 
-    -- Insert statements for procedure here
-	 insert into DocumentVersionBlob(DocumentVersionBlob,DocVersion_UID,DocumentUID,ResubmitFile_Blob)
-		  values(NEWID(),@DocVersionUID,@DocumentUID,@Blob_Data);
-END
-GO
+
 
 
 //
@@ -385,62 +214,8 @@ end
 
 
 
-//
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
--- =============================================
--- Author:		<Author,,Name>
--- Create date: <Create Date,,>
--- Description:	<Description,,>
--- =============================================
-create PROCEDURE [dbo].[usp_InsertDocumentStatusBlob_FirstTime] 
-	-- Add the parameters for the stored procedure here
-@StatusUID as uniqueidentifier,
-@ActualDocumentUID as uniqueidentifier,
-@CoverLetterUID as uniqueidentifier
-AS
-BEGIN
-	-- SET NOCOUNT ON added to prevent extra result sets from
-	-- interfering with SELECT statements.
-	SET NOCOUNT ON;
-
-	declare @CoverLetterBlob varbinary(MAX);
-	set @CoverLetterBlob=(select Blob_Data from ActualDocumentBlob where ActualDocumentUID=@CoverLetterUID and Delete_Flag='N');
-	  --Insert into Document Status Blob table
-		  insert into DocumentStatus_Blob(StatusBlob_UID,StatusUID,DocumentUID,CoverFileBlob_Data)
-		  values(NEWID(),@StatusUID,@ActualDocumentUID,@CoverLetterBlob);
-END
 
 
-//
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-create proc [dbo].[usp_GetActualDocumentBlob_by_ActualDocumentUID]
-@ActualDocumentUID uniqueidentifier
-as
-begin
-set nocount on;
-select Blob_UID,ActualDocumentUID,Blob_Data from ActualDocumentBlob where 
-ActualDocumentUID=@ActualDocumentUID and Delete_Flag='N'
-end
-
-//
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-create proc [dbo].[usp_GetDocumentVersionBlob_by_DocVersion_UID]
-@DocVersion_UID uniqueidentifier
-as
-begin
-set nocount on;
-select DocumentVersionBlob,DocVersion_UID,CoverLetter_Blob,ResubmitFile_Blob
-from DocumentVersionBlob where DocVersion_UID=@DocVersion_UID and Delete_Flag='N';
-end
 
 
 //added on 11/04/2023
@@ -474,45 +249,10 @@ begin
 end
 end
 
-//added on 12/04/2023
-SET QUOTED_IDENTIFIER ON
-GO
--- =============================================
--- Author:		<Author,,Name>
--- Create date: <Create Date,,>
--- Description:	<Description,,>
--- =============================================
-ALTER PROCEDURE [dbo].[usp_InsertDocumentVersionBlob]
-	-- Add the parameters for the stored procedure here
-@DocVersionUID as uniqueidentifier,
-@DocumentUID as uniqueidentifier,
-@Blob_Data as varbinary(max),
-@CoverLetter_Blob varbinary(max)=null
-AS
-BEGIN
-	-- SET NOCOUNT ON added to prevent extra result sets from
-	-- interfering with SELECT statements.
-	SET NOCOUNT ON;
-
-    -- Insert statements for procedure here
-	 insert into DocumentVersionBlob(DocumentVersionBlob,DocVersion_UID,DocumentUID,ResubmitFile_Blob,CoverLetter_Blob)
-		  values(NEWID(),@DocVersionUID,@DocumentUID,@Blob_Data,@CoverLetter_Blob);
-END
+//
 
 
 
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-create proc [dbo].[usp_GetDocumentStatusBlob_by_StatusUID]
-@StatusUID uniqueidentifier
-as
-begin
-set nocount on;
-select StatusBlob_UID,StatusUID,CoverFileBlob_Data,ReviewFileBlob_Data
-from DocumentStatus_Blob where StatusUID=@StatusUID and Delete_Flag='N'
-end
 
 //added on 13/04/2023
 USE [ONTB_Server_Blob]
@@ -1464,179 +1204,9 @@ begin
 end
 end
 
-//added on 13/04/2023
-USE [CP02_Blob]
-GO
 
-/****** Object:  Table [dbo].[DocumentsAttachments_Blob]    Script Date: 4/13/2023 5:56:22 PM ******/
-SET ANSI_NULLS ON
-GO
 
-SET QUOTED_IDENTIFIER ON
-GO
 
-CREATE TABLE [dbo].[DocumentsAttachments_Blob](
-	[DocumentAttachmentBlob] [uniqueidentifier] NOT NULL,
-	[AttachmentUID] [uniqueidentifier] NULL,
-	[ActualDocumentUID] [uniqueidentifier] NULL,
-	[StatusUID] [uniqueidentifier] NULL,
-	[BlobData] [varbinary](max) NULL,
-	[DeleteFlag] [varchar](1) NULL,
-	[CreatedDate] [datetime] NULL,
- CONSTRAINT [PK_DocumentsAttachments_Blob] PRIMARY KEY CLUSTERED 
-(
-	[DocumentAttachmentBlob] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-
-ALTER TABLE [dbo].[DocumentsAttachments_Blob] ADD  CONSTRAINT [DF_DocumentsAttachments_Blob_DeleteFlag]  DEFAULT ('N') FOR [DeleteFlag]
-GO
-
-ALTER TABLE [dbo].[DocumentsAttachments_Blob] ADD  CONSTRAINT [DF_DocumentsAttachments_Blob_CreatedDate]  DEFAULT (getdate()) FOR [CreatedDate]
-GO
-
-//
--- ================================================
--- Template generated from Template Explorer using:
--- Create Procedure (New Menu).SQL
---
--- Use the Specify Values for Template Parameters 
--- command (Ctrl-Shift-M) to fill in the parameter 
--- values below.
---
--- This block of comments will not be included in
--- the definition of the procedure.
--- ================================================
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
--- =============================================
--- Author:		<Author,,Name>
--- Create date: <Create Date,,>
--- Description:	<Description,,>
--- =============================================
-CREATE PROCEDURE [usp_InsertDocumentsAttachmentsBlob] 
-	-- Add the parameters for the stored procedure here
-@AttachmentUID as uniqueidentifier,
-@ActualDocumentUID as uniqueidentifier,
-@StatusUID as uniqueidentifier,
-@BlobData as varbinary(max)
-AS
-BEGIN
-	-- SET NOCOUNT ON added to prevent extra result sets from
-	-- interfering with SELECT statements.
-	SET NOCOUNT ON;
-
-    -- Insert statements for procedure here
-	INSERT INTO [dbo].[DocumentsAttachments_Blob]
-           ([DocumentAttachmentBlob]
-           ,[AttachmentUID]
-           ,[ActualDocumentUID]
-		   ,[StatusUID]
-           ,[BlobData]
-           ,[DeleteFlag]
-           )
-     VALUES
-           (NEWID()
-           ,@AttachmentUID
-           ,@ActualDocumentUID
-           ,@StatusUID
-           ,@BlobData
-           ,'N'
- )
-END
-GO
-
-//added on 14/04/2023
--- ================================================
--- Template generated from Template Explorer using:
--- Create Procedure (New Menu).SQL
---
--- Use the Specify Values for Template Parameters 
--- command (Ctrl-Shift-M) to fill in the parameter 
--- values below.
---
--- This block of comments will not be included in
--- the definition of the procedure.
--- ================================================
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
--- =============================================
--- Author:		<Author,,Name>
--- Create date: <Create Date,,>
--- Description:	<Description,,>
--- =============================================
-CREATE PROCEDURE [usp_GetAttachmentBlob_by_attachmentUID] 
-	-- Add the parameters for the stored procedure here
-@AttachmentUID as uniqueidentifier
-AS
-BEGIN
-	-- SET NOCOUNT ON added to prevent extra result sets from
-	-- interfering with SELECT statements.
-	SET NOCOUNT ON;
-
-    -- Insert statements for procedure here
-	select * From DocumentsAttachments_Blob Where AttachmentUID=@AttachmentUID and DeleteFlag='N'
-END
-GO
-
-//added on 17/04/2023
--- ================================================
--- Template generated from Template Explorer using:
--- Create Procedure (New Menu).SQL
---
--- Use the Specify Values for Template Parameters 
--- command (Ctrl-Shift-M) to fill in the parameter 
--- values below.
---
--- This block of comments will not be included in
--- the definition of the procedure.
--- ================================================
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
--- =============================================
--- Author:		<Author,,Name>
--- Create date: <Create Date,,>
--- Description:	<Description,,>
--- =============================================
-CREATE PROCEDURE [usp_ReplaceDocsFlow2old_Blob]
-	-- Add the parameters for the stored procedure here
-@CoverLetterUID as uniqueidentifier,
-@StatusUID as uniqueidentifier,
-@DocVersionUID as uniqueidentifier,
-@ActualDocument_Blob varbinary(max),
-@CoverLetter_Blob as varbinary(max)
- 
-AS
-BEGIN
-	-- SET NOCOUNT ON added to prevent extra result sets from
-	-- interfering with SELECT statements.
-	SET NOCOUNT ON;
-
-    -- Insert statements for procedure here
-	SET NOCOUNT ON;
-	
-
-    -- Insert statements for procedure here
-	
-
-	Update ActualDocumentBlob set Blob_Data=@ActualDocument_Blob
-	Where ActualDocumentUID=@CoverLetterUID
-
-	--- update document status table
-	Update DocumentStatus_Blob set CoverFileBlob_Data=@CoverLetter_Blob Where StatusUID = @StatusUID
-
-	---- update document Version table
-	Update  DocumentVersionBlob set ResubmitFile_Blob=@ActualDocument_Blob  Where DocVersion_UID=@DocVersionUID
-
-END
-GO
 
 
 //
@@ -1675,54 +1245,6 @@ BEGIN
 
 	select @CoverLetterUID as CoverLetterUID,@StatusUID as StatusUID,@DocVersionUID as DocVersionUID from ActualDocuments Where ActualDocumentUID=@ActualDocumentUID
 	
-END
-
-//
-USE [CP02_Blob]
-GO
-/****** Object:  StoredProcedure [dbo].[usp_ReplaceDocsFlow2old_Blob]    Script Date: 4/24/2023 2:27:42 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
--- =============================================
--- Author:		<Author,,Name>
--- Create date: <Create Date,,>
--- Description:	<Description,,>
--- =============================================
-ALTER PROCEDURE [dbo].[usp_ReplaceDocsFlow2old_Blob]
-	-- Add the parameters for the stored procedure here
-@ActualDocumentUID as uniqueidentifier,
-@CoverLetterUID as uniqueidentifier,
-@StatusUID as uniqueidentifier,
-@DocVersionUID as uniqueidentifier,
-@ActualDocument_Blob varbinary(max),
-@CoverLetter_Blob as varbinary(max)
- 
-AS
-BEGIN
-	-- SET NOCOUNT ON added to prevent extra result sets from
-	-- interfering with SELECT statements.
-	SET NOCOUNT ON;
-
-    -- Insert statements for procedure here
-	SET NOCOUNT ON;
-	
-
-    -- Insert statements for procedure here
-	Update ActualDocumentBlob set Blob_Data=@ActualDocument_Blob
-	Where ActualDocumentUID=@ActualDocumentUID
-
-
-	Update ActualDocumentBlob set Blob_Data=@CoverLetter_Blob
-	Where ActualDocumentUID=@CoverLetterUID
-
-	--- update document status table
-	Update DocumentStatus_Blob set CoverFileBlob_Data=@CoverLetter_Blob Where StatusUID = @StatusUID
-
-	---- update document Version table
-	Update  DocumentVersionBlob set ResubmitFile_Blob=@ActualDocument_Blob  Where DocVersion_UID=@DocVersionUID
-
 END
 
 
